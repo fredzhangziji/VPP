@@ -2,7 +2,7 @@
 
 export PATH=$PATH:/usr/local/bin
 CONDA_PATH="/home/elu/software/anaconda3"
-PROJECT_PATH="/home/elu/airflow_scripts"
+PROJECT_PATH="/home/elu/VPP/airflow_scripts"
 echo "Starting script execution..."
 cd "${PROJECT_PATH}"
 

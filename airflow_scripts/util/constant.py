@@ -1,5 +1,6 @@
 import logging
 
+logging.getLogger('prophet.plot').disabled = True
 logger = logging.getLogger('prophet')
 logger.setLevel(logging.DEBUG)
 
