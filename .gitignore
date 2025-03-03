@@ -1,0 +1,21 @@
+# Logs
+*.log
+lightning_logs/
+
+# Data
+*.csv
+data/
+
+# Output folders
+saved_model/
+predictions/
+scaler_model/
+output/
+model/
+saved_norm/
+
+# Os
+.DS_Store
+
+# Compiled files
+__pycache__
