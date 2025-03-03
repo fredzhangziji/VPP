@@ -2,6 +2,10 @@
 *.log
 lightning_logs/
 
+# Models
+*.pkl
+*.pickle
+
 # Data
 *.csv
 data/
