@@ -19,6 +19,7 @@ model/
 saved_norm/
 
 # Os
+.vscode
 .DS_Store
 
 # Compiled files
