@@ -1,0 +1,7 @@
+pyproject.toml
+setup.py
+pub_tools.egg-info/PKG-INFO
+pub_tools.egg-info/SOURCES.txt
+pub_tools.egg-info/dependency_links.txt
+pub_tools.egg-info/requires.txt
+pub_tools.egg-info/top_level.txt

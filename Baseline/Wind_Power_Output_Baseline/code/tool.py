@@ -5,10 +5,12 @@ import json
 import matplotlib.pyplot as plt 
 import pandas as pd
 import optuna
+from pub_tools import db_tools, const
+from sqlalchemy import Table, select
 
 # 计算斜率
 def compute_daily_metrics(df):
-    features = ['t2m', 'ws10m', 'wd10m_sin', 'wd10m_cos', 'sp']
+    features = ['t2m', 'ws100m', 'wd100m_sin', 'wd100m_cos', 'sp']
     weather_ts = df[features].values  # shape (T, len(features))
     wind_series = df['wind_output'].values
     time_idx = np.arange(len(wind_series))
@@ -120,11 +122,11 @@ def normalize_data(merged_df):
     merged_df['t2m'] = merged_df['t2m'].apply(lambda x: (x - mean_t2m) / std_t2m)
     norm_models['t2m'] = {'method': 'z-score', 'mean': float(mean_t2m), 'std': float(std_t2m)}
 
-    # 风速 ws10m: Z-score 标准化（原地修改）
-    mean_ws10m = merged_df['ws10m'].mean()
-    std_ws10m = merged_df['ws10m'].std()
-    merged_df['ws10m'] = merged_df['ws10m'].apply(lambda x: (x - mean_ws10m) / std_ws10m)
-    norm_models['ws10m'] = {'method': 'z-score', 'mean': float(mean_ws10m), 'std': float(std_ws10m)}
+    # 风速 ws100m: Z-score 标准化（原地修改）
+    mean_ws100m = merged_df['ws100m'].mean()
+    std_ws100m = merged_df['ws100m'].std()
+    merged_df['ws100m'] = merged_df['ws100m'].apply(lambda x: (x - mean_ws100m) / std_ws100m)
+    norm_models['ws100m'] = {'method': 'z-score', 'mean': float(mean_ws100m), 'std': float(std_ws100m)}
 
     # 气压 sp: Z-score 标准化（原地修改）
     mean_sp = merged_df['sp'].mean()
@@ -132,12 +134,12 @@ def normalize_data(merged_df):
     merged_df['sp'] = merged_df['sp'].apply(lambda x: (x - mean_sp) / std_sp)
     norm_models['sp'] = {'method': 'z-score', 'mean': float(mean_sp), 'std': float(std_sp)}
 
-    # 风向 wd10m: 采用正余弦转换
-    # 扩展为两个新列，再删除原始 wd10m（后续在反归一化时恢复原始角度）
-    merged_df['wd10m_sin'] = np.sin(merged_df['wd10m'] * np.pi/180)
-    merged_df['wd10m_cos'] = np.cos(merged_df['wd10m'] * np.pi/180)
-    merged_df.drop(columns=['wd10m'], inplace=True)
-    norm_models['wd10m'] = {'method': 'sin-cos'}
+    # 风向 wd100m: 采用正余弦转换
+    # 扩展为两个新列，再删除原始 wd100m（后续在反归一化时恢复原始角度）
+    merged_df['wd100m_sin'] = np.sin(merged_df['wd100m'] * np.pi/180)
+    merged_df['wd100m_cos'] = np.cos(merged_df['wd100m'] * np.pi/180)
+    merged_df.drop(columns=['wd100m'], inplace=True)
+    norm_models['wd100m'] = {'method': 'sin-cos'}
 
     # 风力发电输出 wind_output: Min-Max 归一化（原地修改）
     min_wind = merged_df['wind_output'].min()
@@ -150,7 +152,7 @@ def normalize_data(merged_df):
         json.dump(norm_models, f, indent=4)
 
     print("归一化预览（原地修改）：")
-    print(merged_df.head(1))
+    print(merged_df.head(5))
     print("归一化模型已保存到 ../output/wind_data_normalization_models.json")
     return merged_df
 
@@ -193,7 +195,7 @@ def load_weights(city):
     return best_params
 
 # 测试集：预测单城市
-def predict_for_test_return(city, day_index):
+def predict_for_test_return(city: str, day_index: int):
     """
     对单个城市的指定测试日做预测，返回：
       actual_unnorm: 实际结果 (1D numpy 数组)
@@ -201,7 +203,7 @@ def predict_for_test_return(city, day_index):
       metrics: 字典，包含 RMSE, MAE, MAPE
     """
     print(f'cur city: {city}')
-    normalized_df = get_data_for_city(city)
+    normalized_df = get_weather_data_for_city(city)
     print(normalized_df.head(1))
     daily_dates, daily_metrics = get_daily_data(normalized_df)
     print(f'daily_dates len: {len(daily_dates)}')
@@ -346,7 +348,7 @@ def predict_province_future(cities, future_features_dict, n_days):
     for city in cities:
         print(f"\nPredicting future {n_days} days of wind power output for [{city}]...")
         # 1. 获取该城市历史数据和日指标
-        normalized_df = get_data_for_city(city)
+        normalized_df = get_weather_data_for_city(city)
         daily_dates, daily_metrics = get_daily_data(normalized_df)
         # 2. 加载该城市训练好的权重参数
         best_params = load_weights(city)
@@ -358,11 +360,11 @@ def predict_province_future(cities, future_features_dict, n_days):
             day_data = future_features.iloc[day*24:(day+1)*24]
             if len(day_data) < 24:
                 continue
-            # 如果原始数据中包含 'wd10m' 列，则计算正余弦转换；否则认为已包含结果
-            if 'wd10m' in day_data.columns:
-                day_data['wd10m_sin'] = np.sin(day_data['wd10m'] * np.pi/180)
-                day_data['wd10m_cos'] = np.cos(day_data['wd10m'] * np.pi/180)
-            weather_ts = day_data[['t2m', 'ws10m', 'wd10m_sin', 'wd10m_cos', 'sp']].values
+            # 如果原始数据中包含 'wd100m' 列，则计算正余弦转换；否则认为已包含结果
+            if 'wd100m' in day_data.columns:
+                day_data['wd100m_sin'] = np.sin(day_data['wd100m'] * np.pi/180)
+                day_data['wd100m_cos'] = np.cos(day_data['wd100m'] * np.pi/180)
+            weather_ts = day_data[['t2m', 'ws100m', 'wd100m_sin', 'wd100m_cos', 'sp']].values
             future_daily_metrics[day] = {
                 'weather_ts': weather_ts,
                 'slope': 0,
@@ -398,24 +400,44 @@ def predict_province_future(cities, future_features_dict, n_days):
     plt.show()
     return province_future_forecast
 
-def get_data_for_city(city):
-    print('inside get_data_for_city func\n\n')
-    weather_df = pd.read_csv('../data/history_weather_data_for_' + city + '.csv', sep=',', dayfirst=False)
-    weather_df['datetime'] = pd.to_datetime(weather_df['datetime'])
-    weather_df.set_index('datetime', inplace=True)
-    weather_df.drop(columns=['city'], inplace=True)
+def get_weather_data_for_city(city):
+    engine, metadata = db_tools.get_db_connection(const.DB_CONFIG_VPP_SERVICE)
+    terraqt_weather = Table('terraqt_weather', metadata, autoload_with=engine)
+    query = select(terraqt_weather).where(
+        (terraqt_weather.c.model == 'gdas_surface') &
+        (terraqt_weather.c.region_name == city)
+    )
 
-    output_df = pd.read_csv('../data/history_wind_power_output_for_all.csv', sep=',', dayfirst=True)
-    print(output_df.head(1))
-    output_df = output_df[output_df['city_name'] == city]
-    print(output_df.head(1))
-    output_df.drop(columns=['type', 'city_name'], inplace=True)
-    print(output_df.head(1))
-    output_df['date_time'] = pd.to_datetime(output_df['date_time'], dayfirst=True)
+    weather_df = db_tools.read_from_db(engine, query)
+
+    weather_df['ts'] = pd.to_datetime(weather_df['ts'])
+    weather_df.rename(columns={'ts': 'datetime'}, inplace=True)
+    weather_df.set_index('datetime', inplace=True)
+    weather_df.drop(
+        columns=[
+            'id', 'region_code', 'region_name', 'model', 'ws10m', 'wd10m', 'gust', 'irra', 'tp', 'lng', 'lat', 'time_fcst'
+            ],
+        inplace=True
+    )
+
+    weather_df.sort_index(inplace=True)
+
+    neimeng_wind_output = Table('neimeng_wind_power', metadata, autoload_with=engine)
+    query = select(neimeng_wind_output).where(
+        neimeng_wind_output.c.type == '3'
+    )
+
+    output_df = db_tools.read_from_db(engine, query)
+
+    db_tools.release_db_connection(engine)
+
+    output_df.drop(columns=['type', 'city_name', 'id'], inplace=True)
+    output_df['date_time'] = pd.to_datetime(output_df['date_time'])
     output_df.set_index('date_time', inplace=True)
     output_df.rename(columns={'date_time': 'datetime', 'value': 'wind_output'}, inplace=True)
-
     output_df = output_df.resample('H', closed='right', label='right').mean()
+
+    output_df.sort_index(inplace=True)
 
     merged_df = pd.merge(weather_df, output_df, left_index=True, right_index=True, how='inner')
     merged_df = merged_df.dropna()
@@ -423,8 +445,6 @@ def get_data_for_city(city):
     merged_df.index = pd.to_datetime(merged_df.index)
     merged_df['date'] = merged_df.index.date
     merged_df = merged_df.groupby('date').filter(lambda group: len(group) == 24)
-    print(merged_df.columns)
-    print(merged_df.head(1))
     normalized_df = normalize_data(merged_df)
 
     return normalized_df
@@ -477,8 +497,11 @@ def search_best_weights(normalized_df, n_trials):
 
     return best_params
 
-def train(cities, n_trials):
+def train(cities: list, n_trials: int):
     for city in cities:
-        normalized_df = get_data_for_city(city)
+        normalized_df = get_weather_data_for_city(city)
         best_params = search_best_weights(normalized_df, n_trials)
         save_weights(best_params, city)
+
+if __name__ == '__main__':
+    predict_for_test_return('呼和浩特市', -1)

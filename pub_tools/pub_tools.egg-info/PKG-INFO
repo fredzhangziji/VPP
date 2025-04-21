@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: pub_tools
+Version: 0.1.0
+Summary: public tool module
+Author: Ziji Zhang
+Requires-Dist: requests>=2.25.1
+Requires-Dist: SQLAlchemy>=1.4.0
+Requires-Dist: pandas>=1.2.0
+Requires-Dist: optuna>=2.0.0
+Requires-Dist: matplotlib>=3.3.0
+Requires-Dist: numpy>=1.19.0
+Requires-Dist: scipy>=1.5.0
+Requires-Dist: pymysql>=0.9.3
