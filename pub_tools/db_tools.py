@@ -1,25 +1,17 @@
+"""
+此模块包含和数据库相关的功能的所有函数。
+"""
+
 import requests
 import time
 from sqlalchemy import create_engine, select, MetaData, Table, insert
 from sqlalchemy.dialects.mysql import insert as mysql_insert
 import pandas as pd
 from . import const
+
 import logging
-
+import pub_tools.logging_config
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-if not logger.handlers:
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    console_handler.setLevel(logging.DEBUG)
-    logger.addHandler(console_handler)
-
-    file_handler = logging.FileHandler('db_tools.log', mode='a')
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
 
 def get_history_weather_data_from_web(pos={'呼和浩特': [111.755509, 40.848423]}, start_time='2022-12-31 17:00:00',
                              end_time='2023-01-02 16:00:00'):
@@ -93,7 +85,7 @@ def write_to_db(engine, df, table_name, if_exists):
 def upsert_to_db(engine, df, table_name):
     """
     使用 SQLAlchemy 实现 MySQL 的 upsert 操作：
-    对于重复的记录（这里以 city_name, date_time, type 为唯一键），只更新 value 字段，
+    对于重复的记录（比如以 city_name, date_time, type 为唯一键），只更新 value 字段，
     而其余字段保持原值。
     """
     metadata = MetaData()

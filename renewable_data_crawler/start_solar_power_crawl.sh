@@ -2,7 +2,7 @@
 
 export PATH=$PATH:/usr/local/bin
 CONDA_PATH="/home/elu/software/anaconda3"
-PROJECT_PATH="/home/elu/VPP/renewable_data_cralwer"
+PROJECT_PATH="/home/elu/VPP/renewable_data_crawler"
 echo "Starting script execution..."
 cd "${PROJECT_PATH}"
 

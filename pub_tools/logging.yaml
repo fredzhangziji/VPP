@@ -1,0 +1,36 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  simple:
+    format: "%(asctime)s %(levelname)s [%(name)s]: %(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: simple
+    level: DEBUG
+  renewable_data_crawler:
+    class: logging.FileHandler
+    filename: logs/renewable_data_crawler.log
+    formatter: simple
+    level: DEBUG
+  db_tools:
+    class: logging.FileHandler
+    filename: logs/db_tools.log
+    formatter: simple
+    level: DEBUG
+
+loggers:
+  renewable_data_crawler:
+    handlers: [renewable_data_crawler, console]
+    level: DEBUG
+    propagate: False
+  db_tools:
+    handlers: [db_tools, console]
+    level: DEBUG
+    propagate: False
+
+root:
+  level: WARNING
+  handlers: []

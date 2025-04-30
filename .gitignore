@@ -15,6 +15,7 @@ saved_model/
 predictions/
 scaler_model/
 output/
+figure/
 model/
 saved_norm/
 

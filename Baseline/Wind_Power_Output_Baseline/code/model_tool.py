@@ -1,3 +1,13 @@
+"""
+此模块定义了风电出力Baseline所有所需的子功能函数，例如
+- normalize_data(merged_df): 标准化数据
+- unnormalize_data(normalized_df): 反标准化数据
+- predict_province_future(cities, future_features_dict, start_date, n_days): 实际预测未来n天的风电出力
+等等
+
+按需被调用。
+"""
+
 import numpy as np
 from scipy.stats import pearsonr
 from sklearn.metrics import mean_squared_error, mean_absolute_error
@@ -7,9 +17,15 @@ import pandas as pd
 import optuna
 from pub_tools import db_tools, const
 from sqlalchemy import Table, select
+from datetime import datetime
+import os
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 
 # 计算斜率
-def compute_daily_metrics(df):
+def _compute_daily_metrics(df: pd.DataFrame):
+    """
+    """
     features = ['t2m', 'ws100m', 'wd100m_sin', 'wd100m_cos', 'sp']
     weather_ts = df[features].values  # shape (T, len(features))
     wind_series = df['wind_output'].values
@@ -20,7 +36,7 @@ def compute_daily_metrics(df):
         slope = np.cov(time_idx, wind_series)[0, 1] / np.var(time_idx)
     return weather_ts, slope, wind_series
 
-def compute_similarity(day1, day2, params, daily_metrics):
+def _compute_similarity(day1, day2, params, daily_metrics):
     # 获取天气时间序列
     weather1 = daily_metrics[day1]['weather_ts']
     weather2 = daily_metrics[day2]['weather_ts']
@@ -60,7 +76,7 @@ def compute_similarity(day1, day2, params, daily_metrics):
     total_similarity = sim_feature + sim_slope + sim_euclid + sim_pearson + sim_season
     return total_similarity
 
-def objective(trial, daily_dates, daily_metrics):
+def _objective(trial, daily_dates, daily_metrics):
     w_feature = [
         trial.suggest_float('w_feature_0', 0, 1),
         trial.suggest_float('w_feature_1', 0, 1),
@@ -88,7 +104,7 @@ def objective(trial, daily_dates, daily_metrics):
         for candidate_day in daily_dates:
             if candidate_day == val_day:
                 continue
-            sim = compute_similarity(val_day, candidate_day, params, daily_metrics)
+            sim = _compute_similarity(val_day, candidate_day, params, daily_metrics)
             similarities[candidate_day] = sim
         if len(similarities) == 0:
             continue
@@ -103,57 +119,93 @@ def objective(trial, daily_dates, daily_metrics):
         return 0.0
     return np.mean(errors)
 
-def get_similar_day(target_day, params, daily_dates, daily_metrics):
+def _get_similar_day(target_day, params, daily_dates, daily_metrics):
     similarities = {}
     for candidate_day in daily_dates:
         if candidate_day == target_day:
             continue
-        sim = compute_similarity(target_day, candidate_day, params, daily_metrics)
+        sim = _compute_similarity(target_day, candidate_day, params, daily_metrics)
         similarities[candidate_day] = sim
     best_day = max(similarities, key=similarities.get)
     return best_day
 
 def normalize_data(merged_df):
-    norm_models = {}
+    model_file = '../output/wind_data_normalization_models.json'
+    
+    # 如果已存在归一化模型，则加载参数，并按模型归一化
+    if os.path.exists(model_file):
+        with open(model_file, 'r') as f:
+            norm_models = json.load(f)
+        print("加载已有归一化模型...")
+        # 温度 t2m （z-score 归一化）
+        mean_t2m = norm_models['t2m']['mean']
+        std_t2m = norm_models['t2m']['std']
+        merged_df['t2m'] = merged_df['t2m'].apply(lambda x: (x - mean_t2m) / std_t2m)
+        
+        # 风速 ws100m （z-score 归一化）
+        mean_ws100m = norm_models['ws100m']['mean']
+        std_ws100m = norm_models['ws100m']['std']
+        merged_df['ws100m'] = merged_df['ws100m'].apply(lambda x: (x - mean_ws100m) / std_ws100m)
+        
+        # 气压 sp （z-score 归一化）
+        mean_sp = norm_models['sp']['mean']
+        std_sp = norm_models['sp']['std']
+        merged_df['sp'] = merged_df['sp'].apply(lambda x: (x - mean_sp) / std_sp)
+        
+        # 风向 wd100m: 采用正余弦转换
+        merged_df['wd100m_sin'] = np.sin(merged_df['wd100m'] * np.pi / 180)
+        merged_df['wd100m_cos'] = np.cos(merged_df['wd100m'] * np.pi / 180)
+        merged_df.drop(columns=['wd100m'], inplace=True)
+        
+        # 风力发电输出 wind_output: Min-Max 归一化
+        min_wind = norm_models['wind_output']['min']
+        max_wind = norm_models['wind_output']['max']
+        merged_df['wind_output'] = merged_df['wind_output'].apply(lambda x: (x - min_wind) / (max_wind - min_wind))
+        
+    # 如果模型文件不存在，则计算归一化参数，并应用归一化，同时保存参数到文件
+    else:
+        norm_models = {}
 
-    # 温度 t2m: Z-score 标准化（原地修改）
-    mean_t2m = merged_df['t2m'].mean()
-    std_t2m = merged_df['t2m'].std()
-    merged_df['t2m'] = merged_df['t2m'].apply(lambda x: (x - mean_t2m) / std_t2m)
-    norm_models['t2m'] = {'method': 'z-score', 'mean': float(mean_t2m), 'std': float(std_t2m)}
+        # 温度 t2m: Z-score 标准化（原地修改）
+        mean_t2m = merged_df['t2m'].mean()
+        std_t2m = merged_df['t2m'].std()
+        merged_df['t2m'] = merged_df['t2m'].apply(lambda x: (x - mean_t2m) / std_t2m)
+        norm_models['t2m'] = {'method': 'z-score', 'mean': float(mean_t2m), 'std': float(std_t2m)}
 
-    # 风速 ws100m: Z-score 标准化（原地修改）
-    mean_ws100m = merged_df['ws100m'].mean()
-    std_ws100m = merged_df['ws100m'].std()
-    merged_df['ws100m'] = merged_df['ws100m'].apply(lambda x: (x - mean_ws100m) / std_ws100m)
-    norm_models['ws100m'] = {'method': 'z-score', 'mean': float(mean_ws100m), 'std': float(std_ws100m)}
+        # 风速 ws100m: Z-score 标准化（原地修改）
+        mean_ws100m = merged_df['ws100m'].mean()
+        std_ws100m = merged_df['ws100m'].std()
+        merged_df['ws100m'] = merged_df['ws100m'].apply(lambda x: (x - mean_ws100m) / std_ws100m)
+        norm_models['ws100m'] = {'method': 'z-score', 'mean': float(mean_ws100m), 'std': float(std_ws100m)}
 
-    # 气压 sp: Z-score 标准化（原地修改）
-    mean_sp = merged_df['sp'].mean()
-    std_sp = merged_df['sp'].std()
-    merged_df['sp'] = merged_df['sp'].apply(lambda x: (x - mean_sp) / std_sp)
-    norm_models['sp'] = {'method': 'z-score', 'mean': float(mean_sp), 'std': float(std_sp)}
+        # 气压 sp: Z-score 标准化（原地修改）
+        mean_sp = merged_df['sp'].mean()
+        std_sp = merged_df['sp'].std()
+        merged_df['sp'] = merged_df['sp'].apply(lambda x: (x - mean_sp) / std_sp)
+        norm_models['sp'] = {'method': 'z-score', 'mean': float(mean_sp), 'std': float(std_sp)}
 
-    # 风向 wd100m: 采用正余弦转换
-    # 扩展为两个新列，再删除原始 wd100m（后续在反归一化时恢复原始角度）
-    merged_df['wd100m_sin'] = np.sin(merged_df['wd100m'] * np.pi/180)
-    merged_df['wd100m_cos'] = np.cos(merged_df['wd100m'] * np.pi/180)
-    merged_df.drop(columns=['wd100m'], inplace=True)
-    norm_models['wd100m'] = {'method': 'sin-cos'}
+        # 风向 wd100m: 采用正余弦转换
+        # 扩展为两个新列，再删除原始 wd100m（后续在反归一化时恢复原始角度）
+        merged_df['wd100m_sin'] = np.sin(merged_df['wd100m'] * np.pi/180)
+        merged_df['wd100m_cos'] = np.cos(merged_df['wd100m'] * np.pi/180)
+        merged_df.drop(columns=['wd100m'], inplace=True)
+        norm_models['wd100m'] = {'method': 'sin-cos'}
 
-    # 风力发电输出 wind_output: Min-Max 归一化（原地修改）
-    min_wind = merged_df['wind_output'].min()
-    max_wind = merged_df['wind_output'].max()
-    merged_df['wind_output'] = merged_df['wind_output'].apply(lambda x: (x - min_wind) / (max_wind - min_wind))
-    norm_models['wind_output'] = {'method': 'min-max', 'min': float(min_wind), 'max': float(max_wind)}
+        # 风力发电输出 wind_output: Min-Max 归一化（原地修改）
+        min_wind = merged_df['wind_output'].min()
+        max_wind = merged_df['wind_output'].max()
+        merged_df['wind_output'] = merged_df['wind_output'].apply(lambda x: (x - min_wind) / (max_wind - min_wind))
+        norm_models['wind_output'] = {'method': 'min-max', 'min': float(min_wind), 'max': float(max_wind)}
 
-    # 保存归一化模型参数到 json 文件
-    with open('../output/wind_data_normalization_models.json', 'w') as f:
-        json.dump(norm_models, f, indent=4)
+        # 保存归一化模型参数到 json 文件
+        os.makedirs(os.path.dirname(model_file), exist_ok=True)
+        with open(model_file, 'w') as f:
+            json.dump(norm_models, f, indent=4)
+        print("归一化模型已保存到", model_file)
 
     print("归一化预览（原地修改）：")
     print(merged_df.head(5))
-    print("归一化模型已保存到 ../output/wind_data_normalization_models.json")
+    
     return merged_df
 
 def unnormalize_data(normalized_df):
@@ -203,14 +255,14 @@ def predict_for_test_return(city: str, day_index: int):
       metrics: 字典，包含 RMSE, MAE, MAPE
     """
     print(f'cur city: {city}')
-    normalized_df = get_weather_data_for_city(city)
+    normalized_df = get_history_weather_data_for_city(city)
     print(normalized_df.head(1))
     daily_dates, daily_metrics = get_daily_data(normalized_df)
     print(f'daily_dates len: {len(daily_dates)}')
     # 加载该城市训练好的权重参数
     best_params = load_weights(city)
     target_day = daily_dates[day_index]
-    similar_day = get_similar_day(target_day, best_params, daily_dates, daily_metrics)
+    similar_day = _get_similar_day(target_day, best_params, daily_dates, daily_metrics)
     print(f"[{city}] Target day: {target_day}; Most similar day: {similar_day}")
     
     # 使用最相似日的风电序列作为预测（归一化状态下）
@@ -234,8 +286,21 @@ def predict_for_test_return(city: str, day_index: int):
     actual_safe = np.where(actual_unnorm==0, 1e-6, actual_unnorm)
     mape = np.mean(np.abs((actual_unnorm - forecast) / actual_safe)) * 100
     metrics = {'RMSE': rmse, 'MAE': mae, 'MAPE': mape}
+
+    # 设置字体
+    try:
+        font_list = [f.name for f in fm.fontManager.ttflist]
+        if 'WenQuanYi Zen Hei' in font_list:
+            plt.rcParams['font.sans-serif'] = ['WenQuanYi Zen Hei']
+        else:
+            raise Exception("WenQuanYi Zen Hei font not found")
+    except Exception as e:
+        print("无法加载 WenQuanYi Zen Hei 字体，请检查该字体是否安装，错误信息：", e)
+        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'DejaVu Sans']
+
+    plt.rcParams['axes.unicode_minus'] = False
     
-    # 绘制单城市预测曲线
+    # 绘制单城市预测曲线并保存
     plt.figure(figsize=(10,6))
     plt.plot(actual_unnorm, label='Actual', marker='o')
     plt.plot(forecast, label='Forecast', marker='x', linestyle='--')
@@ -243,10 +308,21 @@ def predict_for_test_return(city: str, day_index: int):
     plt.title(f"{city} {target_day} Forecast Results")
     plt.xlabel("Hour")
     plt.ylabel("Wind Power Output")
-    plt.show()
+    plt.gca().text(0.05, 0.95, 
+               f"RMSE: {rmse:.3f}\nMAE: {mae:.3f}\nMAPE: {mape:.2f}%", 
+               transform=plt.gca().transAxes, fontsize=12,
+               verticalalignment='top', bbox=dict(boxstyle="round", fc="w"))
     
-    print(f"[{city}] RMSE: {rmse:.3f}, MAE: {mae:.3f}, MAPE: {mape:.2f}%")
-    return actual_unnorm, forecast, metrics
+    fig_folder = "../figure"
+    if not os.path.exists(fig_folder):
+        os.makedirs(fig_folder)
+
+    # 保存图像到 figure 文件夹中，并根据城市和日期命名图片文件
+    save_path = os.path.join(fig_folder, f"{city.replace(' ', '_')}_{target_day}_test_Forecast.png")
+    plt.savefig(save_path)
+    plt.close()
+    
+    return actual_unnorm, forecast, metrics, target_day
 
 # 测试集：每个城市预测
 def test_single_city(cities, day_index= -1):
@@ -254,15 +330,15 @@ def test_single_city(cities, day_index= -1):
     results = {}
     for city in cities:
         print(f"\n开始对城市 {city} 进行测试...")
-        actual, forecast, metrics = predict_for_test_return(city, day_index)
+        actual, forecast, metrics, target_day = predict_for_test_return(city, day_index)
         results[city] = {"actual": actual, "forecast": forecast, "metrics": metrics}
-    return results
+    return results, target_day
 
 # 测试集：全省总和
 def predict_province_day(cities, day_index=-1):
     province_actual = None
     province_forecast = None
-    city_results = test_single_city(cities, day_index)
+    city_results, target_day = test_single_city(cities, day_index)
     for city in cities:
         r = city_results[city]
         # 若不同城市预测长度可能不一致，则取最短长度
@@ -279,6 +355,19 @@ def predict_province_day(cities, day_index=-1):
     actual_safe = np.where(province_actual==0, 1e-6, province_actual)
     mape = np.mean(np.abs((province_actual - province_forecast) / actual_safe)) * 100
     print(f"\nProvince Forecast Metrics: RMSE: {rmse:.3f}, MAE: {mae:.3f}, MAPE: {mape:.2f}%")
+
+    # 设置字体
+    try:
+        font_list = [f.name for f in fm.fontManager.ttflist]
+        if 'WenQuanYi Zen Hei' in font_list:
+            plt.rcParams['font.sans-serif'] = ['WenQuanYi Zen Hei']
+        else:
+            raise Exception("WenQuanYi Zen Hei font not found")
+    except Exception as e:
+        print("无法加载 WenQuanYi Zen Hei 字体，请检查该字体是否安装，错误信息：", e)
+        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'DejaVu Sans']
+
+    plt.rcParams['axes.unicode_minus'] = False
     
     # 绘制全省预测曲线
     plt.figure(figsize=(10,6))
@@ -288,7 +377,19 @@ def predict_province_day(cities, day_index=-1):
     plt.title("Province Forecast Results")
     plt.xlabel("Hour")
     plt.ylabel("Wind Power Output")
-    plt.show()
+    plt.gca().text(0.05, 0.95, 
+               f"RMSE: {rmse:.3f}\nMAE: {mae:.3f}\nMAPE: {mape:.2f}%", 
+               transform=plt.gca().transAxes, fontsize=12,
+               verticalalignment='top', bbox=dict(boxstyle="round", fc="w"))
+    
+    fig_folder = "../figure"
+    if not os.path.exists(fig_folder):
+        os.makedirs(fig_folder)
+
+    # 保存图像到 figure 文件夹中，并根据城市和日期命名图片文件
+    save_path = os.path.join(fig_folder, f"Province_{target_day}_test_Forecast.png")
+    plt.savefig(save_path)
+    plt.close()
     
     return province_actual, province_forecast, {"RMSE": rmse, "MAE": mae, "MAPE": mape}
 
@@ -333,13 +434,13 @@ def get_similar_day_future(future_metric, params, daily_dates, daily_metrics):
     return best_day
 
 # 实际预测未来n天
-def predict_province_future(cities, future_features_dict, n_days):
+def predict_province_future(cities, future_features_dict, start_date, n_days):
     """
     对于未来n天，利用每个城市未来特征数据，通过历史相似性方法预测风电出力，然后累加得到全省预测。
     参数:
       cities: 城市列表
       future_features_dict: dict，键为城市名称，值为该城市未来n天特征数据，格式为DataFrame，
-         要求包含训练时使用的天气特征（例如 't2m','ws10m','ws100m','ssrd','tp','rh'）
+         要求包含训练时使用的天气特征（例如 't2m','ws100m','ws100m','ssrd','tp','rh'）
       n_days: 预测未来天数，每天24个数据点
     返回:
       province_future_forecast: 全省未来预测序列（1D numpy数组）
@@ -348,13 +449,13 @@ def predict_province_future(cities, future_features_dict, n_days):
     for city in cities:
         print(f"\nPredicting future {n_days} days of wind power output for [{city}]...")
         # 1. 获取该城市历史数据和日指标
-        normalized_df = get_weather_data_for_city(city)
+        normalized_df = get_history_weather_data_for_city(city)
         daily_dates, daily_metrics = get_daily_data(normalized_df)
         # 2. 加载该城市训练好的权重参数
         best_params = load_weights(city)
         # 3. 处理未来特征数据：将未来几天数据划分为n_days个，每24行为一天，并构造未来日指标
         future_features = future_features_dict[city].copy()
-        # 假设 future_features 已有相应特征列，与历史归一化数据使用的特征一致，例如：'t2m','ws10m','ws100m','ssrd','tp','rh'
+        # 假设 future_features 已有相应特征列，与历史归一化数据使用的特征一致，例如：'t2m','ws100m','ws100m','ssrd','tp','rh'
         future_daily_metrics = {}
         for day in range(n_days):
             day_data = future_features.iloc[day*24:(day+1)*24]
@@ -390,6 +491,20 @@ def predict_province_future(cities, future_features_dict, n_days):
         else:
             min_len = min(len(province_future_forecast), len(city_forecast_full))
             province_future_forecast = province_future_forecast[:min_len] + city_forecast_full[:min_len]
+
+    # 设置字体
+    try:
+        font_list = [f.name for f in fm.fontManager.ttflist]
+        if 'WenQuanYi Zen Hei' in font_list:
+            plt.rcParams['font.sans-serif'] = ['WenQuanYi Zen Hei']
+        else:
+            raise Exception("WenQuanYi Zen Hei font not found")
+    except Exception as e:
+        print("无法加载 WenQuanYi Zen Hei 字体，请检查该字体是否安装，错误信息：", e)
+        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'DejaVu Sans']
+
+    plt.rcParams['axes.unicode_minus'] = False
+
     # 绘制全省未来预测曲线
     plt.figure(figsize=(12,6))
     plt.plot(province_future_forecast, label='Province Future Forecast', marker='o')
@@ -397,10 +512,18 @@ def predict_province_future(cities, future_features_dict, n_days):
     plt.xlabel("Hour")
     plt.ylabel("Wind Power Output")
     plt.legend()
-    plt.show()
+    
+    fig_folder = "../figure"
+    if not os.path.exists(fig_folder):
+        os.makedirs(fig_folder)
+
+    # 保存图像到 figure 文件夹中，并根据城市和日期命名图片文件
+    save_path = os.path.join(fig_folder, f"Province_{start_date}_real_Forecast.png")
+    plt.savefig(save_path)
+    plt.close()
     return province_future_forecast
 
-def get_weather_data_for_city(city):
+def get_history_weather_data_for_city(city):
     engine, metadata = db_tools.get_db_connection(const.DB_CONFIG_VPP_SERVICE)
     terraqt_weather = Table('terraqt_weather', metadata, autoload_with=engine)
     query = select(terraqt_weather).where(
@@ -449,10 +572,61 @@ def get_weather_data_for_city(city):
 
     return normalized_df
 
+def get_predict_weather_data_for_city(city: str, start_date: str, end_date: str):
+    engine, metadata = db_tools.get_db_connection(const.DB_CONFIG_VPP_SERVICE)
+    terraqt_weather = Table('terraqt_weather', metadata, autoload_with=engine)
+    query = select(terraqt_weather).where(
+        (terraqt_weather.c.model == 'gfs_surface') &
+        (terraqt_weather.c.region_name == city) &
+        (terraqt_weather.c.ts >= datetime.strptime(start_date, '%Y-%m-%d')) &
+        (terraqt_weather.c.ts <= datetime.strptime(end_date, '%Y-%m-%d'))
+    )
+
+    weather_df = db_tools.read_from_db(engine, query)
+
+    weather_df['ts'] = pd.to_datetime(weather_df['ts'])
+    weather_df.rename(columns={'ts': 'datetime'}, inplace=True)
+    weather_df.set_index('datetime', inplace=True)
+    weather_df.drop(
+        columns=[
+            'id', 'region_code', 'region_name', 'model', 'ws10m', 'wd10m', 'gust', 'irra', 'tp', 'lng', 'lat', 'time_fcst'
+            ],
+        inplace=True
+    )
+
+    weather_df.sort_index(inplace=True)
+
+    neimeng_wind_output = Table('neimeng_wind_power', metadata, autoload_with=engine)
+    query = select(neimeng_wind_output).where(
+        neimeng_wind_output.c.type == '3'
+    )
+
+    output_df = db_tools.read_from_db(engine, query)
+
+    db_tools.release_db_connection(engine)
+
+    output_df.drop(columns=['type', 'city_name', 'id'], inplace=True)
+    output_df['date_time'] = pd.to_datetime(output_df['date_time'])
+    output_df.set_index('date_time', inplace=True)
+    output_df.rename(columns={'date_time': 'datetime', 'value': 'wind_output'}, inplace=True)
+    output_df = output_df.resample('H', closed='right', label='right').mean()
+
+    output_df.sort_index(inplace=True)
+
+    merged_df = pd.merge(weather_df, output_df, left_index=True, right_index=True, how='inner')
+    merged_df = merged_df.dropna()
+    # 强制将索引转换为 DatetimeIndex
+    merged_df.index = pd.to_datetime(merged_df.index)
+    merged_df['date'] = merged_df.index.date
+    merged_df = merged_df.groupby('date').filter(lambda group: len(group) == 24)
+    normalized_df = normalize_data(merged_df)
+
+    return normalized_df
+
 def get_daily_data(normalized_df):
     daily_metrics = {}
     for date, group in normalized_df.groupby('date'):
-        weather_ts, slope, wind_series = compute_daily_metrics(group)
+        weather_ts, slope, wind_series = _compute_daily_metrics(group)
 
         month = pd.to_datetime(str(date)).month
         season_sin = np.sin(2 * np.pi * (month - 1) / 12)
@@ -474,9 +648,9 @@ def get_daily_data(normalized_df):
 def search_best_weights(normalized_df, n_trials):
     daily_dates, daily_metrics = get_daily_data(normalized_df)
 
-    # 优化过程：通过 lambda 包装 objective 传入 daily_dates 和 daily_metrics
+    # 优化过程：通过 lambda 包装 _objective 传入 daily_dates 和 daily_metrics
     study = optuna.create_study(direction='minimize')
-    study.optimize(lambda trial: objective(trial, daily_dates, daily_metrics), n_trials)
+    study.optimize(lambda trial: _objective(trial, daily_dates, daily_metrics), n_trials)
     print("Best trial:")
     print(study.best_trial.values)
     print(study.best_trial.params)
@@ -499,9 +673,10 @@ def search_best_weights(normalized_df, n_trials):
 
 def train(cities: list, n_trials: int):
     for city in cities:
-        normalized_df = get_weather_data_for_city(city)
+        normalized_df = get_history_weather_data_for_city(city)
         best_params = search_best_weights(normalized_df, n_trials)
         save_weights(best_params, city)
 
 if __name__ == '__main__':
-    predict_for_test_return('呼和浩特市', -1)
+    df = get_predict_weather_data_for_city('呼和浩特市')
+    print(df.head())

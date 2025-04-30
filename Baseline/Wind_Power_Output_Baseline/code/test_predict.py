@@ -1,8 +1,11 @@
-import tool
+"""
+测试某一天的预测表现和实际表现的程序入口。
+"""
 
-cities = [
-    '呼和浩特',
-    '阿拉善盟']
+from Baseline.Wind_Power_Output_Baseline.code import model_tool
+from pub_tools import const
 
-single_results = tool.test_single_city(cities, day_index=-1)
-province_actual, province_forecast, province_metrics = tool.predict_province_day(cities, day_index=-1)
+if __name__ == '__main__':
+    cities = const.REGIONS_FOR_WEATHER
+
+    province_actual, province_forecast, province_metrics = model_tool.predict_province_day(cities, day_index=-80)
