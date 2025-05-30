@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/033d49c863094cd5bbeca9f56670722c/artifacts
+end_time: 1748430062077
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 033d49c863094cd5bbeca9f56670722c
+run_name: languid-asp-940
+run_uuid: 033d49c863094cd5bbeca9f56670722c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430059698
+status: 3
+tags: []
+user_id: fredzhang

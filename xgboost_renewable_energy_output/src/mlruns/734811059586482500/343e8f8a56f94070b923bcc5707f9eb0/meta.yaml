@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/343e8f8a56f94070b923bcc5707f9eb0/artifacts
+end_time: 1748430847238
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 343e8f8a56f94070b923bcc5707f9eb0
+run_name: victorious-quail-140
+run_uuid: 343e8f8a56f94070b923bcc5707f9eb0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430842373
+status: 3
+tags: []
+user_id: fredzhang

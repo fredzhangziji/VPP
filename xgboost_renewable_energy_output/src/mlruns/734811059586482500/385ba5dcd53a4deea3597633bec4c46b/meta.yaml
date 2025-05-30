@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/385ba5dcd53a4deea3597633bec4c46b/artifacts
+end_time: 1748430136617
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 385ba5dcd53a4deea3597633bec4c46b
+run_name: kindly-crane-895
+run_uuid: 385ba5dcd53a4deea3597633bec4c46b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430128038
+status: 3
+tags: []
+user_id: fredzhang

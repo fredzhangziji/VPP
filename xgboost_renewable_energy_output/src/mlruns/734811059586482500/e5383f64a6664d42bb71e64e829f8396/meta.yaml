@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/e5383f64a6664d42bb71e64e829f8396/artifacts
+end_time: 1748430950616
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: e5383f64a6664d42bb71e64e829f8396
+run_name: honorable-mink-226
+run_uuid: e5383f64a6664d42bb71e64e829f8396
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430948508
+status: 3
+tags: []
+user_id: fredzhang

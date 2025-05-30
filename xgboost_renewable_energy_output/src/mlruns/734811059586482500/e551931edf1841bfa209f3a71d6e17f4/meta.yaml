@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/e551931edf1841bfa209f3a71d6e17f4/artifacts
+end_time: 1748429764217
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: e551931edf1841bfa209f3a71d6e17f4
+run_name: bouncy-cow-889
+run_uuid: e551931edf1841bfa209f3a71d6e17f4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429760298
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/65b8081d5c4c4dee9d90941115b0c543/artifacts
+end_time: 1748429834743
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 65b8081d5c4c4dee9d90941115b0c543
+run_name: casual-eel-380
+run_uuid: 65b8081d5c4c4dee9d90941115b0c543
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429830936
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/68d84f3077444443a6c4858e1d87a7aa/artifacts
+end_time: 1748431146983
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 68d84f3077444443a6c4858e1d87a7aa
+run_name: defiant-lark-896
+run_uuid: 68d84f3077444443a6c4858e1d87a7aa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431145748
+status: 3
+tags: []
+user_id: fredzhang

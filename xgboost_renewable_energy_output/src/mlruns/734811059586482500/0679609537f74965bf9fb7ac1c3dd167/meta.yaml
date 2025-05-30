@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/0679609537f74965bf9fb7ac1c3dd167/artifacts
+end_time: 1748430281280
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 0679609537f74965bf9fb7ac1c3dd167
+run_name: burly-ray-132
+run_uuid: 0679609537f74965bf9fb7ac1c3dd167
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430276360
+status: 3
+tags: []
+user_id: fredzhang

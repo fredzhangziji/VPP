@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/8a1cd0de454f474289cd06c5af644c54/artifacts
+end_time: 1748429358830
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 8a1cd0de454f474289cd06c5af644c54
+run_name: dapper-lamb-397
+run_uuid: 8a1cd0de454f474289cd06c5af644c54
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429355390
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/ad5fcc0fbbeb43ed89d06e645ec4ae74/artifacts
+end_time: 1748429519259
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: ad5fcc0fbbeb43ed89d06e645ec4ae74
+run_name: gregarious-snail-93
+run_uuid: ad5fcc0fbbeb43ed89d06e645ec4ae74
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429515032
+status: 3
+tags: []
+user_id: fredzhang

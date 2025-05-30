@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/b657109b20a9424999a8d69b21b6b377/artifacts
+end_time: 1748431359375
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: b657109b20a9424999a8d69b21b6b377
+run_name: suave-squid-484
+run_uuid: b657109b20a9424999a8d69b21b6b377
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431352982
+status: 3
+tags: []
+user_id: fredzhang

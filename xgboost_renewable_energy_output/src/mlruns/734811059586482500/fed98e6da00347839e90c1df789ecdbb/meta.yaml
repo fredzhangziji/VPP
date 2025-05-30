@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/fed98e6da00347839e90c1df789ecdbb/artifacts
+end_time: 1748428248970
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: fed98e6da00347839e90c1df789ecdbb
+run_name: bustling-bass-196
+run_uuid: fed98e6da00347839e90c1df789ecdbb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748428245813
+status: 3
+tags: []
+user_id: fredzhang

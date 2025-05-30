@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6a2e4e9fa758492b8c193ecf8d0af543/artifacts
+end_time: 1748429168218
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6a2e4e9fa758492b8c193ecf8d0af543
+run_name: able-grub-329
+run_uuid: 6a2e4e9fa758492b8c193ecf8d0af543
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429161949
+status: 3
+tags: []
+user_id: fredzhang

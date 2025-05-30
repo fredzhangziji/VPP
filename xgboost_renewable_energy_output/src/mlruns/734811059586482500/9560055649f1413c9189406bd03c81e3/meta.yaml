@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/9560055649f1413c9189406bd03c81e3/artifacts
+end_time: 1748430577057
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 9560055649f1413c9189406bd03c81e3
+run_name: indecisive-slug-199
+run_uuid: 9560055649f1413c9189406bd03c81e3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430576539
+status: 3
+tags: []
+user_id: fredzhang

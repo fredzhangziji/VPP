@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/70e10f8c430044a1b0b61a97998b233a/artifacts
+end_time: 1748430614012
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 70e10f8c430044a1b0b61a97998b233a
+run_name: respected-shad-211
+run_uuid: 70e10f8c430044a1b0b61a97998b233a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430604775
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6a78142531374c59a0a89004540513d5/artifacts
+end_time: 1748429446979
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6a78142531374c59a0a89004540513d5
+run_name: crawling-cub-213
+run_uuid: 6a78142531374c59a0a89004540513d5
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429444406
+status: 3
+tags: []
+user_id: fredzhang

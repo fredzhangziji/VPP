@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/11a7f66835464e9c9b71b57cf001a489/artifacts
+end_time: 1748431065423
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 11a7f66835464e9c9b71b57cf001a489
+run_name: colorful-gnu-237
+run_uuid: 11a7f66835464e9c9b71b57cf001a489
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431063382
+status: 3
+tags: []
+user_id: fredzhang

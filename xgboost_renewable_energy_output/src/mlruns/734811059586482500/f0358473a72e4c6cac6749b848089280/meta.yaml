@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/f0358473a72e4c6cac6749b848089280/artifacts
+end_time: 1748429930424
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: f0358473a72e4c6cac6749b848089280
+run_name: thoughtful-quail-335
+run_uuid: f0358473a72e4c6cac6749b848089280
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429929247
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a29b82edd2c343a79069deb0add61025/artifacts
+end_time: 1748430783106
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a29b82edd2c343a79069deb0add61025
+run_name: rumbling-carp-269
+run_uuid: a29b82edd2c343a79069deb0add61025
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430777455
+status: 3
+tags: []
+user_id: fredzhang

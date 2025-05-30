@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/4bc954bb703e47239815b3e51d6d4122/artifacts
+end_time: 1748429590443
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 4bc954bb703e47239815b3e51d6d4122
+run_name: blushing-moose-505
+run_uuid: 4bc954bb703e47239815b3e51d6d4122
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429588414
+status: 3
+tags: []
+user_id: fredzhang

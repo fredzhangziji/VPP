@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/d7e3032581174c3aadbd150b77e0fb0f/artifacts
+end_time: 1748428989643
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: d7e3032581174c3aadbd150b77e0fb0f
+run_name: xgb_optuna_best_鄂尔多斯+薛家湾
+run_uuid: d7e3032581174c3aadbd150b77e0fb0f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748428985686
+status: 3
+tags: []
+user_id: fredzhang

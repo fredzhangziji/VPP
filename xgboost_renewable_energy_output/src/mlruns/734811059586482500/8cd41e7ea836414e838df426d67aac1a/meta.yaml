@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/8cd41e7ea836414e838df426d67aac1a/artifacts
+end_time: 1748429309309
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 8cd41e7ea836414e838df426d67aac1a
+run_name: nebulous-conch-936
+run_uuid: 8cd41e7ea836414e838df426d67aac1a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429306718
+status: 3
+tags: []
+user_id: fredzhang

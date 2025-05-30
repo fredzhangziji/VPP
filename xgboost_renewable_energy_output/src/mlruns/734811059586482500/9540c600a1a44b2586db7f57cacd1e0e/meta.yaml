@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/9540c600a1a44b2586db7f57cacd1e0e/artifacts
+end_time: 1748430927847
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 9540c600a1a44b2586db7f57cacd1e0e
+run_name: lyrical-conch-914
+run_uuid: 9540c600a1a44b2586db7f57cacd1e0e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430923894
+status: 3
+tags: []
+user_id: fredzhang

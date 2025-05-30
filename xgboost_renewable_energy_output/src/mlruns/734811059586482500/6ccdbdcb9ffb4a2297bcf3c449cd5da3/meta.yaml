@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6ccdbdcb9ffb4a2297bcf3c449cd5da3/artifacts
+end_time: 1748430401244
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6ccdbdcb9ffb4a2297bcf3c449cd5da3
+run_name: bright-fox-571
+run_uuid: 6ccdbdcb9ffb4a2297bcf3c449cd5da3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430397721
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/1df03c612a1a466283a3ba54547040ba/artifacts
+end_time: 1748429427576
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 1df03c612a1a466283a3ba54547040ba
+run_name: mercurial-grouse-202
+run_uuid: 1df03c612a1a466283a3ba54547040ba
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429423913
+status: 3
+tags: []
+user_id: fredzhang

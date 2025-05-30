@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/c136f24317444673986dd5010a8e9dba/artifacts
+end_time: 1747732035955
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: c136f24317444673986dd5010a8e9dba
+run_name: charming-bug-211
+run_uuid: c136f24317444673986dd5010a8e9dba
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747732034260
+status: 3
+tags: []
+user_id: fredzhang

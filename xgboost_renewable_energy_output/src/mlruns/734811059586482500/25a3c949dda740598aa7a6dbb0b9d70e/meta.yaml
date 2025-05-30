@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/25a3c949dda740598aa7a6dbb0b9d70e/artifacts
+end_time: 1748431396117
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 25a3c949dda740598aa7a6dbb0b9d70e
+run_name: caring-jay-312
+run_uuid: 25a3c949dda740598aa7a6dbb0b9d70e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431393145
+status: 3
+tags: []
+user_id: fredzhang

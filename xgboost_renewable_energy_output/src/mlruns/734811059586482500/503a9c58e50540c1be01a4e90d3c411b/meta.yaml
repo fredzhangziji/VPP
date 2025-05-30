@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/503a9c58e50540c1be01a4e90d3c411b/artifacts
+end_time: 1748428944394
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 503a9c58e50540c1be01a4e90d3c411b
+run_name: capable-lark-790
+run_uuid: 503a9c58e50540c1be01a4e90d3c411b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748428940586
+status: 3
+tags: []
+user_id: fredzhang

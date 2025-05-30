@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/4dadbb06e8854cf2a3da33ad65baa631/artifacts
+end_time: 1748431445161
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 4dadbb06e8854cf2a3da33ad65baa631
+run_name: upset-whale-222
+run_uuid: 4dadbb06e8854cf2a3da33ad65baa631
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431444181
+status: 3
+tags: []
+user_id: fredzhang

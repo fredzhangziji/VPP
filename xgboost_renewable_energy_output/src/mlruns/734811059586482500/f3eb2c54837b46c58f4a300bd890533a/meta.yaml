@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/f3eb2c54837b46c58f4a300bd890533a/artifacts
+end_time: 1748429685490
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: f3eb2c54837b46c58f4a300bd890533a
+run_name: sincere-swan-408
+run_uuid: f3eb2c54837b46c58f4a300bd890533a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429684808
+status: 3
+tags: []
+user_id: fredzhang

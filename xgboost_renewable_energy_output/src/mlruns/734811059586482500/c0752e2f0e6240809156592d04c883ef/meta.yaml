@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/c0752e2f0e6240809156592d04c883ef/artifacts
+end_time: 1748429989204
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: c0752e2f0e6240809156592d04c883ef
+run_name: magnificent-lamb-124
+run_uuid: c0752e2f0e6240809156592d04c883ef
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429979897
+status: 3
+tags: []
+user_id: fredzhang

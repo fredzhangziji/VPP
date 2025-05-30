@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/41f0164121f4497fa3cf11e8ea41d587/artifacts
+end_time: 1748429587362
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 41f0164121f4497fa3cf11e8ea41d587
+run_name: likeable-lamb-3
+run_uuid: 41f0164121f4497fa3cf11e8ea41d587
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429584439
+status: 3
+tags: []
+user_id: fredzhang

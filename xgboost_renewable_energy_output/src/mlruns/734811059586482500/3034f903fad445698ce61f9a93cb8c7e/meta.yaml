@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/3034f903fad445698ce61f9a93cb8c7e/artifacts
+end_time: 1748430363470
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 3034f903fad445698ce61f9a93cb8c7e
+run_name: worried-lamb-998
+run_uuid: 3034f903fad445698ce61f9a93cb8c7e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430358475
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/0483e542c80649e383c6205a69392f45/artifacts
+end_time: 1748431283999
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 0483e542c80649e383c6205a69392f45
+run_name: burly-steed-389
+run_uuid: 0483e542c80649e383c6205a69392f45
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431277441
+status: 3
+tags: []
+user_id: fredzhang

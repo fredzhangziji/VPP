@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/8ab2b689810c4ca9b59bea33822059ca/artifacts
+end_time: 1748429138996
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 8ab2b689810c4ca9b59bea33822059ca
+run_name: efficient-crane-217
+run_uuid: 8ab2b689810c4ca9b59bea33822059ca
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429133897
+status: 3
+tags: []
+user_id: fredzhang

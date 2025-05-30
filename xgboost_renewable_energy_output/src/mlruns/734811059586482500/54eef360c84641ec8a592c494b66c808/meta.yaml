@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/54eef360c84641ec8a592c494b66c808/artifacts
+end_time: 1748429043137
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 54eef360c84641ec8a592c494b66c808
+run_name: predict_future_阿拉善盟
+run_uuid: 54eef360c84641ec8a592c494b66c808
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429039345
+status: 3
+tags: []
+user_id: fredzhang

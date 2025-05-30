@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/9cc275134746477e94694d2a7510dafe/artifacts
+end_time: 1748430878791
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 9cc275134746477e94694d2a7510dafe
+run_name: gentle-asp-933
+run_uuid: 9cc275134746477e94694d2a7510dafe
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430872958
+status: 3
+tags: []
+user_id: fredzhang

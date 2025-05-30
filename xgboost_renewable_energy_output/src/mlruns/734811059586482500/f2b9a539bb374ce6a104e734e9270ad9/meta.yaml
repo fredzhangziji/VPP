@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/f2b9a539bb374ce6a104e734e9270ad9/artifacts
+end_time: 1747732050418
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: f2b9a539bb374ce6a104e734e9270ad9
+run_name: serious-fish-532
+run_uuid: f2b9a539bb374ce6a104e734e9270ad9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747732048538
+status: 3
+tags: []
+user_id: fredzhang

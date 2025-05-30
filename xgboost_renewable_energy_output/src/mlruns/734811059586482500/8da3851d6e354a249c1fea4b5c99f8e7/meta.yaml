@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/8da3851d6e354a249c1fea4b5c99f8e7/artifacts
+end_time: 1748430461462
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 8da3851d6e354a249c1fea4b5c99f8e7
+run_name: monumental-horse-346
+run_uuid: 8da3851d6e354a249c1fea4b5c99f8e7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430454794
+status: 3
+tags: []
+user_id: fredzhang

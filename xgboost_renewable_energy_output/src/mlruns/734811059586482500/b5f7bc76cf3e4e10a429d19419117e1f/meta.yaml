@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/b5f7bc76cf3e4e10a429d19419117e1f/artifacts
+end_time: 1748429537055
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: b5f7bc76cf3e4e10a429d19419117e1f
+run_name: bold-shoat-357
+run_uuid: b5f7bc76cf3e4e10a429d19419117e1f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429535925
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/abf5657e72b742f4a85f8a1ff932aa32/artifacts
+end_time: 1748429386280
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: abf5657e72b742f4a85f8a1ff932aa32
+run_name: treasured-flea-800
+run_uuid: abf5657e72b742f4a85f8a1ff932aa32
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429383557
+status: 3
+tags: []
+user_id: fredzhang

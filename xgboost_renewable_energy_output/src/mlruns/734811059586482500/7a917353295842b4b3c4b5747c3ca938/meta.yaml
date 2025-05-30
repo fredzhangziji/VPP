@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/7a917353295842b4b3c4b5747c3ca938/artifacts
+end_time: 1748429349157
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 7a917353295842b4b3c4b5747c3ca938
+run_name: nimble-worm-536
+run_uuid: 7a917353295842b4b3c4b5747c3ca938
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429347065
+status: 3
+tags: []
+user_id: fredzhang

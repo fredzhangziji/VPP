@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/cba6eda54d30436c88614499544166c1/artifacts
+end_time: 1748429881749
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: cba6eda54d30436c88614499544166c1
+run_name: intelligent-cub-266
+run_uuid: cba6eda54d30436c88614499544166c1
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429877967
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/058b4167d78e4ff9a1930c923f8be8ef/artifacts
+end_time: 1748430128016
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 058b4167d78e4ff9a1930c923f8be8ef
+run_name: adorable-frog-144
+run_uuid: 058b4167d78e4ff9a1930c923f8be8ef
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430118692
+status: 3
+tags: []
+user_id: fredzhang

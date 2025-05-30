@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/2e95afc8686a4c3caf3b0eaccb31cb53/artifacts
+end_time: 1748430793320
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 2e95afc8686a4c3caf3b0eaccb31cb53
+run_name: skillful-stork-616
+run_uuid: 2e95afc8686a4c3caf3b0eaccb31cb53
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430786373
+status: 3
+tags: []
+user_id: fredzhang

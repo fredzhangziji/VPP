@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/1d740f5d873c4848b19430d17b44ad66/artifacts
+end_time: 1748429921842
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 1d740f5d873c4848b19430d17b44ad66
+run_name: casual-elk-69
+run_uuid: 1d740f5d873c4848b19430d17b44ad66
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429921377
+status: 3
+tags: []
+user_id: fredzhang

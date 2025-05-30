@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/36383452f7a548fa90b16ad5e1fbafc4/artifacts
+end_time: 1748430939794
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 36383452f7a548fa90b16ad5e1fbafc4
+run_name: overjoyed-perch-499
+run_uuid: 36383452f7a548fa90b16ad5e1fbafc4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430936931
+status: 3
+tags: []
+user_id: fredzhang

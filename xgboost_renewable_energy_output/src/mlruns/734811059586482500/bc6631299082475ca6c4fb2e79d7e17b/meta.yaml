@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/bc6631299082475ca6c4fb2e79d7e17b/artifacts
+end_time: 1748431425687
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: bc6631299082475ca6c4fb2e79d7e17b
+run_name: upbeat-deer-305
+run_uuid: bc6631299082475ca6c4fb2e79d7e17b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431424217
+status: 3
+tags: []
+user_id: fredzhang

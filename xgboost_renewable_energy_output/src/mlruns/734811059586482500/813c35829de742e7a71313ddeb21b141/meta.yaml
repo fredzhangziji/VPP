@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/813c35829de742e7a71313ddeb21b141/artifacts
+end_time: 1748428505320
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 813c35829de742e7a71313ddeb21b141
+run_name: xgb_optuna_best_阿拉善盟
+run_uuid: 813c35829de742e7a71313ddeb21b141
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748428501345
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/d40bb39e6be34f47a3bf4ecc77961306/artifacts
+end_time: 1748430332865
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: d40bb39e6be34f47a3bf4ecc77961306
+run_name: nervous-skunk-21
+run_uuid: d40bb39e6be34f47a3bf4ecc77961306
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430326821
+status: 3
+tags: []
+user_id: fredzhang

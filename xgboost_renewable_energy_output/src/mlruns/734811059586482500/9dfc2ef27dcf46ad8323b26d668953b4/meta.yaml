@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/9dfc2ef27dcf46ad8323b26d668953b4/artifacts
+end_time: 1748427963672
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 9dfc2ef27dcf46ad8323b26d668953b4
+run_name: skillful-shrike-673
+run_uuid: 9dfc2ef27dcf46ad8323b26d668953b4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748427920036
+status: 3
+tags: []
+user_id: fredzhang

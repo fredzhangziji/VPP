@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/d3ac6445a86d45029cc253f8db6aaeab/artifacts
+end_time: 1748430962785
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: d3ac6445a86d45029cc253f8db6aaeab
+run_name: delicate-foal-844
+run_uuid: d3ac6445a86d45029cc253f8db6aaeab
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430960134
+status: 3
+tags: []
+user_id: fredzhang

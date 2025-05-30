@@ -1,0 +1,59 @@
+digest: 1fe10896
+name: dataset
+profile: '{"num_rows": 3979, "num_elements": 306383}'
+schema: '{"mlflow_colspec": [{"type": "double", "name": "t2m", "required": true},
+  {"type": "double", "name": "ws100m", "required": true}, {"type": "double", "name":
+  "wd100m", "required": true}, {"type": "double", "name": "gust", "required": true},
+  {"type": "double", "name": "sp", "required": true}, {"type": "double", "name": "pressure_trend",
+  "required": true}, {"type": "double", "name": "gustiness_abs_100m", "required":
+  true}, {"type": "double", "name": "gustiness_rel_100m", "required": true}, {"type":
+  "double", "name": "lag_30d", "required": true}, {"type": "double", "name": "lag_7d",
+  "required": true}, {"type": "boolean", "name": "wind_season_small", "required":
+  true}, {"type": "boolean", "name": "year_2024", "required": true}, {"type": "boolean",
+  "name": "year_2025", "required": true}, {"type": "boolean", "name": "month_10",
+  "required": true}, {"type": "boolean", "name": "month_11", "required": true}, {"type":
+  "boolean", "name": "month_12", "required": true}, {"type": "boolean", "name": "month_2",
+  "required": true}, {"type": "boolean", "name": "month_3", "required": true}, {"type":
+  "boolean", "name": "month_4", "required": true}, {"type": "boolean", "name": "month_5",
+  "required": true}, {"type": "boolean", "name": "month_6", "required": true}, {"type":
+  "boolean", "name": "month_7", "required": true}, {"type": "boolean", "name": "month_8",
+  "required": true}, {"type": "boolean", "name": "month_9", "required": true}, {"type":
+  "boolean", "name": "day_10", "required": true}, {"type": "boolean", "name": "day_11",
+  "required": true}, {"type": "boolean", "name": "day_12", "required": true}, {"type":
+  "boolean", "name": "day_13", "required": true}, {"type": "boolean", "name": "day_14",
+  "required": true}, {"type": "boolean", "name": "day_15", "required": true}, {"type":
+  "boolean", "name": "day_16", "required": true}, {"type": "boolean", "name": "day_17",
+  "required": true}, {"type": "boolean", "name": "day_18", "required": true}, {"type":
+  "boolean", "name": "day_19", "required": true}, {"type": "boolean", "name": "day_2",
+  "required": true}, {"type": "boolean", "name": "day_20", "required": true}, {"type":
+  "boolean", "name": "day_21", "required": true}, {"type": "boolean", "name": "day_22",
+  "required": true}, {"type": "boolean", "name": "day_23", "required": true}, {"type":
+  "boolean", "name": "day_24", "required": true}, {"type": "boolean", "name": "day_25",
+  "required": true}, {"type": "boolean", "name": "day_26", "required": true}, {"type":
+  "boolean", "name": "day_27", "required": true}, {"type": "boolean", "name": "day_28",
+  "required": true}, {"type": "boolean", "name": "day_29", "required": true}, {"type":
+  "boolean", "name": "day_3", "required": true}, {"type": "boolean", "name": "day_30",
+  "required": true}, {"type": "boolean", "name": "day_31", "required": true}, {"type":
+  "boolean", "name": "day_4", "required": true}, {"type": "boolean", "name": "day_5",
+  "required": true}, {"type": "boolean", "name": "day_6", "required": true}, {"type":
+  "boolean", "name": "day_7", "required": true}, {"type": "boolean", "name": "day_8",
+  "required": true}, {"type": "boolean", "name": "day_9", "required": true}, {"type":
+  "boolean", "name": "hour_1", "required": true}, {"type": "boolean", "name": "hour_10",
+  "required": true}, {"type": "boolean", "name": "hour_11", "required": true}, {"type":
+  "boolean", "name": "hour_12", "required": true}, {"type": "boolean", "name": "hour_13",
+  "required": true}, {"type": "boolean", "name": "hour_14", "required": true}, {"type":
+  "boolean", "name": "hour_15", "required": true}, {"type": "boolean", "name": "hour_16",
+  "required": true}, {"type": "boolean", "name": "hour_17", "required": true}, {"type":
+  "boolean", "name": "hour_18", "required": true}, {"type": "boolean", "name": "hour_19",
+  "required": true}, {"type": "boolean", "name": "hour_2", "required": true}, {"type":
+  "boolean", "name": "hour_20", "required": true}, {"type": "boolean", "name": "hour_21",
+  "required": true}, {"type": "boolean", "name": "hour_22", "required": true}, {"type":
+  "boolean", "name": "hour_23", "required": true}, {"type": "boolean", "name": "hour_3",
+  "required": true}, {"type": "boolean", "name": "hour_4", "required": true}, {"type":
+  "boolean", "name": "hour_5", "required": true}, {"type": "boolean", "name": "hour_6",
+  "required": true}, {"type": "boolean", "name": "hour_7", "required": true}, {"type":
+  "boolean", "name": "hour_8", "required": true}, {"type": "boolean", "name": "hour_9",
+  "required": true}]}'
+source: '{"tags": {"mlflow.user": "fredzhang", "mlflow.source.name": "train.py", "mlflow.source.type":
+  "LOCAL", "mlflow.source.git.commit": "02bd6ac6f920a96c7c161989c39954401ee8820f"}}'
+source_type: code

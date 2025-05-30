@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/22735524b2cf4737a5bef6bf6ac77ae4/artifacts
+end_time: 1748428488520
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 22735524b2cf4737a5bef6bf6ac77ae4
+run_name: unequaled-croc-389
+run_uuid: 22735524b2cf4737a5bef6bf6ac77ae4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748428485364
+status: 3
+tags: []
+user_id: fredzhang

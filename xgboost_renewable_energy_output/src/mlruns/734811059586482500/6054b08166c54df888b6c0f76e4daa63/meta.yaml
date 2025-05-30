@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6054b08166c54df888b6c0f76e4daa63/artifacts
+end_time: 1748431155191
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6054b08166c54df888b6c0f76e4daa63
+run_name: sneaky-carp-465
+run_uuid: 6054b08166c54df888b6c0f76e4daa63
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431154901
+status: 3
+tags: []
+user_id: fredzhang

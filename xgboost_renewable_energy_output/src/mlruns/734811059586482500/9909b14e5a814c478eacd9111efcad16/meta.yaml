@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/9909b14e5a814c478eacd9111efcad16/artifacts
+end_time: 1748431152885
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 9909b14e5a814c478eacd9111efcad16
+run_name: bittersweet-cod-918
+run_uuid: 9909b14e5a814c478eacd9111efcad16
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431152629
+status: 3
+tags: []
+user_id: fredzhang

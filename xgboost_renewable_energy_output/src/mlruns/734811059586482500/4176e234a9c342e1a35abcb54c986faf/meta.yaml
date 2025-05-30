@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/4176e234a9c342e1a35abcb54c986faf/artifacts
+end_time: 1748430397697
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 4176e234a9c342e1a35abcb54c986faf
+run_name: merciful-whale-213
+run_uuid: 4176e234a9c342e1a35abcb54c986faf
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430392491
+status: 3
+tags: []
+user_id: fredzhang

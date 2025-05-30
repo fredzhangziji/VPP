@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/1f5181c19d964b2dac6e0e3f917cddcb/artifacts
+end_time: 1748429939574
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 1f5181c19d964b2dac6e0e3f917cddcb
+run_name: wistful-shark-884
+run_uuid: 1f5181c19d964b2dac6e0e3f917cddcb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429939057
+status: 3
+tags: []
+user_id: fredzhang

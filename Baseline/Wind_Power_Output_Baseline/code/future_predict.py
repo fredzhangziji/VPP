@@ -15,9 +15,13 @@ if __name__ == '__main__':
 
     start_date = date.today()
     end_date = start_date + timedelta(days=5)
+    start_date = str(start_date)
+    end_date = str(end_date)
 
-    for city in const.REGIONS_FOR_WEATHER:
+    cities_for_prediction = [city for city in const.REGIONS_FOR_WEATHER if city != '乌海市']
+
+    for city in cities_for_prediction:
         df_city_normalized = model_tool.get_predict_weather_data_for_city(city=city, start_date=start_date, end_date=end_date)
         future_features_dict[city] = df_city_normalized
 
-    province_future_forecast = model_tool.predict_province_future(const.REGIONS_FOR_WEATHER, future_features_dict, start_date, n_days)
+    province_future_forecast = model_tool.predict_province_future(cities_for_prediction, future_features_dict, start_date, n_days)

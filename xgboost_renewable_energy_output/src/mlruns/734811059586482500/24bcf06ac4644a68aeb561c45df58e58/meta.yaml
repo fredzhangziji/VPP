@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/24bcf06ac4644a68aeb561c45df58e58/artifacts
+end_time: 1748431171739
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 24bcf06ac4644a68aeb561c45df58e58
+run_name: fortunate-bee-89
+run_uuid: 24bcf06ac4644a68aeb561c45df58e58
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431171273
+status: 3
+tags: []
+user_id: fredzhang

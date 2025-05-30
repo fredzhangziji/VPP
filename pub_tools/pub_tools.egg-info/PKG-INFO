@@ -1,4 +1,4 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: pub_tools
 Version: 0.1.0
 Summary: public tool module
@@ -11,3 +11,6 @@ Requires-Dist: matplotlib>=3.3.0
 Requires-Dist: numpy>=1.19.0
 Requires-Dist: scipy>=1.5.0
 Requires-Dist: pymysql>=0.9.3
+Dynamic: author
+Dynamic: requires-dist
+Dynamic: summary

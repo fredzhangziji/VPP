@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/c3d00c155ccb41dc91547ab472895977/artifacts
+end_time: 1747732059369
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: c3d00c155ccb41dc91547ab472895977
+run_name: zealous-mare-930
+run_uuid: c3d00c155ccb41dc91547ab472895977
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747732057391
+status: 3
+tags: []
+user_id: fredzhang

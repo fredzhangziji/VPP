@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/b2b80f46e9ff459abf468085934fc107/artifacts
+end_time: 1748429391663
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: b2b80f46e9ff459abf468085934fc107
+run_name: suave-mink-338
+run_uuid: b2b80f46e9ff459abf468085934fc107
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429389176
+status: 3
+tags: []
+user_id: fredzhang

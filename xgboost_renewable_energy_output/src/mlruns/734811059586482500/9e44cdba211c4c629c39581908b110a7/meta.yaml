@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/9e44cdba211c4c629c39581908b110a7/artifacts
+end_time: 1748502151883
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 9e44cdba211c4c629c39581908b110a7
+run_name: predict_future_锡林郭勒
+run_uuid: 9e44cdba211c4c629c39581908b110a7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748502148158
+status: 3
+tags: []
+user_id: fredzhang

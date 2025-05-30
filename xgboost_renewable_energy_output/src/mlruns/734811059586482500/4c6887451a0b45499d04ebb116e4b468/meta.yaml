@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/4c6887451a0b45499d04ebb116e4b468/artifacts
+end_time: 1748430740142
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 4c6887451a0b45499d04ebb116e4b468
+run_name: debonair-toad-49
+run_uuid: 4c6887451a0b45499d04ebb116e4b468
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430734664
+status: 3
+tags: []
+user_id: fredzhang

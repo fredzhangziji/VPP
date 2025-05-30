@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/1b24e23eace6408880c553404ff56b73/artifacts
+end_time: 1748429702304
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 1b24e23eace6408880c553404ff56b73
+run_name: polite-crow-7
+run_uuid: 1b24e23eace6408880c553404ff56b73
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429696853
+status: 3
+tags: []
+user_id: fredzhang

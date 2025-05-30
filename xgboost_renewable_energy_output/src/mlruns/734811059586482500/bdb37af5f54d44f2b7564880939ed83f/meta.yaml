@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/bdb37af5f54d44f2b7564880939ed83f/artifacts
+end_time: 1748430143372
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: bdb37af5f54d44f2b7564880939ed83f
+run_name: gaudy-mink-318
+run_uuid: bdb37af5f54d44f2b7564880939ed83f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430136638
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/9d3f9f2589ff4beaad3bd81ef30f40bf/artifacts
+end_time: 1748429931216
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 9d3f9f2589ff4beaad3bd81ef30f40bf
+run_name: casual-bear-179
+run_uuid: 9d3f9f2589ff4beaad3bd81ef30f40bf
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429931004
+status: 3
+tags: []
+user_id: fredzhang

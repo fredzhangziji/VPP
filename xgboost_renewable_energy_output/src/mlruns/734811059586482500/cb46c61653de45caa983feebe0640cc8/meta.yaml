@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/cb46c61653de45caa983feebe0640cc8/artifacts
+end_time: 1748429324760
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: cb46c61653de45caa983feebe0640cc8
+run_name: wistful-flea-407
+run_uuid: cb46c61653de45caa983feebe0640cc8
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429322694
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/2891996c435e4e03b109a854b2800469/artifacts
+end_time: 1747732061357
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 2891996c435e4e03b109a854b2800469
+run_name: treasured-fly-640
+run_uuid: 2891996c435e4e03b109a854b2800469
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747732059464
+status: 3
+tags: []
+user_id: fredzhang

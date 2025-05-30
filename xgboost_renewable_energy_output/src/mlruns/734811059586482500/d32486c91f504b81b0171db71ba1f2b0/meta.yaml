@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/d32486c91f504b81b0171db71ba1f2b0/artifacts
+end_time: 1748431460996
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: d32486c91f504b81b0171db71ba1f2b0
+run_name: orderly-shoat-508
+run_uuid: d32486c91f504b81b0171db71ba1f2b0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431460397
+status: 3
+tags: []
+user_id: fredzhang

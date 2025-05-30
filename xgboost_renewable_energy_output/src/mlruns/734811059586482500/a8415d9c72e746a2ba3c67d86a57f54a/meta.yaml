@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a8415d9c72e746a2ba3c67d86a57f54a/artifacts
+end_time: 1748429940223
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a8415d9c72e746a2ba3c67d86a57f54a
+run_name: luminous-whale-958
+run_uuid: a8415d9c72e746a2ba3c67d86a57f54a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429939597
+status: 3
+tags: []
+user_id: fredzhang

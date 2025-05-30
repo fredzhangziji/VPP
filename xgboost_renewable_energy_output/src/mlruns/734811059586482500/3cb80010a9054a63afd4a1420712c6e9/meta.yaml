@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/3cb80010a9054a63afd4a1420712c6e9/artifacts
+end_time: 1748429189051
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 3cb80010a9054a63afd4a1420712c6e9
+run_name: polite-donkey-710
+run_uuid: 3cb80010a9054a63afd4a1420712c6e9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429186148
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/afa7ad7fdd814107b880466b7d2b1799/artifacts
+end_time: 1748430823491
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: afa7ad7fdd814107b880466b7d2b1799
+run_name: thoughtful-conch-677
+run_uuid: afa7ad7fdd814107b880466b7d2b1799
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430818392
+status: 3
+tags: []
+user_id: fredzhang

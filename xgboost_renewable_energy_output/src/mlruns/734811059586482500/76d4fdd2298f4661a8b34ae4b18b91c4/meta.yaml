@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/76d4fdd2298f4661a8b34ae4b18b91c4/artifacts
+end_time: 1748431285383
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 76d4fdd2298f4661a8b34ae4b18b91c4
+run_name: stylish-smelt-572
+run_uuid: 76d4fdd2298f4661a8b34ae4b18b91c4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431284018
+status: 3
+tags: []
+user_id: fredzhang

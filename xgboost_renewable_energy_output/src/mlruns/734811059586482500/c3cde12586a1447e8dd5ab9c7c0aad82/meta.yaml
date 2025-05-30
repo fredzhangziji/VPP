@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/c3cde12586a1447e8dd5ab9c7c0aad82/artifacts
+end_time: 1748430148516
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: c3cde12586a1447e8dd5ab9c7c0aad82
+run_name: worried-crow-479
+run_uuid: c3cde12586a1447e8dd5ab9c7c0aad82
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430143393
+status: 3
+tags: []
+user_id: fredzhang

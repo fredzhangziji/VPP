@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/7f6ba0eae0c842849fa884ea1f58e33b/artifacts
+end_time: 1748430872934
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 7f6ba0eae0c842849fa884ea1f58e33b
+run_name: dashing-goose-864
+run_uuid: 7f6ba0eae0c842849fa884ea1f58e33b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430862048
+status: 3
+tags: []
+user_id: fredzhang

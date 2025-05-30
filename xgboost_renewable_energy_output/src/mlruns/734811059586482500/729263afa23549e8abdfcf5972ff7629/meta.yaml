@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/729263afa23549e8abdfcf5972ff7629/artifacts
+end_time: 1748431165516
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 729263afa23549e8abdfcf5972ff7629
+run_name: shivering-grouse-747
+run_uuid: 729263afa23549e8abdfcf5972ff7629
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431164700
+status: 3
+tags: []
+user_id: fredzhang

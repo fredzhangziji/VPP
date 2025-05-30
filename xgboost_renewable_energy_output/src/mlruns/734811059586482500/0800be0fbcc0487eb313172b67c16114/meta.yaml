@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/0800be0fbcc0487eb313172b67c16114/artifacts
+end_time: 1747732063375
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 0800be0fbcc0487eb313172b67c16114
+run_name: fortunate-auk-189
+run_uuid: 0800be0fbcc0487eb313172b67c16114
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747732061454
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/d768e7cbf768464fb417b09078d46f46/artifacts
+end_time: 1748431430424
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: d768e7cbf768464fb417b09078d46f46
+run_name: gifted-fly-904
+run_uuid: d768e7cbf768464fb417b09078d46f46
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431429728
+status: 3
+tags: []
+user_id: fredzhang

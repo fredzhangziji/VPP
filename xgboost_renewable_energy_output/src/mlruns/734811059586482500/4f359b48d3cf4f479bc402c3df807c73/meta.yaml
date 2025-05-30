@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/4f359b48d3cf4f479bc402c3df807c73/artifacts
+end_time: 1748431039122
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 4f359b48d3cf4f479bc402c3df807c73
+run_name: amazing-squirrel-924
+run_uuid: 4f359b48d3cf4f479bc402c3df807c73
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431031979
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/ffd4882c15214d7c879d6f101b67e11d/artifacts
+end_time: 1748431431761
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: ffd4882c15214d7c879d6f101b67e11d
+run_name: fearless-trout-519
+run_uuid: ffd4882c15214d7c879d6f101b67e11d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431431113
+status: 3
+tags: []
+user_id: fredzhang

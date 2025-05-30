@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/96597b112fc84f1b9c0236340b9c75fc/artifacts
+end_time: 1747732067266
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 96597b112fc84f1b9c0236340b9c75fc
+run_name: melodic-rat-431
+run_uuid: 96597b112fc84f1b9c0236340b9c75fc
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747732065405
+status: 3
+tags: []
+user_id: fredzhang

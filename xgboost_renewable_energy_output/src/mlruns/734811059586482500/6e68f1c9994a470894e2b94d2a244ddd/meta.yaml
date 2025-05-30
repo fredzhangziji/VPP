@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6e68f1c9994a470894e2b94d2a244ddd/artifacts
+end_time: 1748431420345
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6e68f1c9994a470894e2b94d2a244ddd
+run_name: industrious-crab-117
+run_uuid: 6e68f1c9994a470894e2b94d2a244ddd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431419376
+status: 3
+tags: []
+user_id: fredzhang

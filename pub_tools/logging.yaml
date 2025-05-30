@@ -20,6 +20,16 @@ handlers:
     filename: logs/db_tools.log
     formatter: simple
     level: DEBUG
+  tft_model:
+    class: logging.FileHandler
+    filename: logs/tft_model.log
+    formatter: simple
+    level: DEBUG
+  xgboost:
+    class: logging.FileHandler
+    filename: logs/xgboost.log
+    formatter: simple
+    level: DEBUG
 
 loggers:
   renewable_data_crawler:
@@ -28,6 +38,14 @@ loggers:
     propagate: False
   db_tools:
     handlers: [db_tools, console]
+    level: DEBUG
+    propagate: False
+  tft_model:
+    handlers: [tft_model, console]
+    level: DEBUG
+    propagate: False
+  xgboost:
+    handlers: [xgboost, console]
     level: DEBUG
     propagate: False
 

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/40c5d23298f64e788a75dde99788552c/artifacts
+end_time: 1748429584421
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 40c5d23298f64e788a75dde99788552c
+run_name: thundering-mare-35
+run_uuid: 40c5d23298f64e788a75dde99788552c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429582619
+status: 3
+tags: []
+user_id: fredzhang

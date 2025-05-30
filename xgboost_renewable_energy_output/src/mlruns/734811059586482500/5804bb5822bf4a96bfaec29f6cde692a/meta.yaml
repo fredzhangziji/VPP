@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/5804bb5822bf4a96bfaec29f6cde692a/artifacts
+end_time: 1748502148153
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 5804bb5822bf4a96bfaec29f6cde692a
+run_name: predict_future_乌兰察布
+run_uuid: 5804bb5822bf4a96bfaec29f6cde692a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748502143883
+status: 3
+tags: []
+user_id: fredzhang

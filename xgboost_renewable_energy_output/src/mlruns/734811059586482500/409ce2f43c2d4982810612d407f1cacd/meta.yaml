@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/409ce2f43c2d4982810612d407f1cacd/artifacts
+end_time: 1748429414596
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 409ce2f43c2d4982810612d407f1cacd
+run_name: selective-mole-933
+run_uuid: 409ce2f43c2d4982810612d407f1cacd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429411879
+status: 3
+tags: []
+user_id: fredzhang

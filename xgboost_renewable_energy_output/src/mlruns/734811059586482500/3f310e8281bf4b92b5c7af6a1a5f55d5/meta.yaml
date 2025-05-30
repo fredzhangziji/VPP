@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/3f310e8281bf4b92b5c7af6a1a5f55d5/artifacts
+end_time: 1748429783954
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 3f310e8281bf4b92b5c7af6a1a5f55d5
+run_name: adorable-midge-587
+run_uuid: 3f310e8281bf4b92b5c7af6a1a5f55d5
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429779471
+status: 3
+tags: []
+user_id: fredzhang

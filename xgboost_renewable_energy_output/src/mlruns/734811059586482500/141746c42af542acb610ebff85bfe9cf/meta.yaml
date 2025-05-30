@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/141746c42af542acb610ebff85bfe9cf/artifacts
+end_time: 1748431194341
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 141746c42af542acb610ebff85bfe9cf
+run_name: mysterious-toad-521
+run_uuid: 141746c42af542acb610ebff85bfe9cf
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431190816
+status: 3
+tags: []
+user_id: fredzhang

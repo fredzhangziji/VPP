@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/67f8651bee844634bb358da9df903d70/artifacts
+end_time: 1748431468566
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 67f8651bee844634bb358da9df903d70
+run_name: victorious-gnu-243
+run_uuid: 67f8651bee844634bb358da9df903d70
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431468371
+status: 3
+tags: []
+user_id: fredzhang

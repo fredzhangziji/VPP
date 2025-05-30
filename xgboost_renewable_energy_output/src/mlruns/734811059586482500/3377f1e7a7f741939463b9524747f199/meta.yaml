@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/3377f1e7a7f741939463b9524747f199/artifacts
+end_time: 1748429894573
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 3377f1e7a7f741939463b9524747f199
+run_name: nimble-sheep-100
+run_uuid: 3377f1e7a7f741939463b9524747f199
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429891872
+status: 3
+tags: []
+user_id: fredzhang

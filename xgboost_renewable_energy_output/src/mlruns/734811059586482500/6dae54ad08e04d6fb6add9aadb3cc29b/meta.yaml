@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6dae54ad08e04d6fb6add9aadb3cc29b/artifacts
+end_time: 1748431440430
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6dae54ad08e04d6fb6add9aadb3cc29b
+run_name: defiant-zebra-478
+run_uuid: 6dae54ad08e04d6fb6add9aadb3cc29b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431439464
+status: 3
+tags: []
+user_id: fredzhang

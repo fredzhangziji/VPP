@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/b642371554de4290a0c2f8f22154d5e5/artifacts
+end_time: 1748429967777
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: b642371554de4290a0c2f8f22154d5e5
+run_name: abundant-cod-366
+run_uuid: b642371554de4290a0c2f8f22154d5e5
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429960261
+status: 3
+tags: []
+user_id: fredzhang

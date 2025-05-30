@@ -1,0 +1,6 @@
+artifact_location: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/mlruns/272976903752533208
+creation_time: 1748254248234
+experiment_id: '272976903752533208'
+last_update_time: 1748254248234
+lifecycle_stage: active
+name: XGBoost Wind Power Prediction

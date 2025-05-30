@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/17a67104ffd14ddf8186a488b12edee1/artifacts
+end_time: 1748430693127
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 17a67104ffd14ddf8186a488b12edee1
+run_name: clean-flea-782
+run_uuid: 17a67104ffd14ddf8186a488b12edee1
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430688634
+status: 3
+tags: []
+user_id: fredzhang

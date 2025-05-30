@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/c881e839dbe84fcb8ee209c8c7213d8a/artifacts
+end_time: 1748429714352
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: c881e839dbe84fcb8ee209c8c7213d8a
+run_name: enchanting-asp-97
+run_uuid: c881e839dbe84fcb8ee209c8c7213d8a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429702329
+status: 3
+tags: []
+user_id: fredzhang

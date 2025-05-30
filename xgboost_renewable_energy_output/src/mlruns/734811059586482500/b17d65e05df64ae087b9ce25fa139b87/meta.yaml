@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/b17d65e05df64ae087b9ce25fa139b87/artifacts
+end_time: 1748429544018
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: b17d65e05df64ae087b9ce25fa139b87
+run_name: capricious-ox-555
+run_uuid: b17d65e05df64ae087b9ce25fa139b87
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429542111
+status: 3
+tags: []
+user_id: fredzhang

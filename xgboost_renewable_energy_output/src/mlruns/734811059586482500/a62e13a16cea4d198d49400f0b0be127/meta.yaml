@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a62e13a16cea4d198d49400f0b0be127/artifacts
+end_time: 1748431427446
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a62e13a16cea4d198d49400f0b0be127
+run_name: caring-dog-203
+run_uuid: a62e13a16cea4d198d49400f0b0be127
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431425708
+status: 3
+tags: []
+user_id: fredzhang

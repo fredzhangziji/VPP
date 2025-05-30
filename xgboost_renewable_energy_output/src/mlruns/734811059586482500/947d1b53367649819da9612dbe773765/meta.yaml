@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/947d1b53367649819da9612dbe773765/artifacts
+end_time: 1748429241509
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 947d1b53367649819da9612dbe773765
+run_name: amusing-horse-527
+run_uuid: 947d1b53367649819da9612dbe773765
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429238955
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/ad536aed285f4c15b8e8c6f3a68f5713/artifacts
+end_time: 1748429050393
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: ad536aed285f4c15b8e8c6f3a68f5713
+run_name: predict_future_鄂尔多斯+薛家湾
+run_uuid: ad536aed285f4c15b8e8c6f3a68f5713
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429046768
+status: 3
+tags: []
+user_id: fredzhang

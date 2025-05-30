@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/49d4104cfdd24b5487a83bf7e0a9cf54/artifacts
+end_time: 1748431028424
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 49d4104cfdd24b5487a83bf7e0a9cf54
+run_name: capable-crow-234
+run_uuid: 49d4104cfdd24b5487a83bf7e0a9cf54
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431026383
+status: 3
+tags: []
+user_id: fredzhang

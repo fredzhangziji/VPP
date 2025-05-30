@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/f86f25bb349943ea8e28a1a389b6f20c/artifacts
+end_time: 1748429257645
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: f86f25bb349943ea8e28a1a389b6f20c
+run_name: merciful-deer-400
+run_uuid: f86f25bb349943ea8e28a1a389b6f20c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429252576
+status: 3
+tags: []
+user_id: fredzhang

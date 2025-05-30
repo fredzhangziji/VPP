@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/90ca8bb6a9dc43e8a10429c231126813/artifacts
+end_time: 1748430161810
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 90ca8bb6a9dc43e8a10429c231126813
+run_name: nosy-wolf-118
+run_uuid: 90ca8bb6a9dc43e8a10429c231126813
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430160689
+status: 3
+tags: []
+user_id: fredzhang

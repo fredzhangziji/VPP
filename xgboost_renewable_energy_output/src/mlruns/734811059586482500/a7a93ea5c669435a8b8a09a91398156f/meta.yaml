@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a7a93ea5c669435a8b8a09a91398156f/artifacts
+end_time: 1748428972750
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a7a93ea5c669435a8b8a09a91398156f
+run_name: masked-grub-219
+run_uuid: a7a93ea5c669435a8b8a09a91398156f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748428969681
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/9f35c7ed728b413585602abc926fbb83/artifacts
+end_time: 1748429314535
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 9f35c7ed728b413585602abc926fbb83
+run_name: capricious-hare-293
+run_uuid: 9f35c7ed728b413585602abc926fbb83
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429312363
+status: 3
+tags: []
+user_id: fredzhang

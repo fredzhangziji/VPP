@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/4b41bd84c90d41c1a1c2fefdd3cae681/artifacts
+end_time: 1748429624078
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 4b41bd84c90d41c1a1c2fefdd3cae681
+run_name: capricious-shoat-403
+run_uuid: 4b41bd84c90d41c1a1c2fefdd3cae681
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429620542
+status: 3
+tags: []
+user_id: fredzhang

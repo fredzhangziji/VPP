@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/249f729b01c940d1bd504c12bc0b14f0/artifacts
+end_time: 1748431067610
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 249f729b01c940d1bd504c12bc0b14f0
+run_name: sneaky-loon-39
+run_uuid: 249f729b01c940d1bd504c12bc0b14f0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431065441
+status: 3
+tags: []
+user_id: fredzhang

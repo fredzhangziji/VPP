@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/424691082e6f4330a65161468eb2dcdd/artifacts
+end_time: 1748430377115
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 424691082e6f4330a65161468eb2dcdd
+run_name: upbeat-eel-602
+run_uuid: 424691082e6f4330a65161468eb2dcdd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430371320
+status: 3
+tags: []
+user_id: fredzhang

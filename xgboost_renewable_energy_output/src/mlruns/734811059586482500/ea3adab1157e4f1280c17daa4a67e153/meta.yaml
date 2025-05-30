@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/ea3adab1157e4f1280c17daa4a67e153/artifacts
+end_time: 1748429598328
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: ea3adab1157e4f1280c17daa4a67e153
+run_name: delightful-sheep-164
+run_uuid: ea3adab1157e4f1280c17daa4a67e153
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429597370
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/bbf346c57a2f46fdb4470d04ccb3a479/artifacts
+end_time: 1748429897023
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: bbf346c57a2f46fdb4470d04ccb3a479
+run_name: bright-lamb-813
+run_uuid: bbf346c57a2f46fdb4470d04ccb3a479
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429894592
+status: 3
+tags: []
+user_id: fredzhang

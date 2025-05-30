@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6e3bbf91a6c245ad85e322efa67b0b0e/artifacts
+end_time: 1748429740197
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6e3bbf91a6c245ad85e322efa67b0b0e
+run_name: receptive-mare-926
+run_uuid: 6e3bbf91a6c245ad85e322efa67b0b0e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429733290
+status: 3
+tags: []
+user_id: fredzhang

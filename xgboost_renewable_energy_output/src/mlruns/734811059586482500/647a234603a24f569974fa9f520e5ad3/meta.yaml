@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/647a234603a24f569974fa9f520e5ad3/artifacts
+end_time: 1748429245123
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 647a234603a24f569974fa9f520e5ad3
+run_name: intelligent-bass-958
+run_uuid: 647a234603a24f569974fa9f520e5ad3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429243524
+status: 3
+tags: []
+user_id: fredzhang

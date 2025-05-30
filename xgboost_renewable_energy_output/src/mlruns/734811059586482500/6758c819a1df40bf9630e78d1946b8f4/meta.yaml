@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6758c819a1df40bf9630e78d1946b8f4/artifacts
+end_time: 1748429458638
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6758c819a1df40bf9630e78d1946b8f4
+run_name: selective-perch-281
+run_uuid: 6758c819a1df40bf9630e78d1946b8f4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429453692
+status: 3
+tags: []
+user_id: fredzhang

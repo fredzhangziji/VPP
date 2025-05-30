@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/c09d4b7aacd64a3db3e2cb7098f79187/artifacts
+end_time: 1748431151417
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: c09d4b7aacd64a3db3e2cb7098f79187
+run_name: thundering-bass-585
+run_uuid: c09d4b7aacd64a3db3e2cb7098f79187
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431150839
+status: 3
+tags: []
+user_id: fredzhang

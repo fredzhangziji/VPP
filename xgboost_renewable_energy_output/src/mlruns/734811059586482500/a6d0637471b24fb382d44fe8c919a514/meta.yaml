@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a6d0637471b24fb382d44fe8c919a514/artifacts
+end_time: 1748430237085
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a6d0637471b24fb382d44fe8c919a514
+run_name: adaptable-cow-107
+run_uuid: a6d0637471b24fb382d44fe8c919a514
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430233730
+status: 3
+tags: []
+user_id: fredzhang

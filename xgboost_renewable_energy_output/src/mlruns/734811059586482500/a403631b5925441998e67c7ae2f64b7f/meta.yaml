@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a403631b5925441998e67c7ae2f64b7f/artifacts
+end_time: 1748429538252
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a403631b5925441998e67c7ae2f64b7f
+run_name: gifted-squid-242
+run_uuid: a403631b5925441998e67c7ae2f64b7f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429537073
+status: 3
+tags: []
+user_id: fredzhang

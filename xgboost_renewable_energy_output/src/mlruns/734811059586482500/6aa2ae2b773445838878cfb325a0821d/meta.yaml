@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6aa2ae2b773445838878cfb325a0821d/artifacts
+end_time: 1748429627881
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6aa2ae2b773445838878cfb325a0821d
+run_name: nervous-fly-594
+run_uuid: 6aa2ae2b773445838878cfb325a0821d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429624100
+status: 3
+tags: []
+user_id: fredzhang

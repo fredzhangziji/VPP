@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/3c4a642e56964ce99b0d6fe1a872091b/artifacts
+end_time: 1748429779450
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 3c4a642e56964ce99b0d6fe1a872091b
+run_name: upbeat-finch-770
+run_uuid: 3c4a642e56964ce99b0d6fe1a872091b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429775799
+status: 3
+tags: []
+user_id: fredzhang

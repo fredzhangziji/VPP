@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/01544a49c5ad4586aa2d368914ba1979/artifacts
+end_time: 1748431133802
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 01544a49c5ad4586aa2d368914ba1979
+run_name: big-colt-800
+run_uuid: 01544a49c5ad4586aa2d368914ba1979
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431128948
+status: 3
+tags: []
+user_id: fredzhang

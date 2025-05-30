@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/9e06a558aba4402f88773c12391b5c54/artifacts
+end_time: 1748429159986
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 9e06a558aba4402f88773c12391b5c54
+run_name: magnificent-colt-879
+run_uuid: 9e06a558aba4402f88773c12391b5c54
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429152594
+status: 3
+tags: []
+user_id: fredzhang

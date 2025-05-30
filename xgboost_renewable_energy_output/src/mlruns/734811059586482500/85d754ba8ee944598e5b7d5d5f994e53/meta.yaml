@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/85d754ba8ee944598e5b7d5d5f994e53/artifacts
+end_time: 1748429942576
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 85d754ba8ee944598e5b7d5d5f994e53
+run_name: stately-pig-81
+run_uuid: 85d754ba8ee944598e5b7d5d5f994e53
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429942246
+status: 3
+tags: []
+user_id: fredzhang

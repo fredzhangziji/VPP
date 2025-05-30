@@ -82,11 +82,17 @@ def write_to_db(engine, df, table_name, if_exists):
         df.to_sql(table_name, conn, if_exists=if_exists, index=False)
     logger.info(f"Data has been written into {table_name}.")
 
-def upsert_to_db(engine, df, table_name):
+def upsert_to_db(engine, df, table_name, update_column='value'):
     """
     使用 SQLAlchemy 实现 MySQL 的 upsert 操作：
-    对于重复的记录（比如以 city_name, date_time, type 为唯一键），只更新 value 字段，
+    对于重复的记录（比如以 city_name, date_time, model 为唯一键），只更新指定的字段，
     而其余字段保持原值。
+
+    参数:
+        engine: SQLAlchemy engine 对象
+        df: 要插入的 DataFrame
+        table_name: 目标表名
+        update_column: 当发生重复时要更新的列名，默认为 'value'
     """
     metadata = MetaData()
     table = Table(table_name, metadata, autoload_with=engine)
@@ -99,12 +105,12 @@ def upsert_to_db(engine, df, table_name):
     
     # 构造插入语句
     stmt = mysql_insert(table).values(data)
-    # 当唯一键冲突时，仅更新 value 字段为新值    
-    upsert_stmt = stmt.on_duplicate_key_update(value=stmt.inserted.value)
+    # 当唯一键冲突时，仅更新指定字段为新值    
+    upsert_stmt = stmt.on_duplicate_key_update(**{update_column: getattr(stmt.inserted, update_column)})
     
     with engine.begin() as conn:
         conn.execute(upsert_stmt)
-    logger.info(f"Upsert 执行完成，数据已写入 {table_name}.")
+    logger.info(f"Upsert 执行完成，数据已写入 {table_name}。")
 
 if __name__ == '__main__':
     history_weather = get_history_weather_data_from_web(const.CITY_POS, '2025-03-26 00:00:00', '2025-03-29 00:00:00')

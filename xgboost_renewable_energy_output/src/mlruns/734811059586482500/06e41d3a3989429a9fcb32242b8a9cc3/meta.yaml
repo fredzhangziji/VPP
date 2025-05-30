@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/06e41d3a3989429a9fcb32242b8a9cc3/artifacts
+end_time: 1748428498110
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 06e41d3a3989429a9fcb32242b8a9cc3
+run_name: melodic-sponge-189
+run_uuid: 06e41d3a3989429a9fcb32242b8a9cc3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748428494501
+status: 3
+tags: []
+user_id: fredzhang

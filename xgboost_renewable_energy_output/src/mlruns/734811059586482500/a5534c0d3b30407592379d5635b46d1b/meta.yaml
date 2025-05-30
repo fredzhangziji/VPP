@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a5534c0d3b30407592379d5635b46d1b/artifacts
+end_time: 1748429306700
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a5534c0d3b30407592379d5635b46d1b
+run_name: vaunted-gnu-629
+run_uuid: a5534c0d3b30407592379d5635b46d1b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429304023
+status: 3
+tags: []
+user_id: fredzhang

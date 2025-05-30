@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/078652042d0f4deea5f7ecb8e6eef9fc/artifacts
+end_time: 1748431163984
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 078652042d0f4deea5f7ecb8e6eef9fc
+run_name: fearless-cat-879
+run_uuid: 078652042d0f4deea5f7ecb8e6eef9fc
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431163211
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/11d7380cfff649029cdc8f0d27961a82/artifacts
+end_time: 1748429579383
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 11d7380cfff649029cdc8f0d27961a82
+run_name: chill-bug-403
+run_uuid: 11d7380cfff649029cdc8f0d27961a82
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429577489
+status: 3
+tags: []
+user_id: fredzhang

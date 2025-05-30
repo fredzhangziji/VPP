@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/e1684dd783914e7ca90a45f0a6480ee1/artifacts
+end_time: 1748429401963
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: e1684dd783914e7ca90a45f0a6480ee1
+run_name: burly-snake-926
+run_uuid: e1684dd783914e7ca90a45f0a6480ee1
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429397720
+status: 3
+tags: []
+user_id: fredzhang

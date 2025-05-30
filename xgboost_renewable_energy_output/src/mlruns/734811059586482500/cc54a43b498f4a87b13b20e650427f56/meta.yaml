@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/cc54a43b498f4a87b13b20e650427f56/artifacts
+end_time: 1748431462722
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: cc54a43b498f4a87b13b20e650427f56
+run_name: powerful-snipe-943
+run_uuid: cc54a43b498f4a87b13b20e650427f56
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431462245
+status: 3
+tags: []
+user_id: fredzhang

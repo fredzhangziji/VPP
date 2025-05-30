@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/ddd55a9337e346ffbb9c4df6b04d52fc/artifacts
+end_time: 1748430642467
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: ddd55a9337e346ffbb9c4df6b04d52fc
+run_name: skittish-ant-737
+run_uuid: ddd55a9337e346ffbb9c4df6b04d52fc
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430634033
+status: 3
+tags: []
+user_id: fredzhang

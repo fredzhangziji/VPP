@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6cfe578462d743769b41a8f4c654158a/artifacts
+end_time: 1748431277419
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6cfe578462d743769b41a8f4c654158a
+run_name: unique-gull-397
+run_uuid: 6cfe578462d743769b41a8f4c654158a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431269255
+status: 3
+tags: []
+user_id: fredzhang

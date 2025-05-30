@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/2bb06b347a0b490fb432801c6de662af/artifacts
+end_time: 1748431179967
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 2bb06b347a0b490fb432801c6de662af
+run_name: monumental-mink-943
+run_uuid: 2bb06b347a0b490fb432801c6de662af
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431178438
+status: 3
+tags: []
+user_id: fredzhang

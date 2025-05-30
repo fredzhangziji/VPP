@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/df1711840f3c4743bfa64f2c73e904f6/artifacts
+end_time: 1748430948481
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: df1711840f3c4743bfa64f2c73e904f6
+run_name: beautiful-fish-151
+run_uuid: df1711840f3c4743bfa64f2c73e904f6
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430945608
+status: 3
+tags: []
+user_id: fredzhang

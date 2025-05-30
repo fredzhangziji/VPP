@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/cd13f9ff9c3d45f1a0c03f4c14e19561/artifacts
+end_time: 1748430966922
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: cd13f9ff9c3d45f1a0c03f4c14e19561
+run_name: illustrious-hen-964
+run_uuid: cd13f9ff9c3d45f1a0c03f4c14e19561
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430962809
+status: 3
+tags: []
+user_id: fredzhang

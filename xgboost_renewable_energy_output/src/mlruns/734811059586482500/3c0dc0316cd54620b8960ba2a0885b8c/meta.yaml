@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/3c0dc0316cd54620b8960ba2a0885b8c/artifacts
+end_time: 1748431166371
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 3c0dc0316cd54620b8960ba2a0885b8c
+run_name: gifted-fowl-779
+run_uuid: 3c0dc0316cd54620b8960ba2a0885b8c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431165815
+status: 3
+tags: []
+user_id: fredzhang

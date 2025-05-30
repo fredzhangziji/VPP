@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/bd560157acb345928ac1f9fccc4e3337/artifacts
+end_time: 1748430264788
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: bd560157acb345928ac1f9fccc4e3337
+run_name: enthused-sloth-221
+run_uuid: bd560157acb345928ac1f9fccc4e3337
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430261227
+status: 3
+tags: []
+user_id: fredzhang

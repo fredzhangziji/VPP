@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/4dcef39a2929456ba58b5d2193e13b2d/artifacts
+end_time: 1748431154188
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 4dcef39a2929456ba58b5d2193e13b2d
+run_name: marvelous-shoat-218
+run_uuid: 4dcef39a2929456ba58b5d2193e13b2d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431153881
+status: 3
+tags: []
+user_id: fredzhang

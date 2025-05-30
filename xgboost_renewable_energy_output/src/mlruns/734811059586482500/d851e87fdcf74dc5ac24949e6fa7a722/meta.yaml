@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/d851e87fdcf74dc5ac24949e6fa7a722/artifacts
+end_time: 1748429484016
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: d851e87fdcf74dc5ac24949e6fa7a722
+run_name: chill-lynx-774
+run_uuid: d851e87fdcf74dc5ac24949e6fa7a722
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429478458
+status: 3
+tags: []
+user_id: fredzhang

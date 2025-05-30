@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a449abeb579f4631b9c7ffdc04c795a4/artifacts
+end_time: 1748431167091
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a449abeb579f4631b9c7ffdc04c795a4
+run_name: kindly-mare-629
+run_uuid: a449abeb579f4631b9c7ffdc04c795a4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431166805
+status: 3
+tags: []
+user_id: fredzhang

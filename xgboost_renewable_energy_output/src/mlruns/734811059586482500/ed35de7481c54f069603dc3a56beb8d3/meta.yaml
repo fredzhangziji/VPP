@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/ed35de7481c54f069603dc3a56beb8d3/artifacts
+end_time: 1748431002155
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: ed35de7481c54f069603dc3a56beb8d3
+run_name: unique-hound-720
+run_uuid: ed35de7481c54f069603dc3a56beb8d3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431000508
+status: 3
+tags: []
+user_id: fredzhang

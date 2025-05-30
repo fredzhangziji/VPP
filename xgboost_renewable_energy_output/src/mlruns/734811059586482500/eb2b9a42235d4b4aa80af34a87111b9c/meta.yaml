@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/eb2b9a42235d4b4aa80af34a87111b9c/artifacts
+end_time: 1748431123436
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: eb2b9a42235d4b4aa80af34a87111b9c
+run_name: merciful-midge-14
+run_uuid: eb2b9a42235d4b4aa80af34a87111b9c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431122179
+status: 3
+tags: []
+user_id: fredzhang

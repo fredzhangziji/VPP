@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/e85894c9aa9142fc98105b3ec7cdd78a/artifacts
+end_time: 1748431074002
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: e85894c9aa9142fc98105b3ec7cdd78a
+run_name: gregarious-hound-364
+run_uuid: e85894c9aa9142fc98105b3ec7cdd78a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431069949
+status: 3
+tags: []
+user_id: fredzhang

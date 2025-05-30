@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/d96f668cbc824d6a8184a63b937ec5a2/artifacts
+end_time: 1748431413687
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: d96f668cbc824d6a8184a63b937ec5a2
+run_name: melodic-croc-420
+run_uuid: d96f668cbc824d6a8184a63b937ec5a2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431411860
+status: 3
+tags: []
+user_id: fredzhang

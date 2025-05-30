@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/0db879d6133d4f7fb0a62978eddd3dc3/artifacts
+end_time: 1748431180779
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 0db879d6133d4f7fb0a62978eddd3dc3
+run_name: loud-deer-911
+run_uuid: 0db879d6133d4f7fb0a62978eddd3dc3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431179993
+status: 3
+tags: []
+user_id: fredzhang

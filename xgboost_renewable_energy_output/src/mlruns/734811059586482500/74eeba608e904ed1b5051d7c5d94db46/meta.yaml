@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/74eeba608e904ed1b5051d7c5d94db46/artifacts
+end_time: 1748430978234
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 74eeba608e904ed1b5051d7c5d94db46
+run_name: able-loon-487
+run_uuid: 74eeba608e904ed1b5051d7c5d94db46
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430975621
+status: 3
+tags: []
+user_id: fredzhang

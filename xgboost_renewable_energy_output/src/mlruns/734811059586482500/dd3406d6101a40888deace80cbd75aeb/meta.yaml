@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/dd3406d6101a40888deace80cbd75aeb/artifacts
+end_time: 1748429729680
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: dd3406d6101a40888deace80cbd75aeb
+run_name: sassy-yak-972
+run_uuid: dd3406d6101a40888deace80cbd75aeb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429727631
+status: 3
+tags: []
+user_id: fredzhang

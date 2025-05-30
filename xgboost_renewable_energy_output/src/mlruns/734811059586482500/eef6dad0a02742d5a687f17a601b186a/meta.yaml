@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/eef6dad0a02742d5a687f17a601b186a/artifacts
+end_time: 1748429918148
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: eef6dad0a02742d5a687f17a601b186a
+run_name: bedecked-moth-538
+run_uuid: eef6dad0a02742d5a687f17a601b186a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429917513
+status: 3
+tags: []
+user_id: fredzhang

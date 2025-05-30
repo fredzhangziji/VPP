@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/b3141f3383f24819a47201bb342638ec/artifacts
+end_time: 1748431145715
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: b3141f3383f24819a47201bb342638ec
+run_name: sassy-shad-624
+run_uuid: b3141f3383f24819a47201bb342638ec
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431141855
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a22c2eb52dba4d5aaf0ba0196409737a/artifacts
+end_time: 1748430105234
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a22c2eb52dba4d5aaf0ba0196409737a
+run_name: intelligent-auk-340
+run_uuid: a22c2eb52dba4d5aaf0ba0196409737a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430094214
+status: 3
+tags: []
+user_id: fredzhang

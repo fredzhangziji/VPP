@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/dae9ffd6e37e4770bc437a3a482ee3dd/artifacts
+end_time: 1748430522647
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: dae9ffd6e37e4770bc437a3a482ee3dd
+run_name: lyrical-skink-695
+run_uuid: dae9ffd6e37e4770bc437a3a482ee3dd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430515277
+status: 3
+tags: []
+user_id: fredzhang

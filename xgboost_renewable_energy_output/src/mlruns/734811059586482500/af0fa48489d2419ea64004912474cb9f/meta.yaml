@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/af0fa48489d2419ea64004912474cb9f/artifacts
+end_time: 1748430709580
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: af0fa48489d2419ea64004912474cb9f
+run_name: luxuriant-moose-791
+run_uuid: af0fa48489d2419ea64004912474cb9f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430704010
+status: 3
+tags: []
+user_id: fredzhang

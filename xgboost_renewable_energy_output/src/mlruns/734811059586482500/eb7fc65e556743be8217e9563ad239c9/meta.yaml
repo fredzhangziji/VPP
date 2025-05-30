@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/eb7fc65e556743be8217e9563ad239c9/artifacts
+end_time: 1748429193567
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: eb7fc65e556743be8217e9563ad239c9
+run_name: nebulous-crane-348
+run_uuid: eb7fc65e556743be8217e9563ad239c9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429189067
+status: 3
+tags: []
+user_id: fredzhang

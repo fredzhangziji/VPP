@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/d141779c36ec4338838cf4256c39176d/artifacts
+end_time: 1748429681956
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: d141779c36ec4338838cf4256c39176d
+run_name: funny-croc-733
+run_uuid: d141779c36ec4338838cf4256c39176d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429677846
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/fdfc7280947b4ac7bab366ada4d97508/artifacts
+end_time: 1748429826213
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: fdfc7280947b4ac7bab366ada4d97508
+run_name: rumbling-quail-601
+run_uuid: fdfc7280947b4ac7bab366ada4d97508
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429823374
+status: 3
+tags: []
+user_id: fredzhang

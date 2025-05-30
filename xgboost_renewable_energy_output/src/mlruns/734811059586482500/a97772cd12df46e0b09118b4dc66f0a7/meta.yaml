@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a97772cd12df46e0b09118b4dc66f0a7/artifacts
+end_time: 1748431419355
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a97772cd12df46e0b09118b4dc66f0a7
+run_name: rumbling-mule-1
+run_uuid: a97772cd12df46e0b09118b4dc66f0a7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431416868
+status: 3
+tags: []
+user_id: fredzhang

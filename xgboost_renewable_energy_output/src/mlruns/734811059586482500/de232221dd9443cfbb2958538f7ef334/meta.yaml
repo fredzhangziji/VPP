@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/de232221dd9443cfbb2958538f7ef334/artifacts
+end_time: 1748429936382
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: de232221dd9443cfbb2958538f7ef334
+run_name: merciful-rat-249
+run_uuid: de232221dd9443cfbb2958538f7ef334
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429935937
+status: 3
+tags: []
+user_id: fredzhang

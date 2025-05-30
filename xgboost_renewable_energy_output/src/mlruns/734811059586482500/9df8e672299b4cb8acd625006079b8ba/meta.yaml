@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/9df8e672299b4cb8acd625006079b8ba/artifacts
+end_time: 1748430082374
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 9df8e672299b4cb8acd625006079b8ba
+run_name: clumsy-gnat-358
+run_uuid: 9df8e672299b4cb8acd625006079b8ba
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430067871
+status: 3
+tags: []
+user_id: fredzhang

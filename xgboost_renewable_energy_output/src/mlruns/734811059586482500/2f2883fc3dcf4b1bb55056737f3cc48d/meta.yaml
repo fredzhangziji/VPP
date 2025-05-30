@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/2f2883fc3dcf4b1bb55056737f3cc48d/artifacts
+end_time: 1748428960070
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 2f2883fc3dcf4b1bb55056737f3cc48d
+run_name: masked-robin-584
+run_uuid: 2f2883fc3dcf4b1bb55056737f3cc48d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748428956815
+status: 3
+tags: []
+user_id: fredzhang

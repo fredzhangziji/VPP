@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/2bf126e192554c48bfb4c76c2730c50c/artifacts
+end_time: 1748431160188
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 2bf126e192554c48bfb4c76c2730c50c
+run_name: overjoyed-lamb-412
+run_uuid: 2bf126e192554c48bfb4c76c2730c50c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431156950
+status: 3
+tags: []
+user_id: fredzhang

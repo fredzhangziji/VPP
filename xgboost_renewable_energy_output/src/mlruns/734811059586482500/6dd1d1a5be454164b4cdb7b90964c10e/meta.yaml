@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6dd1d1a5be454164b4cdb7b90964c10e/artifacts
+end_time: 1748431128929
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6dd1d1a5be454164b4cdb7b90964c10e
+run_name: valuable-goose-266
+run_uuid: 6dd1d1a5be454164b4cdb7b90964c10e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431127615
+status: 3
+tags: []
+user_id: fredzhang

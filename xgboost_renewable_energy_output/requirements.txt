@@ -1,0 +1,9 @@
+xgboost
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+mlflow
+SQLAlchemy
+mysql-connector-python # For MySQL

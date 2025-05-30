@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6927776fc135421c8943530876ec531a/artifacts
+end_time: 1748430470503
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6927776fc135421c8943530876ec531a
+run_name: tasteful-horse-981
+run_uuid: 6927776fc135421c8943530876ec531a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430461487
+status: 3
+tags: []
+user_id: fredzhang

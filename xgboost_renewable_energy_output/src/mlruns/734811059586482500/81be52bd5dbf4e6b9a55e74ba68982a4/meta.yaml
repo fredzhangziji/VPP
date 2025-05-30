@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/81be52bd5dbf4e6b9a55e74ba68982a4/artifacts
+end_time: 1748429648729
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 81be52bd5dbf4e6b9a55e74ba68982a4
+run_name: exultant-midge-288
+run_uuid: 81be52bd5dbf4e6b9a55e74ba68982a4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429644984
+status: 3
+tags: []
+user_id: fredzhang

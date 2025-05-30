@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a007930c47f4447b8af402b17860d58b/artifacts
+end_time: 1748431429312
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a007930c47f4447b8af402b17860d58b
+run_name: youthful-fox-337
+run_uuid: a007930c47f4447b8af402b17860d58b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431428945
+status: 3
+tags: []
+user_id: fredzhang

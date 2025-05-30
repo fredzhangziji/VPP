@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6bd085141c4d4e4db7b9fe9052c01a4d/artifacts
+end_time: 1748431181883
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6bd085141c4d4e4db7b9fe9052c01a4d
+run_name: shivering-snake-120
+run_uuid: 6bd085141c4d4e4db7b9fe9052c01a4d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431181636
+status: 3
+tags: []
+user_id: fredzhang

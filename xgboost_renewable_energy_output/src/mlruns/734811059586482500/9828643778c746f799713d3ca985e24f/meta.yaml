@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/9828643778c746f799713d3ca985e24f/artifacts
+end_time: 1748429295065
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 9828643778c746f799713d3ca985e24f
+run_name: calm-moose-39
+run_uuid: 9828643778c746f799713d3ca985e24f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429291497
+status: 3
+tags: []
+user_id: fredzhang

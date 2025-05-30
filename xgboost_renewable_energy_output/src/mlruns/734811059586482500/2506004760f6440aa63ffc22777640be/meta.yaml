@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/2506004760f6440aa63ffc22777640be/artifacts
+end_time: 1748429526637
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 2506004760f6440aa63ffc22777640be
+run_name: valuable-cub-693
+run_uuid: 2506004760f6440aa63ffc22777640be
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429522990
+status: 3
+tags: []
+user_id: fredzhang

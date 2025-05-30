@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/882721a6f19a474bae5911a5e1f96c6c/artifacts
+end_time: 1747732040638
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 882721a6f19a474bae5911a5e1f96c6c
+run_name: amusing-cod-85
+run_uuid: 882721a6f19a474bae5911a5e1f96c6c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747732038059
+status: 3
+tags: []
+user_id: fredzhang

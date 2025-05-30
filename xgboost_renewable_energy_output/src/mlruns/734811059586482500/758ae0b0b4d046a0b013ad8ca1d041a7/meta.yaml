@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/758ae0b0b4d046a0b013ad8ca1d041a7/artifacts
+end_time: 1748430421549
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 758ae0b0b4d046a0b013ad8ca1d041a7
+run_name: colorful-stork-246
+run_uuid: 758ae0b0b4d046a0b013ad8ca1d041a7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430415661
+status: 3
+tags: []
+user_id: fredzhang

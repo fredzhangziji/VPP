@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a5c0245523c544d78776046aaef2526f/artifacts
+end_time: 1748431450653
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a5c0245523c544d78776046aaef2526f
+run_name: whimsical-donkey-532
+run_uuid: a5c0245523c544d78776046aaef2526f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431449314
+status: 3
+tags: []
+user_id: fredzhang

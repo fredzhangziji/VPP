@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a2bb08c469854f90a4f5bbba7f20223d/artifacts
+end_time: 1748429299970
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a2bb08c469854f90a4f5bbba7f20223d
+run_name: wistful-toad-225
+run_uuid: a2bb08c469854f90a4f5bbba7f20223d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429297690
+status: 3
+tags: []
+user_id: fredzhang

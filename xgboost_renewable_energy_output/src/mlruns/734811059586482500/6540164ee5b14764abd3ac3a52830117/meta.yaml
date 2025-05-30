@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6540164ee5b14764abd3ac3a52830117/artifacts
+end_time: 1748429934920
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6540164ee5b14764abd3ac3a52830117
+run_name: loud-bird-959
+run_uuid: 6540164ee5b14764abd3ac3a52830117
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429934563
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/e068c32b85f3445e87aef4f5ee784e82/artifacts
+end_time: 1748429940790
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: e068c32b85f3445e87aef4f5ee784e82
+run_name: wistful-mule-293
+run_uuid: e068c32b85f3445e87aef4f5ee784e82
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429940246
+status: 3
+tags: []
+user_id: fredzhang

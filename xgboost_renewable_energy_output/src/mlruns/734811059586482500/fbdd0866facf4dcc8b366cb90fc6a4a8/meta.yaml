@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/fbdd0866facf4dcc8b366cb90fc6a4a8/artifacts
+end_time: 1748431155525
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: fbdd0866facf4dcc8b366cb90fc6a4a8
+run_name: enchanting-slug-217
+run_uuid: fbdd0866facf4dcc8b366cb90fc6a4a8
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431155211
+status: 3
+tags: []
+user_id: fredzhang

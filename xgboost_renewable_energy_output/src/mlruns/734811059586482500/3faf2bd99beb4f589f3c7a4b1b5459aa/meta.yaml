@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/3faf2bd99beb4f589f3c7a4b1b5459aa/artifacts
+end_time: 1748430176231
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 3faf2bd99beb4f589f3c7a4b1b5459aa
+run_name: big-fowl-435
+run_uuid: 3faf2bd99beb4f589f3c7a4b1b5459aa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430168092
+status: 3
+tags: []
+user_id: fredzhang

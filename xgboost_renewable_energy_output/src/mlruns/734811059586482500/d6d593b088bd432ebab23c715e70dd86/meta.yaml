@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/d6d593b088bd432ebab23c715e70dd86/artifacts
+end_time: 1748431372263
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: d6d593b088bd432ebab23c715e70dd86
+run_name: valuable-shark-588
+run_uuid: d6d593b088bd432ebab23c715e70dd86
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431367718
+status: 3
+tags: []
+user_id: fredzhang

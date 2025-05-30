@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/10695829cf864140b4bb57d5393c85f7/artifacts
+end_time: 1748430862025
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 10695829cf864140b4bb57d5393c85f7
+run_name: stylish-zebra-423
+run_uuid: 10695829cf864140b4bb57d5393c85f7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430859368
+status: 3
+tags: []
+user_id: fredzhang

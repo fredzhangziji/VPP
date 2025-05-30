@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/6f92ccec61a8466696b1c357eae95c2f/artifacts
+end_time: 1748430094193
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 6f92ccec61a8466696b1c357eae95c2f
+run_name: bittersweet-shad-4
+run_uuid: 6f92ccec61a8466696b1c357eae95c2f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430082395
+status: 3
+tags: []
+user_id: fredzhang

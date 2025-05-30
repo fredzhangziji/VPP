@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/95704c303e4343d5b1c79e4b8fa8a094/artifacts
+end_time: 1748431004553
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 95704c303e4343d5b1c79e4b8fa8a094
+run_name: merciful-crane-6
+run_uuid: 95704c303e4343d5b1c79e4b8fa8a094
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431003373
+status: 3
+tags: []
+user_id: fredzhang

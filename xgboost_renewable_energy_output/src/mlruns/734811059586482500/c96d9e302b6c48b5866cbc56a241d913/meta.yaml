@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/c96d9e302b6c48b5866cbc56a241d913/artifacts
+end_time: 1748431152040
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: c96d9e302b6c48b5866cbc56a241d913
+run_name: wise-trout-168
+run_uuid: c96d9e302b6c48b5866cbc56a241d913
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431151749
+status: 3
+tags: []
+user_id: fredzhang

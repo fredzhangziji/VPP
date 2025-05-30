@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/5a6f2c74a9f043c1ab6d7948722fd0df/artifacts
+end_time: 1748429899438
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 5a6f2c74a9f043c1ab6d7948722fd0df
+run_name: brawny-bee-815
+run_uuid: 5a6f2c74a9f043c1ab6d7948722fd0df
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429897044
+status: 3
+tags: []
+user_id: fredzhang

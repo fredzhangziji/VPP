@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/74655bd0e328476c93e20c5c5d78517a/artifacts
+end_time: 1748429727623
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 74655bd0e328476c93e20c5c5d78517a
+run_name: rogue-sloth-513
+run_uuid: 74655bd0e328476c93e20c5c5d78517a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429726673
+status: 3
+tags: []
+user_id: fredzhang

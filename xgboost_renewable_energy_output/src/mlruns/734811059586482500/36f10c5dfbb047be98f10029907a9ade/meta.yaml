@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/36f10c5dfbb047be98f10029907a9ade/artifacts
+end_time: 1748430387578
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 36f10c5dfbb047be98f10029907a9ade
+run_name: fearless-zebra-210
+run_uuid: 36f10c5dfbb047be98f10029907a9ade
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430382653
+status: 3
+tags: []
+user_id: fredzhang

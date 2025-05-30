@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/5a63222676284b9a8597d41672768760/artifacts
+end_time: 1748429133882
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 5a63222676284b9a8597d41672768760
+run_name: beautiful-steed-306
+run_uuid: 5a63222676284b9a8597d41672768760
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429128679
+status: 3
+tags: []
+user_id: fredzhang

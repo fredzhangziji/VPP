@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/adbcb644614c4a4bacf913e27c9eafdc/artifacts
+end_time: 1748431150415
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: adbcb644614c4a4bacf913e27c9eafdc
+run_name: melodic-skunk-215
+run_uuid: adbcb644614c4a4bacf913e27c9eafdc
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431150011
+status: 3
+tags: []
+user_id: fredzhang

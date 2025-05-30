@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/c7f6dd8a67224b0a8b916c5d960c0cf6/artifacts
+end_time: 1748431169672
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: c7f6dd8a67224b0a8b916c5d960c0cf6
+run_name: beautiful-mouse-768
+run_uuid: c7f6dd8a67224b0a8b916c5d960c0cf6
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431168996
+status: 3
+tags: []
+user_id: fredzhang

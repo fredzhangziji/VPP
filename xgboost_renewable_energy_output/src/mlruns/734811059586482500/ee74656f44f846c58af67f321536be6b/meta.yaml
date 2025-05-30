@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/ee74656f44f846c58af67f321536be6b/artifacts
+end_time: 1748429203536
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: ee74656f44f846c58af67f321536be6b
+run_name: exultant-bee-761
+run_uuid: ee74656f44f846c58af67f321536be6b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429200346
+status: 3
+tags: []
+user_id: fredzhang

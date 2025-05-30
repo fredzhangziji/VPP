@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/47de2f247cca446c9f9ca2f574b0376e/artifacts
+end_time: 1748430984364
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 47de2f247cca446c9f9ca2f574b0376e
+run_name: zealous-skunk-413
+run_uuid: 47de2f247cca446c9f9ca2f574b0376e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430981441
+status: 3
+tags: []
+user_id: fredzhang

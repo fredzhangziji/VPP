@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/57421730f6f1473e8bbbe7c80222c4ce/artifacts
+end_time: 1748430975597
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 57421730f6f1473e8bbbe7c80222c4ce
+run_name: unequaled-stag-122
+run_uuid: 57421730f6f1473e8bbbe7c80222c4ce
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430971757
+status: 3
+tags: []
+user_id: fredzhang

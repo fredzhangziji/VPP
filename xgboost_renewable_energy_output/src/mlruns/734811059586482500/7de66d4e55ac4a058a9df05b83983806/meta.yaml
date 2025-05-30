@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/7de66d4e55ac4a058a9df05b83983806/artifacts
+end_time: 1748429759303
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 7de66d4e55ac4a058a9df05b83983806
+run_name: mysterious-wolf-690
+run_uuid: 7de66d4e55ac4a058a9df05b83983806
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429757453
+status: 3
+tags: []
+user_id: fredzhang

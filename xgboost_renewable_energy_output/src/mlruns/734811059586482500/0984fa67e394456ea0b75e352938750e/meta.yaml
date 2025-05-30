@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/0984fa67e394456ea0b75e352938750e/artifacts
+end_time: 1748430728686
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 0984fa67e394456ea0b75e352938750e
+run_name: classy-worm-110
+run_uuid: 0984fa67e394456ea0b75e352938750e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430722052
+status: 3
+tags: []
+user_id: fredzhang

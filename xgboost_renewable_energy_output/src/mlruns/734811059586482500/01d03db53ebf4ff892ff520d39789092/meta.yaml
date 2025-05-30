@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/01d03db53ebf4ff892ff520d39789092/artifacts
+end_time: 1748428449085
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 01d03db53ebf4ff892ff520d39789092
+run_name: fortunate-chimp-482
+run_uuid: 01d03db53ebf4ff892ff520d39789092
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748428445882
+status: 3
+tags: []
+user_id: fredzhang

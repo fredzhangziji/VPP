@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/75aef49cf82646b4a8efce07e7e6ef33/artifacts
+end_time: 1748431170841
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 75aef49cf82646b4a8efce07e7e6ef33
+run_name: clumsy-calf-976
+run_uuid: 75aef49cf82646b4a8efce07e7e6ef33
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431170420
+status: 3
+tags: []
+user_id: fredzhang

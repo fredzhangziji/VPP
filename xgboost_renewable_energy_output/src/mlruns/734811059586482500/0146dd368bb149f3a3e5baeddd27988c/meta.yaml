@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/0146dd368bb149f3a3e5baeddd27988c/artifacts
+end_time: 1748430805372
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 0146dd368bb149f3a3e5baeddd27988c
+run_name: abrasive-steed-333
+run_uuid: 0146dd368bb149f3a3e5baeddd27988c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430799193
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/3fc233f7be1544719434ae2f089768fd/artifacts
+end_time: 1748430989651
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 3fc233f7be1544719434ae2f089768fd
+run_name: abundant-turtle-555
+run_uuid: 3fc233f7be1544719434ae2f089768fd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430984391
+status: 3
+tags: []
+user_id: fredzhang

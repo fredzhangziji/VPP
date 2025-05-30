@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/f4b435f297b143e097e59876890e8b07/artifacts
+end_time: 1748429278498
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: f4b435f297b143e097e59876890e8b07
+run_name: inquisitive-duck-186
+run_uuid: f4b435f297b143e097e59876890e8b07
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429273796
+status: 3
+tags: []
+user_id: fredzhang

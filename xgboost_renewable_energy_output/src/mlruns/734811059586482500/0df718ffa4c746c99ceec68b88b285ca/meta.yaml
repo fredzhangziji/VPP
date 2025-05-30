@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/0df718ffa4c746c99ceec68b88b285ca/artifacts
+end_time: 1748429417956
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 0df718ffa4c746c99ceec68b88b285ca
+run_name: xgb_optuna_best_乌兰察布
+run_uuid: 0df718ffa4c746c99ceec68b88b285ca
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429414603
+status: 3
+tags: []
+user_id: fredzhang

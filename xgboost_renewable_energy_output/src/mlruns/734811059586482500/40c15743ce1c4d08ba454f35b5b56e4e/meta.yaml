@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/40c15743ce1c4d08ba454f35b5b56e4e/artifacts
+end_time: 1748431154881
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 40c15743ce1c4d08ba454f35b5b56e4e
+run_name: intelligent-calf-881
+run_uuid: 40c15743ce1c4d08ba454f35b5b56e4e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431154418
+status: 3
+tags: []
+user_id: fredzhang

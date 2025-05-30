@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/240f80c688f448f9b0153f165f96a707/artifacts
+end_time: 1748431338497
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 240f80c688f448f9b0153f165f96a707
+run_name: auspicious-skunk-367
+run_uuid: 240f80c688f448f9b0153f165f96a707
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431324485
+status: 3
+tags: []
+user_id: fredzhang

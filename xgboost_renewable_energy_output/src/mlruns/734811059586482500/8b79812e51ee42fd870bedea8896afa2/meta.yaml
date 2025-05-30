@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/8b79812e51ee42fd870bedea8896afa2/artifacts
+end_time: 1748430253985
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 8b79812e51ee42fd870bedea8896afa2
+run_name: sneaky-bass-816
+run_uuid: 8b79812e51ee42fd870bedea8896afa2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430249198
+status: 3
+tags: []
+user_id: fredzhang

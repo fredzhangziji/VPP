@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/60a8b6648dfb4266ad109f3bb8cdaa7b/artifacts
+end_time: 1748428985680
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 60a8b6648dfb4266ad109f3bb8cdaa7b
+run_name: smiling-shoat-992
+run_uuid: 60a8b6648dfb4266ad109f3bb8cdaa7b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748428982455
+status: 3
+tags: []
+user_id: fredzhang

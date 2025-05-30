@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/52370054058a4eaea0e5377ea623f556/artifacts
+end_time: 1748429197027
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 52370054058a4eaea0e5377ea623f556
+run_name: hilarious-bass-863
+run_uuid: 52370054058a4eaea0e5377ea623f556
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429193582
+status: 3
+tags: []
+user_id: fredzhang

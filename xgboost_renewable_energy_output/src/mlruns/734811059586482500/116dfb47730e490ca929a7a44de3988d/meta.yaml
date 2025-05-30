@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/116dfb47730e490ca929a7a44de3988d/artifacts
+end_time: 1747732034173
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 116dfb47730e490ca929a7a44de3988d
+run_name: fortunate-crane-718
+run_uuid: 116dfb47730e490ca929a7a44de3988d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747732032173
+status: 3
+tags: []
+user_id: fredzhang

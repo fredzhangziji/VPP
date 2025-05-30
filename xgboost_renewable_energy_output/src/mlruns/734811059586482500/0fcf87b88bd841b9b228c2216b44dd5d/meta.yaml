@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/0fcf87b88bd841b9b228c2216b44dd5d/artifacts
+end_time: 1747732073785
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 0fcf87b88bd841b9b228c2216b44dd5d
+run_name: rogue-hare-405
+run_uuid: 0fcf87b88bd841b9b228c2216b44dd5d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747732071905
+status: 3
+tags: []
+user_id: fredzhang

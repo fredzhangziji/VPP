@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/0b352f36b1024a60b6e018a300309ae2/artifacts
+end_time: 1747732024928
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 0b352f36b1024a60b6e018a300309ae2
+run_name: peaceful-fox-81
+run_uuid: 0b352f36b1024a60b6e018a300309ae2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747732022992
+status: 3
+tags: []
+user_id: fredzhang

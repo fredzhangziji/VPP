@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/dc066077f7544e6e8a36b3ffe552a467/artifacts
+end_time: 1748429233137
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: dc066077f7544e6e8a36b3ffe552a467
+run_name: upbeat-shrike-32
+run_uuid: dc066077f7544e6e8a36b3ffe552a467
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429229617
+status: 3
+tags: []
+user_id: fredzhang

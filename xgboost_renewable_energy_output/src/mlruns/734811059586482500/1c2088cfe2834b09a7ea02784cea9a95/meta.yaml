@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/1c2088cfe2834b09a7ea02784cea9a95/artifacts
+end_time: 1748431181613
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 1c2088cfe2834b09a7ea02784cea9a95
+run_name: big-finch-68
+run_uuid: 1c2088cfe2834b09a7ea02784cea9a95
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431181361
+status: 3
+tags: []
+user_id: fredzhang

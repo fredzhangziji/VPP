@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/c094ed779b8249888330ca2e2fa488a1/artifacts
+end_time: 1748429463739
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: c094ed779b8249888330ca2e2fa488a1
+run_name: handsome-deer-361
+run_uuid: c094ed779b8249888330ca2e2fa488a1
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429458656
+status: 3
+tags: []
+user_id: fredzhang

@@ -321,7 +321,7 @@ def write_df_into_wind_db(engine, df: pd.DataFrame, city_name: str, cur_date_str
         df: 经处理后的风电数据DataFrame
         city_name: 城市名称，字符串形式（用于日志输出）
     """
-    db_tools.upsert_to_db(engine=engine, df=df, table_name=const.NEIMENG_WIND_TABLE_NAME)
+    db_tools.upsert_to_db(engine=engine, df=df, table_name=const.NEIMENG_WIND_TABLE_NAME, update_column='value')
     logger.info(f'{cur_date_str} 的 {city_name} 的风电数据已写入DB.')
 
 def write_df_into_solar_db(engine, df: pd.DataFrame, city_name: str, cur_date_str: str):
@@ -334,7 +334,7 @@ def write_df_into_solar_db(engine, df: pd.DataFrame, city_name: str, cur_date_st
         df: 经处理后的光伏数据DataFrame
         city_name: 城市名称，字符串形式（用于日志输出）
     """
-    db_tools.upsert_to_db(engine=engine, df=df, table_name=const.NEIMENG_SOLAR_TABLE_NAME)
+    db_tools.upsert_to_db(engine=engine, df=df, table_name=const.NEIMENG_SOLAR_TABLE_NAME, update_column='value')
     logger.info(f'{cur_date_str} 的 {city_name} 的光伏数据已写入DB.')
 
 def get_response(url: str, headers: dict, data: dict):

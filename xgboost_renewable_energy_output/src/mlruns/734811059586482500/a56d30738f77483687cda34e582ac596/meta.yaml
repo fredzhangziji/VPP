@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/a56d30738f77483687cda34e582ac596/artifacts
+end_time: 1748431003348
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: a56d30738f77483687cda34e582ac596
+run_name: rumbling-flea-277
+run_uuid: a56d30738f77483687cda34e582ac596
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431002181
+status: 3
+tags: []
+user_id: fredzhang

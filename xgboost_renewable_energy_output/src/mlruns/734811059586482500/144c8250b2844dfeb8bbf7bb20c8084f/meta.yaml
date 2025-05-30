@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/144c8250b2844dfeb8bbf7bb20c8084f/artifacts
+end_time: 1748431190806
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 144c8250b2844dfeb8bbf7bb20c8084f
+run_name: mercurial-midge-946
+run_uuid: 144c8250b2844dfeb8bbf7bb20c8084f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431187058
+status: 3
+tags: []
+user_id: fredzhang

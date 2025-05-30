@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/29face87c6ad4a6eb1e58a713a641dfa/artifacts
+end_time: 1748429263995
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 29face87c6ad4a6eb1e58a713a641dfa
+run_name: unique-doe-585
+run_uuid: 29face87c6ad4a6eb1e58a713a641dfa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429257664
+status: 3
+tags: []
+user_id: fredzhang

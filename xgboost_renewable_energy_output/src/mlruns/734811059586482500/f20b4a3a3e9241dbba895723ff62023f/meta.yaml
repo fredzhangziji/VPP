@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/f20b4a3a3e9241dbba895723ff62023f/artifacts
+end_time: 1748429269100
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: f20b4a3a3e9241dbba895723ff62023f
+run_name: stately-fowl-195
+run_uuid: f20b4a3a3e9241dbba895723ff62023f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429264012
+status: 3
+tags: []
+user_id: fredzhang

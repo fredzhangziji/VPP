@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/3646c1c5ea53428b998f9393b48976f7/artifacts
+end_time: 1748430168070
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 3646c1c5ea53428b998f9393b48976f7
+run_name: resilient-bug-876
+run_uuid: 3646c1c5ea53428b998f9393b48976f7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430161830
+status: 3
+tags: []
+user_id: fredzhang

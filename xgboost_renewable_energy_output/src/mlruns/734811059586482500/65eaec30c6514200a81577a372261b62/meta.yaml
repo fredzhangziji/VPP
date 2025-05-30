@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/65eaec30c6514200a81577a372261b62/artifacts
+end_time: 1748431414815
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 65eaec30c6514200a81577a372261b62
+run_name: overjoyed-moth-265
+run_uuid: 65eaec30c6514200a81577a372261b62
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431413710
+status: 3
+tags: []
+user_id: fredzhang

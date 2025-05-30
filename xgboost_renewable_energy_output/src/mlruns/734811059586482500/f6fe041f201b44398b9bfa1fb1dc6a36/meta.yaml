@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/f6fe041f201b44398b9bfa1fb1dc6a36/artifacts
+end_time: 1748430818368
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: f6fe041f201b44398b9bfa1fb1dc6a36
+run_name: angry-mink-918
+run_uuid: f6fe041f201b44398b9bfa1fb1dc6a36
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430813450
+status: 3
+tags: []
+user_id: fredzhang

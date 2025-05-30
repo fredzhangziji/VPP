@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/fba8797ab3aa48b69d1f7f8a1af38151/artifacts
+end_time: 1748430777434
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: fba8797ab3aa48b69d1f7f8a1af38151
+run_name: monumental-yak-724
+run_uuid: fba8797ab3aa48b69d1f7f8a1af38151
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430772310
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/f68eb353c9ac4d18ab2e9d2c4188f724/artifacts
+end_time: 1748431168257
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: f68eb353c9ac4d18ab2e9d2c4188f724
+run_name: shivering-shoat-57
+run_uuid: f68eb353c9ac4d18ab2e9d2c4188f724
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431167902
+status: 3
+tags: []
+user_id: fredzhang

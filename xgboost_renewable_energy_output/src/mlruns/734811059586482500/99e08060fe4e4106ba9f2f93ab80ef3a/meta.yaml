@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/99e08060fe4e4106ba9f2f93ab80ef3a/artifacts
+end_time: 1748427920023
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 99e08060fe4e4106ba9f2f93ab80ef3a
+run_name: gaudy-zebra-863
+run_uuid: 99e08060fe4e4106ba9f2f93ab80ef3a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748427909075
+status: 3
+tags: []
+user_id: fredzhang

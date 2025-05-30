@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/476bd55fe8bf4a61b296983776245e55/artifacts
+end_time: 1748429312345
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 476bd55fe8bf4a61b296983776245e55
+run_name: useful-mare-667
+run_uuid: 476bd55fe8bf4a61b296983776245e55
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429309327
+status: 3
+tags: []
+user_id: fredzhang

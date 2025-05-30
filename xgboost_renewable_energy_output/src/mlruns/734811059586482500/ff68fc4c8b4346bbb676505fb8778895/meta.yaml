@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/ff68fc4c8b4346bbb676505fb8778895/artifacts
+end_time: 1748431467095
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: ff68fc4c8b4346bbb676505fb8778895
+run_name: funny-hound-597
+run_uuid: ff68fc4c8b4346bbb676505fb8778895
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431466809
+status: 3
+tags: []
+user_id: fredzhang

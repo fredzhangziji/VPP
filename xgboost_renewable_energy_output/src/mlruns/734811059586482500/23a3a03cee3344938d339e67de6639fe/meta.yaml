@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/23a3a03cee3344938d339e67de6639fe/artifacts
+end_time: 1748429478441
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 23a3a03cee3344938d339e67de6639fe
+run_name: charming-carp-147
+run_uuid: 23a3a03cee3344938d339e67de6639fe
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429477910
+status: 3
+tags: []
+user_id: fredzhang

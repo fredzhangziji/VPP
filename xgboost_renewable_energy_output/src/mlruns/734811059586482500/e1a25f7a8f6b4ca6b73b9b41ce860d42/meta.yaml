@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/e1a25f7a8f6b4ca6b73b9b41ce860d42/artifacts
+end_time: 1748430276337
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: e1a25f7a8f6b4ca6b73b9b41ce860d42
+run_name: treasured-steed-973
+run_uuid: e1a25f7a8f6b4ca6b73b9b41ce860d42
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430270518
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/d49517a4b9ce4165b39b4d91372d7fde/artifacts
+end_time: 1748429322631
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: d49517a4b9ce4165b39b4d91372d7fde
+run_name: polite-elk-582
+run_uuid: d49517a4b9ce4165b39b4d91372d7fde
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429318963
+status: 3
+tags: []
+user_id: fredzhang

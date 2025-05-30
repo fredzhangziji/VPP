@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/5b984c530c4d49718c9aa72bb1e74237/artifacts
+end_time: 1748431448060
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 5b984c530c4d49718c9aa72bb1e74237
+run_name: defiant-goat-834
+run_uuid: 5b984c530c4d49718c9aa72bb1e74237
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431447377
+status: 3
+tags: []
+user_id: fredzhang

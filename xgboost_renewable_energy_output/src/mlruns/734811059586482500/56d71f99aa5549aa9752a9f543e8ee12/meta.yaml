@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/56d71f99aa5549aa9752a9f543e8ee12/artifacts
+end_time: 1748428934763
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 56d71f99aa5549aa9752a9f543e8ee12
+run_name: unequaled-zebra-956
+run_uuid: 56d71f99aa5549aa9752a9f543e8ee12
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748428931696
+status: 3
+tags: []
+user_id: fredzhang

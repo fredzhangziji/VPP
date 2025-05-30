@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/78eca7d335d54620a656732ebe950c0f/artifacts
+end_time: 1748429852251
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 78eca7d335d54620a656732ebe950c0f
+run_name: clumsy-wren-830
+run_uuid: 78eca7d335d54620a656732ebe950c0f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429840716
+status: 3
+tags: []
+user_id: fredzhang

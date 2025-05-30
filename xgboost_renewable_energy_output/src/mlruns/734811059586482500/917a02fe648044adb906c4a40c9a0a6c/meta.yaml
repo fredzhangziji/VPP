@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/917a02fe648044adb906c4a40c9a0a6c/artifacts
+end_time: 1748431182882
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 917a02fe648044adb906c4a40c9a0a6c
+run_name: bright-asp-201
+run_uuid: 917a02fe648044adb906c4a40c9a0a6c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748431182288
+status: 3
+tags: []
+user_id: fredzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/ad45c45c44ca40079ada4ca6f9534524/artifacts
+end_time: 1747732044442
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: ad45c45c44ca40079ada4ca6f9534524
+run_name: valuable-snipe-263
+run_uuid: ad45c45c44ca40079ada4ca6f9534524
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747732042685
+status: 3
+tags: []
+user_id: fredzhang

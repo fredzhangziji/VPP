@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/141daa8a2800483db4bb1c7489f3c3e5/artifacts
+end_time: 1747732065310
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 141daa8a2800483db4bb1c7489f3c3e5
+run_name: invincible-moose-816
+run_uuid: 141daa8a2800483db4bb1c7489f3c3e5
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747732063470
+status: 3
+tags: []
+user_id: fredzhang

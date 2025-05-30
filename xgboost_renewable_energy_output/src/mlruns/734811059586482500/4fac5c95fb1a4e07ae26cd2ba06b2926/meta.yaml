@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/4fac5c95fb1a4e07ae26cd2ba06b2926/artifacts
+end_time: 1748430918087
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 4fac5c95fb1a4e07ae26cd2ba06b2926
+run_name: rogue-toad-83
+run_uuid: 4fac5c95fb1a4e07ae26cd2ba06b2926
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748430912150
+status: 3
+tags: []
+user_id: fredzhang

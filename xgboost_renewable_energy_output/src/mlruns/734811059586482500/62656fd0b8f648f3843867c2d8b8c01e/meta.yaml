@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/fredzhang/Documents/git_repo/VPP/xgboost_renewable_energy_output/src/mlruns/734811059586482500/62656fd0b8f648f3843867c2d8b8c01e/artifacts
+end_time: 1748429866290
+entry_point_name: ''
+experiment_id: '734811059586482500'
+lifecycle_stage: active
+run_id: 62656fd0b8f648f3843867c2d8b8c01e
+run_name: unruly-hawk-36
+run_uuid: 62656fd0b8f648f3843867c2d8b8c01e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748429862174
+status: 3
+tags: []
+user_id: fredzhang
