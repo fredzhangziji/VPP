@@ -1,0 +1,13 @@
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+mlflow
+SQLAlchemy
+torch
+einops
+tqdm
+mysql-connector-python
+optuna>=3.0.0
+plotly>=5.0.0 

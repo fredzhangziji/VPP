@@ -1,0 +1,22 @@
+name: informer
+channels:
+  - defaults
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pip
+  - pytorch
+  - pip:
+    - numpy
+    - pandas
+    - scikit-learn
+    - matplotlib
+    - seaborn
+    - mlflow>=1.0
+    - tqdm
+    - einops
+    - SQLAlchemy
+    - mysql-connector-python
+    - optuna>=3.0.0
+    - plotly>=5.0.0 
