@@ -539,11 +539,11 @@ def create_dataloaders(training_dataset: TimeSeriesDataSet,
         val_dataloader: 验证数据加载器
     """
     train_dataloader = training_dataset.to_dataloader(
-        train=True, batch_size=batch_size, num_workers=63, pin_memory=True, persistent_workers=True
+        train=True, batch_size=batch_size, num_workers=32, pin_memory=True, persistent_workers=True
     )
     # validation DataLoader: shuffle=False to keep deterministic ordering
     val_dataloader = validation_dataset.to_dataloader(
-        train=False, batch_size=batch_size, num_workers=63, shuffle=False
+        train=False, batch_size=batch_size, num_workers=32, shuffle=False
     )
     return train_dataloader, val_dataloader
 
@@ -833,7 +833,7 @@ class TFTModelTrainer:
         future_loader = future_dataset.to_dataloader(
             train=False, 
             batch_size=self.batch_size,
-            num_workers=63,
+            num_workers=32,
             pin_memory=True
         )
 

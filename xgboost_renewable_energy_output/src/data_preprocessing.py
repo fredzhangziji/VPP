@@ -8,6 +8,9 @@ from sqlalchemy import Table, select
 from pub_tools import db_tools, const
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+import json
+from datetime import datetime, timedelta
 
 import logging
 import pub_tools.logging_config
@@ -421,7 +424,7 @@ def _deal_missing_data(df: pd.DataFrame, threshold_percent: float = 0.05) -> pd.
         return df
 
     logger.info("Dealing with missing data.")
-    logger.info("Initial missing dates:\n", pd.Series(initial_missing.date).value_counts())
+    logger.info("Initial missing dates:\n%s", pd.Series(initial_missing.date).value_counts())
 
     df_reindexed = df.reindex(complete_time_range)
     # mark originally missing timestamps before interpolation
@@ -571,7 +574,6 @@ def plot_predictions(true_values: pd.Series, predicted_values: np.ndarray, time_
         r2: R²决定系数
     """
     # 如果filename不是绝对路径，则保存到src/figures下
-    import os
     if not os.path.isabs(filename):
         figures_dir = os.path.join(os.path.dirname(__file__), 'figures')
         os.makedirs(figures_dir, exist_ok=True)
@@ -601,6 +603,72 @@ def plot_predictions(true_values: pd.Series, predicted_values: np.ndarray, time_
         logger.error(f"Error saving plot {filename}: {e}")
     plt.close()
     
+# 添加新函数，用于保存训练数据中的分类变量值
+def save_categorical_values(df, city_name):
+    """保存训练数据中的分类变量可能值
+    
+    将训练数据中分类变量的所有可能值保存到JSON文件，
+    以便在预测时确保特征的一致性。
+    
+    入参:
+        df: 训练数据DataFrame
+        city_name: 城市名称，用于文件命名
+    """
+    model_dir = os.path.join(os.path.dirname(__file__), '..', 'models')
+    os.makedirs(model_dir, exist_ok=True)
+    
+    cat_values = {}
+    for col in ['wind_season', 'year', 'month', 'day', 'hour']:
+        if col in df.columns:
+            cat_values[col] = sorted(df[col].unique().tolist())
+    
+    cat_file = os.path.join(model_dir, f'{city_name}_categorical_values.json')
+    with open(cat_file, 'w') as f:
+        json.dump(cat_values, f)
+    logger.info(f"已保存分类变量值到 {cat_file}")
+
+# 添加新函数，用于确保未来数据的特征与训练数据一致
+def ensure_consistent_encoding(future_df, city_name):
+    """确保未来数据的编码与训练数据一致
+    
+    根据保存的分类变量值，为未来数据创建一致的one-hot编码特征。
+    如果某些特征在未来数据中不存在，则添加并设为0。
+    
+    入参:
+        future_df: 未来数据DataFrame
+        city_name: 城市名称，用于加载对应的分类值文件
+        
+    返回:
+        处理后的DataFrame，包含与训练数据一致的one-hot编码特征
+    """
+    model_dir = os.path.join(os.path.dirname(__file__), '..', 'models')
+    cat_file = os.path.join(model_dir, f'{city_name}_categorical_values.json')
+    
+    try:
+        if os.path.exists(cat_file):
+            with open(cat_file, 'r') as f:
+                cat_values = json.load(f)
+                
+            # 为每个分类变量创建一致的one-hot编码
+            for col, values in cat_values.items():
+                # 确保列存在
+                if col not in future_df.columns:
+                    continue
+                    
+                # 创建一致的one-hot编码
+                for val in values:
+                    col_name = f"{col}_{val}"
+                    future_df[col_name] = (future_df[col] == val).astype(int)
+                    
+                # 删除原始分类列
+                future_df.drop(columns=[col], inplace=True)
+        else:
+            logger.warning(f"找不到分类值文件 {cat_file}，无法确保特征一致性")
+    except Exception as e:
+        logger.warning(f"确保特征一致性时出错: {e}")
+    
+    return future_df
+
 if __name__ == '__main__':
     CITY_FOR_POWER_DATA = '乌兰察布'
     CITY_FOR_WEATHER_DATA = CITY_NAME_MAPPING_DICT[CITY_FOR_POWER_DATA]
@@ -622,3 +690,14 @@ if __name__ == '__main__':
     print("\nSample of time_wise_df for training (after string time features, datetime column dropped):")
     print(time_wise_df.head())
     print(time_wise_df.info())
+
+    # 保存分类变量值
+    save_categorical_values(time_wise_df, CITY_FOR_POWER_DATA)
+
+    # 确保未来数据的特征与训练数据一致
+    future_weather_df = get_predicted_weather_data_for_city(CITY_FOR_POWER_DATA)
+    future_df = _add_more_features_for_future(future_weather_df, preprocessed_df)
+    consistent_future_df = ensure_consistent_encoding(future_df, CITY_FOR_POWER_DATA)
+    print("\nSample of consistent_future_df for training (after ensuring consistent encoding):")
+    print(consistent_future_df.head())
+    print(consistent_future_df.info())

@@ -1,13 +1,13 @@
 #!/bin/bash
 
 export PATH=$PATH:/usr/local/bin
-CONDA_PATH="/home/elu/software/anaconda3"
+CONDA_PATH="/home/elu/anaconda3/"
 PROJECT_PATH="/home/elu/VPP/Baseline/Wind_Power_Output_Baseline/code"
 echo "Starting wind energy baseline daily predict script execution..."
 cd "${PROJECT_PATH}"
 
 eval "$("${CONDA_PATH}/bin/conda" shell.bash hook)"
-conda activate baseline_model
+conda activate baseline
 
 # Execute Python script
 if [ -f "future_predict.py" ]; then

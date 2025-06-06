@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export PATH=$PATH:/usr/local/bin
-CONDA_PATH="/home/elu/software/anaconda3"
+CONDA_PATH="/home/elu/anaconda3"
 PROJECT_PATH="/home/elu/VPP/TFT_for_renewable_energy_output/code"
 echo "Starting wind energy TFT daily predict script execution..."
 cd "${PROJECT_PATH}"

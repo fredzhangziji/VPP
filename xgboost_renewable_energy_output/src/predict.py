@@ -4,15 +4,21 @@
 同时支持多城市预测、数据可视化和预测结果存入数据库等功能。
 """
 
-import mlflow
 import os
+# 设置 MLflow 环境变量，避免权限问题
+os.environ['MLFLOW_TRACKING_DIR'] = os.path.join(os.path.dirname(__file__), 'mlruns')
+# 或者完全禁用 MLflow
+# os.environ['MLFLOW_DISABLE'] = 'true'
+
+import mlflow
 import pandas as pd
 import xgboost as xgb
 import numpy as np
 from data_preprocessing import (
     CITY_NAME_MAPPING_DICT, CITIES_FOR_POWER, get_predicted_weather_data_for_city, 
     get_history_weather_data_for_city, get_history_wind_power_for_city,
-    merge_weather_and_power_df, preprocess_data, set_time_wise_feature, _add_more_features_for_future
+    merge_weather_and_power_df, preprocess_data, set_time_wise_feature, _add_more_features_for_future,
+    ensure_consistent_encoding
 )
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
@@ -27,17 +33,30 @@ logger = logging.getLogger('xgboost')
 # 设置matplotlib中文字体
 font_path = get_system_font_path()
 if font_path is not None:
-    plt.rcParams['font.sans-serif'] = [fm.FontProperties(fname=font_path).get_name()]
-    plt.rcParams['axes.unicode_minus'] = False
-    logger.info(f"已设置matplotlib字体: {font_path}")
+    try:
+        plt.rcParams['font.sans-serif'] = [fm.FontProperties(fname=font_path).get_name()]
+        plt.rcParams['axes.unicode_minus'] = False
+        logger.info(f"已设置matplotlib字体: {font_path}")
+    except Exception as e:
+        logger.warning(f"设置字体时出错: {e}, 继续使用默认字体")
+        plt.rcParams['font.sans-serif'] = ['DejaVu Sans']  # 使用一个通用的备选字体
 else:
     logger.warning("未找到可用的中文字体，继续使用默认字体。")
+    plt.rcParams['font.sans-serif'] = ['DejaVu Sans']  # 使用一个通用的备选字体
 
 MODEL_DIR = 'models'
 MLFLOW_EXPERIMENT = "XGBoost Wind Power Prediction"
 MODEL_NAME = "XGBoost_wind_power"  # 模型名称，用于数据库记录
 
-mlflow.set_experiment(MLFLOW_EXPERIMENT)
+# 安全设置 MLflow
+USE_MLFLOW = False
+try:
+    mlflow.set_experiment(MLFLOW_EXPERIMENT)
+    USE_MLFLOW = True
+    logger.info(f"MLflow 实验已设置为: {MLFLOW_EXPERIMENT}")
+except Exception as e:
+    logger.warning(f"MLflow 设置失败: {e}, 将不使用 MLflow 记录")
+    USE_MLFLOW = False
 
 def load_model(model_path):
     """加载XGBoost预测模型
@@ -72,6 +91,8 @@ def predict_for_city(city_power):
     返回:
         db_result_df: DataFrame，包含日期时间和预测的风力发电量，用于数据库存储
     """
+    global USE_MLFLOW
+    
     CITY_FOR_POWER_DATA = city_power
     CITY_FOR_WEATHER_DATA = CITY_NAME_MAPPING_DICT[CITY_FOR_POWER_DATA]
     BEST_MODEL_PATH = os.path.join(MODEL_DIR, f'xgb_best_model_{CITY_FOR_POWER_DATA}.json')
@@ -87,7 +108,15 @@ def predict_for_city(city_power):
         logger.warning(f"警告: 找不到城市 {CITY_FOR_POWER_DATA} 的特征文件, 跳过预测")
         return
     
-    with mlflow.start_run(run_name=f"predict_future_{CITY_FOR_POWER_DATA}"):
+    try:
+        # 使用 MLflow 记录预测过程，但仅当 USE_MLFLOW 为 True 时
+        if USE_MLFLOW:
+            try:
+                mlflow.start_run(run_name=f"predict_future_{CITY_FOR_POWER_DATA}")
+            except Exception as e:
+                logger.warning(f"启动 MLflow run 失败: {e}, 将不使用 MLflow")
+                USE_MLFLOW = False
+                
         # 1. 获取历史数据，生成历史特征（用于滞后项）
         weather_df = get_history_weather_data_for_city(CITY_FOR_WEATHER_DATA)
         power_df = get_history_wind_power_for_city(CITY_FOR_POWER_DATA)
@@ -134,6 +163,9 @@ def predict_for_city(city_power):
         # 5. 时间特征处理
         time_wise_future_df = set_time_wise_feature(future_features_df.copy())
         
+        # 应用一致的特征编码
+        time_wise_future_df = ensure_consistent_encoding(time_wise_future_df, CITY_FOR_POWER_DATA)
+        
         # 6. 加载特征名
         with open(FEATURE_PATH, 'r') as f:
             trained_features = [line.strip() for line in f.readlines() if line.strip()]
@@ -171,7 +203,14 @@ def predict_for_city(city_power):
         os.makedirs(output_dir, exist_ok=True)
         output_path = os.path.join(output_dir, f'future_predictions_{CITY_FOR_POWER_DATA}.csv')
         db_result_df.to_csv(output_path, index=False)
-        mlflow.log_artifact(output_path)
+        
+        # 安全地记录 MLflow 工件
+        if USE_MLFLOW:
+            try:
+                mlflow.log_artifact(output_path)
+            except Exception as e:
+                logger.warning(f"MLflow 记录工件失败: {e}")
+                USE_MLFLOW = False
         
         # 保存预测结果图
         figures_dir = os.path.join(os.path.dirname(__file__), 'figures')
@@ -190,7 +229,15 @@ def predict_for_city(city_power):
         
         save_path = os.path.join(figures_dir, f"{CITY_FOR_POWER_DATA}_future_5day_predictions.png")
         plt.savefig(save_path)
-        mlflow.log_artifact(save_path)
+        
+        # 安全地记录 MLflow 图表
+        if USE_MLFLOW:
+            try:
+                mlflow.log_artifact(save_path)
+            except Exception as e:
+                logger.warning(f"MLflow 记录图表失败: {e}")
+                USE_MLFLOW = False
+                
         plt.close()
         
         # 10. 将预测结果写入数据库
@@ -222,7 +269,25 @@ def predict_for_city(city_power):
             db_tools.release_db_connection(engine)
         
         logger.info(f"{CITY_FOR_POWER_DATA} 未来5天预测完成, 结果已保存到 {output_path} 和 {save_path}")
+        
+        # 安全地结束 MLflow run
+        if USE_MLFLOW:
+            try:
+                mlflow.end_run()
+            except Exception as e:
+                logger.warning(f"结束 MLflow run 失败: {e}")
+                
         return db_result_df
+        
+    except Exception as e:
+        logger.error(f"预测城市 {CITY_FOR_POWER_DATA} 时发生错误: {e}")
+        # 确保 MLflow run 被正确结束
+        if USE_MLFLOW:
+            try:
+                mlflow.end_run()
+            except:
+                pass
+        return None
 
 if __name__ == '__main__':
     logger.info(f"将为以下城市进行预测: {CITIES_FOR_POWER}")

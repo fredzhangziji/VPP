@@ -2,7 +2,7 @@
 风电出力Baseline对于真实情况的预测入口脚本
 """
 
-from Baseline.Wind_Power_Output_Baseline.code import model_tool
+import model_tool
 import numpy as np
 import pandas as pd
 from pub_tools import const

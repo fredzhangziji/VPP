@@ -7,3 +7,4 @@ seaborn
 mlflow
 SQLAlchemy
 mysql-connector-python # For MySQL
+-e ..

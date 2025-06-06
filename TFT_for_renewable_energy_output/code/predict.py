@@ -22,6 +22,47 @@ from pytorch_forecasting import TemporalFusionTransformer
 import pandas as pd
 import numpy as np
 
+# 添加自定义指标
+import torch
+from pytorch_forecasting.metrics import MultiHorizonMetric
+from pytorch_forecasting.metrics.point import SMAPE, MAE, RMSE, MAPE
+
+class R2Score(MultiHorizonMetric):
+    """
+    R² score for timeseries forecasting.
+    """
+    def __init__(self, reduction="mean"):
+        super().__init__(reduction=reduction)
+
+    def loss(self, y_pred, target):
+        # 计算R²分数
+        ss_tot = torch.sum((target - torch.mean(target)) ** 2)
+        ss_res = torch.sum((target - y_pred) ** 2)
+        r2 = 1 - ss_res / (ss_tot + 1e-8)  # 添加小值避免除零
+        return r2  # 注意：R²越高越好，但这里我们返回原始值，不取负
+
+class MSLE(MultiHorizonMetric):
+    """
+    Mean Squared Logarithmic Error for timeseries forecasting.
+    """
+    def __init__(self, reduction="mean"):
+        super().__init__(reduction=reduction)
+
+    def loss(self, y_pred, target):
+        # 添加一个小的常数避免log(0)
+        eps = 1e-8
+        # 计算MSLE
+        msle = torch.mean((torch.log(y_pred + eps) - torch.log(target + eps)) ** 2)
+        return msle
+
+# 将自定义指标添加到pytorch_forecasting.metrics.point模块
+import sys
+import pytorch_forecasting.metrics.point
+setattr(pytorch_forecasting.metrics.point, 'R2Score', R2Score)
+setattr(pytorch_forecasting.metrics.point, 'MSLE', MSLE)
+sys.modules['pytorch_forecasting.metrics.point'].R2Score = R2Score
+sys.modules['pytorch_forecasting.metrics.point'].MSLE = MSLE
+
 import logging
 import pub_tools.logging_config
 logger = logging.getLogger('tft_model')
