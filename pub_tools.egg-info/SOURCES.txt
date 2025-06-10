@@ -1,4 +1,3 @@
-README.md
 setup.py
 pub_tools/__init__.py
 pub_tools/const.py
