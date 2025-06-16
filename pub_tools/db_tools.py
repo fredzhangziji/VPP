@@ -112,6 +112,48 @@ def upsert_to_db(engine, df, table_name, update_column='value'):
         conn.execute(upsert_stmt)
     logger.info(f"Upsert 执行完成，数据已写入 {table_name}。")
 
+def upsert_multiple_columns_to_db(engine, df, table_name, update_columns=None):
+    """
+    使用 SQLAlchemy 实现 MySQL 的 upsert 操作：
+    对于重复的记录（基于主键），更新指定的多个字段，
+    而其余字段保持原值。
+
+    参数:
+        engine: SQLAlchemy engine 对象
+        df: 要插入的 DataFrame
+        table_name: 目标表名
+        update_columns: 当发生重复时要更新的列名列表，如果为None则更新所有列
+    """
+    metadata = MetaData()
+    table = Table(table_name, metadata, autoload_with=engine)
+    
+    # 将 DataFrame 转换为字典列表记录
+    data = df.to_dict(orient='records')
+    if not data:
+        logger.error("没有数据插入")
+        return
+    
+    # 构造插入语句
+    stmt = mysql_insert(table).values(data)
+    
+    # 当主键冲突时，仅更新指定字段为新值
+    if update_columns is None:
+        # 如果未指定更新列，则更新除主键外的所有列
+        update_dict = {c.name: getattr(stmt.inserted, c.name) 
+                      for c in table.columns 
+                      if not c.primary_key}
+    else:
+        # 只更新指定的列
+        update_dict = {col: getattr(stmt.inserted, col) 
+                      for col in update_columns 
+                      if col in [c.name for c in table.columns]}
+    
+    upsert_stmt = stmt.on_duplicate_key_update(**update_dict)
+    
+    with engine.begin() as conn:
+        conn.execute(upsert_stmt)
+    logger.info(f"Upsert 执行完成，数据已写入 {table_name}。")
+
 if __name__ == '__main__':
     history_weather = get_history_weather_data_from_web(const.CITY_POS, '2025-03-26 00:00:00', '2025-03-29 00:00:00')
 

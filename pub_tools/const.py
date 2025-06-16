@@ -19,6 +19,14 @@ DB_CONFIG_VPP_USER = {
     'port': 3306
 }
 
+DB_CONFIG_ZHEJIANG_MARKET = {
+    'host': '10.5.0.10',
+    'user': 'root',
+    'password': 'kunyu2023rds',
+    'database': 'zhejiang_market',
+    'port': 3306
+}
+
 WEATHER_FEATURE = [
     't2m',      # temperature at 2 meters
     'ws100m',    # wind speed at 100 meters

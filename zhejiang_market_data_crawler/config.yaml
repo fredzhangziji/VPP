@@ -1,0 +1,22 @@
+# 数据库配置
+database:
+  host: '10.5.0.10'
+  port: 3306
+  user: 'root'
+  password: 'kunyu2023rds'
+  database: 'zhejiang_market'
+
+# 目标数据表名
+target_table: 'power_market_data'
+
+# 请求间隔时间（秒）
+request_interval: 2
+
+# 爬虫并发数（如果使用并行）
+concurrency: 5
+
+# 请求超时时间（秒）
+request_timeout: 30
+
+# 最大重试次数
+max_retries: 3 

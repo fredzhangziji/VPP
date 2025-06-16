@@ -1,0 +1,22 @@
+# 数据库配置
+database:
+  host: localhost
+  port: 3306
+  user: your_username
+  password: your_password
+  database: zhejiang_market
+
+# 目标数据表名
+target_table: zhejiang_market_actual
+
+# 请求间隔时间（秒）
+request_interval: 2
+
+# 爬虫并发数（如果使用并行）
+concurrency: 5
+
+# 请求超时时间（秒）
+request_timeout: 30
+
+# 最大重试次数
+max_retries: 3 
