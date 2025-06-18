@@ -41,6 +41,9 @@ from crawlers.non_market_wind_output_crawler import NonMarketWindOutputCrawler
 from crawlers.non_market_nuclear_output_crawler import NonMarketNuclearOutputCrawler
 from crawlers.non_market_hydro_output_crawler import NonMarketHydroOutputCrawler
 from crawlers.day_ahead_price_crawler import DayAheadPriceCrawler
+from crawlers.day_ahead_cleared_volume_crawler import DayAheadClearedVolumeCrawler
+from crawlers.real_time_market_price_crawler import RealTimeMarketPriceCrawler
+from crawlers.spot_cleared_volume_crawler import SpotClearedVolumeCrawler
 
 # 设置日志记录器
 logger = setup_logger('main')
@@ -177,6 +180,21 @@ CRAWLERS = [
         'name': '日前市场出清负荷侧电价爬虫',
         'crawler': DayAheadPriceCrawler,
         'params': {}
+    },
+    {
+        'name': '日前市场出清总电量爬虫',
+        'crawler': DayAheadClearedVolumeCrawler,
+        'params': {}
+    },
+    {
+        'name': '实时市场出清负荷侧电价爬虫',
+        'crawler': RealTimeMarketPriceCrawler,
+        'params': {}
+    },
+    {
+        'name': '实时市场出清总电量爬虫',
+        'crawler': SpotClearedVolumeCrawler,
+        'params': {}
     }
 ]
 
@@ -288,7 +306,9 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='浙江电力市场数据爬虫')
     parser.add_argument('--start-date', help='开始日期，格式为YYYY-MM-DD')
     parser.add_argument('--end-date', help='结束日期，格式为YYYY-MM-DD')
-    parser.add_argument('--crawler', help='要运行的爬虫名称，支持的值：all, week_ahead, day_ahead, actual_load, system_backup, total_generation_forecast, external_power_plan, non_market_solar_forecast, non_market_wind_forecast, non_market_nuclear_forecast, non_market_hydro_forecast, day_ahead_solar_total_forecast, day_ahead_wind_total_forecast, week_ahead_pumped_storage_forecast, day_ahead_hydro_total_forecast, day_ahead_pumped_storage_forecast, actual_total_generation, actual_solar_output, actual_wind_output, actual_hydro_output, actual_pumped_storage_output, non_market_total_output, non_market_solar_output, non_market_wind_output, non_market_nuclear_output, non_market_hydro_output')
+    crawler_help = '要运行的爬虫名称，支持的值：all, week_ahead, day_ahead, actual_load, system_backup, total_generation_forecast, external_power_plan, non_market_solar_forecast, non_market_wind_forecast, non_market_nuclear_forecast, non_market_hydro_forecast, day_ahead_solar_total_forecast, day_ahead_wind_total_forecast, week_ahead_pumped_storage_forecast, day_ahead_hydro_total_forecast, day_ahead_pumped_storage_forecast, actual_total_generation, actual_solar_output, actual_wind_output, actual_hydro_output, actual_pumped_storage_output, non_market_total_output, non_market_solar_output, non_market_wind_output, non_market_nuclear_output, non_market_hydro_output, day_ahead_price, day_ahead_cleared_volume, real_time_market_price, spot_cleared_volume'
+    parser.add_argument('--crawler', help=crawler_help)
+    parser.add_argument('--crawlers', dest='crawler', help=crawler_help)  # 添加别名
     parser.add_argument('--retry-days', type=int, default=3, help='重试天数')
     parser.add_argument('--parallel', action='store_true', help='是否并行运行爬虫')
     parser.add_argument('--max-workers', type=int, default=CONCURRENCY, help='最大并行工作线程数')
@@ -349,7 +369,11 @@ def main():
             'non_market_solar_output': '非市场光伏实时总出力爬虫',
             'non_market_wind_output': '非市场风电实时总出力爬虫',
             'non_market_nuclear_output': '非市场核电实时总出力爬虫',
-            'non_market_hydro_output': '非市场水电实时总出力爬虫'
+            'non_market_hydro_output': '非市场水电实时总出力爬虫',
+            'day_ahead_price': '日前市场出清负荷侧电价爬虫',
+            'day_ahead_cleared_volume': '日前市场出清总电量爬虫',
+            'real_time_market_price': '实时市场出清负荷侧电价爬虫',
+            'spot_cleared_volume': '实时市场出清总电量爬虫'
         }
         
         if args.crawler in crawler_name_map:

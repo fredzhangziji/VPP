@@ -30,3 +30,6 @@ from .non_market_wind_output_crawler import NonMarketWindOutputCrawler
 from .non_market_nuclear_output_crawler import NonMarketNuclearOutputCrawler 
 from .non_market_hydro_output_crawler import NonMarketHydroOutputCrawler 
 from .day_ahead_price_crawler import DayAheadPriceCrawler 
+from .day_ahead_cleared_volume_crawler import DayAheadClearedVolumeCrawler
+from .real_time_market_price_crawler import RealTimeMarketPriceCrawler
+from .spot_cleared_volume_crawler import SpotClearedVolumeCrawler

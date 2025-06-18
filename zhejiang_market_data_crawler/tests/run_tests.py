@@ -44,6 +44,9 @@ try:
     import tests.test_actual_total_generation as test_actual_total_generation
     import tests.test_day_ahead_pumped_storage_forecast as test_day_ahead_pumped_storage_forecast
     import tests.test_week_ahead_load as test_week_ahead_load
+    import tests.test_day_ahead_cleared_volume as test_day_ahead_cleared_volume
+    import tests.test_real_time_market_price as test_real_time_market_price
+    import tests.test_spot_cleared_volume as test_spot_cleared_volume
     
     logger.info("成功导入测试模块")
 except ImportError as e:
@@ -158,6 +161,18 @@ async def run_all_tests():
     logger.info("===== 运行周前负荷预测测试 =====")
     await test_week_ahead_load.main()
     
+    # 运行日前市场出清总电量测试
+    logger.info("===== 运行日前市场出清总电量测试 =====")
+    await test_day_ahead_cleared_volume.main()
+    
+    # 运行实时市场出清负荷侧电价测试
+    logger.info("===== 运行实时市场出清负荷侧电价测试 =====")
+    await test_real_time_market_price.main()
+    
+    # 运行实时市场出清总电量测试
+    logger.info("===== 运行实时市场出清总电量测试 =====")
+    await test_spot_cleared_volume.main()
+    
     logger.info("所有测试执行完毕")
 
 async def run_selected_test(test_name):
@@ -195,9 +210,6 @@ async def run_selected_test(test_name):
     elif test_name == "day_ahead_wind_total_forecast":
         logger.info("===== 运行风电总出力预测测试 =====")
         await test_day_ahead_wind_total_forecast.main()
-    elif test_name == "week_ahead":
-        logger.info("===== 运行周前负荷预测测试 =====")
-        await test_week_ahead_load.main()
     elif test_name == "week_ahead_pumped_storage_forecast":
         logger.info("===== 运行抽蓄总出力预测测试 =====")
         await test_week_ahead_pumped_storage_forecast.main()
@@ -240,20 +252,37 @@ async def run_selected_test(test_name):
     elif test_name == "day_ahead_pumped_storage_forecast":
         logger.info("===== 运行日前抽蓄出力预测测试 =====")
         await test_day_ahead_pumped_storage_forecast.main()
+    elif test_name == "week_ahead_load":
+        logger.info("===== 运行周前负荷预测测试 =====")
+        await test_week_ahead_load.main()
+    elif test_name == "day_ahead_cleared_volume":
+        logger.info("===== 运行日前市场出清总电量测试 =====")
+        await test_day_ahead_cleared_volume.main()
+    elif test_name == "real_time_market_price":
+        logger.info("===== 运行实时市场出清负荷侧电价测试 =====")
+        await test_real_time_market_price.main()
+    elif test_name == "spot_cleared_volume":
+        logger.info("===== 运行实时市场出清总电量测试 =====")
+        await test_spot_cleared_volume.main()
     else:
         logger.error(f"未知的测试名称: {test_name}")
-        logger.info("可用的测试名称: day_ahead, actual_load, system_backup, total_generation_forecast, external_power_plan, non_market_solar_forecast, non_market_wind_forecast, non_market_nuclear_forecast, non_market_hydro_forecast, day_ahead_solar_total_forecast, day_ahead_wind_total_forecast, week_ahead_pumped_storage_forecast, day_ahead_hydro_total_forecast, actual_solar_output, actual_wind_output, actual_hydro_output, actual_pumped_storage_output, non_market_total_output, non_market_solar_output, non_market_wind_output, non_market_nuclear_output, non_market_hydro_output, day_ahead_price, actual_total_generation, day_ahead_pumped_storage_forecast, week_ahead")
 
 def main():
     """主函数"""
+    # 解析命令行参数
     parser = argparse.ArgumentParser(description='运行爬虫测试')
-    parser.add_argument('--test', help='指定要运行的测试，不指定则运行所有测试')
+    parser.add_argument('test', nargs='?', help='指定要运行的测试，如果不指定则运行所有测试')
+    parser.add_argument('--test', dest='test_opt', help='指定要运行的测试（使用选项方式）')
     args = parser.parse_args()
     
-    if args.test:
-        asyncio.run(run_selected_test(args.test))
+    # 确定要运行的测试（优先使用位置参数）
+    test_name = args.test or args.test_opt
+    
+    # 运行测试
+    if test_name:
+        asyncio.run(run_selected_test(test_name))
     else:
         asyncio.run(run_all_tests())
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

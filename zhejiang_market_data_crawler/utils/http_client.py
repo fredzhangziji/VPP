@@ -62,7 +62,7 @@ class HttpClient:
         
         if elapsed < self.interval:
             # 添加一点随机性，避免请求过于规律
-            sleep_time = self.interval - elapsed + random.uniform(0, 0.5)
+            sleep_time = self.interval - elapsed + random.uniform(0, 1.5)
             logger.debug(f"等待 {sleep_time:.2f} 秒后发送下一个请求")
             time.sleep(sleep_time)
         
