@@ -36,13 +36,14 @@ try:
     import tests.test_actual_hydro_output as test_actual_hydro_output
     import tests.test_actual_pumped_storage_output as test_actual_pumped_storage_output
     import tests.test_non_market_total_output as test_non_market_total_output
-    # 如果有周前负荷预测的测试模块，也可以在这里导入
-    HAS_WEEK_AHEAD = False
-    try:
-        import tests.test_week_ahead_load as test_week_ahead_load
-        HAS_WEEK_AHEAD = True
-    except ImportError:
-        logger.warning("未找到周前负荷预测测试模块")
+    import tests.test_non_market_solar_output as test_non_market_solar_output
+    import tests.test_non_market_wind_output as test_non_market_wind_output
+    import tests.test_non_market_nuclear_output as test_non_market_nuclear_output
+    import tests.test_non_market_hydro_output as test_non_market_hydro_output
+    import tests.test_day_ahead_price as test_day_ahead_price
+    import tests.test_actual_total_generation as test_actual_total_generation
+    import tests.test_day_ahead_pumped_storage_forecast as test_day_ahead_pumped_storage_forecast
+    import tests.test_week_ahead_load as test_week_ahead_load
     
     logger.info("成功导入测试模块")
 except ImportError as e:
@@ -125,10 +126,37 @@ async def run_all_tests():
     logger.info("===== 运行非市场机组实时总出力测试 =====")
     await test_non_market_total_output.main()
     
-    # 如果有周前负荷预测，也运行它
-    if HAS_WEEK_AHEAD:
-        logger.info("===== 运行周前负荷预测测试 =====")
-        await test_week_ahead_load.main()
+    # 运行非市场光伏实时总出力测试
+    logger.info("===== 运行非市场光伏实时总出力测试 =====")
+    await test_non_market_solar_output.main()
+    
+    # 运行非市场风电实时总出力测试
+    logger.info("===== 运行非市场风电实时总出力测试 =====")
+    await test_non_market_wind_output.main()
+    
+    # 运行非市场核电实时总出力测试
+    logger.info("===== 运行非市场核电实时总出力测试 =====")
+    await test_non_market_nuclear_output.main()
+    
+    # 运行非市场水电实时总出力测试
+    logger.info("===== 运行非市场水电实时总出力测试 =====")
+    await test_non_market_hydro_output.main()
+    
+    # 运行日前市场出清负荷侧电价测试
+    logger.info("===== 运行日前市场出清负荷侧电价测试 =====")
+    await test_day_ahead_price.main()
+    
+    # 运行实际发电总出力测试
+    logger.info("===== 运行实际发电总出力测试 =====")
+    await test_actual_total_generation.main()
+    
+    # 运行日前抽蓄出力预测测试
+    logger.info("===== 运行日前抽蓄出力预测测试 =====")
+    await test_day_ahead_pumped_storage_forecast.main()
+    
+    # 运行周前负荷预测测试
+    logger.info("===== 运行周前负荷预测测试 =====")
+    await test_week_ahead_load.main()
     
     logger.info("所有测试执行完毕")
 
@@ -167,7 +195,7 @@ async def run_selected_test(test_name):
     elif test_name == "day_ahead_wind_total_forecast":
         logger.info("===== 运行风电总出力预测测试 =====")
         await test_day_ahead_wind_total_forecast.main()
-    elif test_name == "week_ahead" and HAS_WEEK_AHEAD:
+    elif test_name == "week_ahead":
         logger.info("===== 运行周前负荷预测测试 =====")
         await test_week_ahead_load.main()
     elif test_name == "week_ahead_pumped_storage_forecast":
@@ -191,21 +219,41 @@ async def run_selected_test(test_name):
     elif test_name == "non_market_total_output":
         logger.info("===== 运行非市场机组实时总出力测试 =====")
         await test_non_market_total_output.main()
+    elif test_name == "non_market_solar_output":
+        logger.info("===== 运行非市场光伏实时总出力测试 =====")
+        await test_non_market_solar_output.main()
+    elif test_name == "non_market_wind_output":
+        logger.info("===== 运行非市场风电实时总出力测试 =====")
+        await test_non_market_wind_output.main()
+    elif test_name == "non_market_nuclear_output":
+        logger.info("===== 运行非市场核电实时总出力测试 =====")
+        await test_non_market_nuclear_output.main()
+    elif test_name == "non_market_hydro_output":
+        logger.info("===== 运行非市场水电实时总出力测试 =====")
+        await test_non_market_hydro_output.main()
+    elif test_name == "day_ahead_price":
+        logger.info("===== 运行日前市场出清负荷侧电价测试 =====")
+        await test_day_ahead_price.main()
+    elif test_name == "actual_total_generation":
+        logger.info("===== 运行实际发电总出力测试 =====")
+        await test_actual_total_generation.main()
+    elif test_name == "day_ahead_pumped_storage_forecast":
+        logger.info("===== 运行日前抽蓄出力预测测试 =====")
+        await test_day_ahead_pumped_storage_forecast.main()
     else:
         logger.error(f"未知的测试名称: {test_name}")
-        sys.exit(1)
+        logger.info("可用的测试名称: day_ahead, actual_load, system_backup, total_generation_forecast, external_power_plan, non_market_solar_forecast, non_market_wind_forecast, non_market_nuclear_forecast, non_market_hydro_forecast, day_ahead_solar_total_forecast, day_ahead_wind_total_forecast, week_ahead_pumped_storage_forecast, day_ahead_hydro_total_forecast, actual_solar_output, actual_wind_output, actual_hydro_output, actual_pumped_storage_output, non_market_total_output, non_market_solar_output, non_market_wind_output, non_market_nuclear_output, non_market_hydro_output, day_ahead_price, actual_total_generation, day_ahead_pumped_storage_forecast, week_ahead")
 
 def main():
     """主函数"""
-    parser = argparse.ArgumentParser(description="运行爬虫测试")
-    parser.add_argument('--test', '-t', choices=['all', 'day_ahead', 'actual_load', 'week_ahead', 'system_backup', 'total_generation_forecast', 'external_power_plan', 'non_market_solar_forecast', 'non_market_wind_forecast', 'non_market_nuclear_forecast', 'non_market_hydro_forecast', 'day_ahead_solar_total_forecast', 'day_ahead_wind_total_forecast', 'week_ahead_pumped_storage_forecast', 'day_ahead_hydro_total_forecast', 'actual_solar_output', 'actual_wind_output', 'actual_hydro_output', 'actual_pumped_storage_output', 'non_market_total_output'],
-                       default='all', help='要运行的测试 (默认: all)')
+    parser = argparse.ArgumentParser(description='运行爬虫测试')
+    parser.add_argument('--test', help='指定要运行的测试，不指定则运行所有测试')
     args = parser.parse_args()
     
-    if args.test == 'all':
-        asyncio.run(run_all_tests())
-    else:
+    if args.test:
         asyncio.run(run_selected_test(args.test))
+    else:
+        asyncio.run(run_all_tests())
 
 if __name__ == '__main__':
-    main() 
+    main()
