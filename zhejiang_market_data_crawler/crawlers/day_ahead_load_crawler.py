@@ -354,26 +354,6 @@ class DayAheadLoadCrawler(JSONCrawler):
         
         return all_data
     
-    def _save_latest_data(self, df):
-        """
-        保存最近的数据到临时文件
-        
-        Args:
-            df: 包含数据的DataFrame
-        """
-        # 不再保存缓存，方法保留但不执行任何操作
-        pass
-    
-    def _get_cached_data(self):
-        """
-        从临时文件获取缓存的数据
-        
-        Returns:
-            df: 包含缓存数据的DataFrame，如果没有缓存则返回空DataFrame
-        """
-        # 不再使用缓存，直接返回空DataFrame
-        return pd.DataFrame()
-    
     def save_to_db(self, df, update_columns=None):
         """
         保存数据到数据库

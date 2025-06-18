@@ -1,6 +1,6 @@
 """
-实际负荷爬虫
-用于抓取浙江电力市场的实际负荷数据
+光伏实时总出力爬虫
+用于抓取浙江电力市场的光伏实时总出力数据
 """
 
 import json
@@ -13,24 +13,24 @@ from utils.http_client import get, post
 from utils.config import TARGET_TABLE, get_api_cookie
 from utils.db_helper import save_to_db
 
-class ActualLoadCrawler(JSONCrawler):
-    """实际负荷爬虫"""
+class ActualSolarOutputCrawler(JSONCrawler):
+    """光伏实时总出力爬虫"""
     
     def __init__(self, target_table=None, cookie=None):
         """
-        初始化实际负荷爬虫
+        初始化光伏实时总出力爬虫
         
         Args:
             target_table: 目标数据表名，默认使用config.py中的配置
             cookie: API请求的Cookie，如果提供则使用此Cookie
         """
-        super().__init__('actual_load')
+        super().__init__('actual_solar_output')
         self.logger = setup_logger(f'crawler.{self.name}')
         self.target_table = target_table or TARGET_TABLE
         self.cookie = cookie or get_api_cookie()
         
-        # 浙江电网的实际负荷字段名
-        self.field_name = "actual_load"  # 实际负荷
+        # 浙江电网的光伏实时总出力字段名
+        self.field_name = "actual_solar_output"  # 光伏实时总出力
     
     def transform_data(self, json_data, query_date=None):
         """
@@ -73,7 +73,7 @@ class ActualLoadCrawler(JSONCrawler):
             self.logger.warning("没有找到数据")
             return pd.DataFrame()
         
-        self.logger.info(f"找到 {len(data_list)} 条负荷记录")
+        self.logger.info(f"找到 {len(data_list)} 条光伏实时总出力记录")
         
         # 使用查询日期作为基准日期
         if query_date:
@@ -84,7 +84,7 @@ class ActualLoadCrawler(JSONCrawler):
         
         # 遍历找到浙江电网的数据
         for item_data in data_list:
-            # 创建时间点和实际负荷值列表
+            # 创建时间点和光伏实时总出力值列表
             timestamps = []
             actual_values = []
             
@@ -117,7 +117,7 @@ class ActualLoadCrawler(JSONCrawler):
                 return df
         
         # 如果没有找到浙江电网的数据
-        self.logger.warning("未能找到浙江电网的实际负荷数据")
+        self.logger.warning("未能找到浙江电网的光伏实时总出力数据")
         return pd.DataFrame()
     
     def get_request_params(self, start_date=None, end_date=None):
@@ -139,8 +139,8 @@ class ActualLoadCrawler(JSONCrawler):
         if not end_date:
             end_date = start_date
         
-        # 请求URL - 实际负荷使用不同的URL
-        url = "https://zjpx.com.cn/px-settlement-infpubquery-phbzj/schedule/realLoad"
+        # 请求URL - 光伏实时总出力使用的URL
+        url = "https://zjpx.com.cn/px-settlement-infpubquery-phbzj/schedule/solarPowerLoad"
         
         # 请求头
         headers = {
@@ -171,7 +171,7 @@ class ActualLoadCrawler(JSONCrawler):
             },
             "data": {
                 "queryDate": start_date,
-                "zjNumber": "0200087",  # 实际负荷的zjNumber
+                "zjNumber": "0200103",  # 光伏实时总出力使用的zjNumber
                 "measType": None
             }
         }
@@ -251,104 +251,119 @@ class ActualLoadCrawler(JSONCrawler):
         if not query_date:
             query_date = datetime.now().strftime('%Y-%m-%d')
         
-        # 检查响应内容
-        if not response:
-            self.logger.error("响应为空")
-            return pd.DataFrame()
-        
-        # 记录原始响应内容的前1000个字符
-        self.logger.debug(f"原始响应内容: {response[:1000]}")
-        
         try:
-            # 解析JSON响应
-            json_data = json.loads(response)
-            self.logger.debug("成功解析JSON响应")
+            # 如果响应是字符串，尝试解析为JSON
+            if isinstance(response, str):
+                json_data = json.loads(response)
+            else:
+                # 如果已经是JSON对象或响应对象
+                json_data = response.json() if hasattr(response, 'json') else response
+            
+            # 转换数据
+            return self.transform_data(json_data, query_date)
         except json.JSONDecodeError as e:
-            self.logger.error(f"JSON解析错误: {e}")
-            self.logger.debug(f"无法解析的响应内容: {response[:1000]}")
+            self.logger.error(f"解析JSON响应失败: {e}")
             return pd.DataFrame()
-        
-        # 使用transform_data方法解析数据
-        return self.transform_data(json_data, query_date=query_date)
+        except Exception as e:
+            self.logger.error(f"解析响应异常: {e}")
+            return pd.DataFrame()
     
     def fetch_data(self, start_date=None, end_date=None):
         """
-        获取指定日期范围内的数据
+        获取数据
         
         Args:
             start_date: 开始日期，格式为YYYY-MM-DD
             end_date: 结束日期，格式为YYYY-MM-DD
-        
+            
         Returns:
-            df: 包含所有数据的DataFrame
+            df: 包含数据的DataFrame
         """
-        # 如果未指定开始日期，则使用当天的日期
-        if not start_date:
-            start_date = datetime.now().strftime('%Y-%m-%d')
-        
-        # 如果未指定结束日期，则使用开始日期
-        if not end_date:
-            end_date = start_date
-        
-        # 将日期字符串转换为datetime对象
-        start_dt = datetime.strptime(start_date, '%Y-%m-%d')
-        end_dt = datetime.strptime(end_date, '%Y-%m-%d')
-        
-        # 创建一个空的DataFrame来存储所有数据
-        all_data = pd.DataFrame()
-        
-        # 记录缺失数据的日期
-        missing_dates = []
-        
-        # 遍历日期范围
-        current_dt = start_dt
-        while current_dt <= end_dt:
-            # 获取当前日期的字符串表示
-            current_date = current_dt.strftime('%Y-%m-%d')
+        try:
+            # 如果未指定开始日期，则使用当天的日期
+            if not start_date:
+                start_date = datetime.now().strftime('%Y-%m-%d')
             
-            # 获取请求参数
-            request_params = self.get_request_params(current_date)
+            # 如果未指定结束日期，则使用开始日期
+            if not end_date:
+                end_date = start_date
             
-            # 发送请求
-            response = self.send_request(**request_params)
+            self.logger.info(f"获取数据: {start_date} 至 {end_date}")
             
-            # 如果请求失败，继续下一个日期
-            if not response:
-                self.logger.warning(f"获取 {current_date} 的数据请求失败，可能是网络问题或服务器维护")
-                missing_dates.append(current_date)
-                current_dt += timedelta(days=1)
-                continue
+            # 解析日期
+            start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d')
             
-            # 解析响应数据
-            df = self.parse_response(response, current_date)
+            # 确保开始日期不晚于结束日期
+            if start_date_obj > end_date_obj:
+                self.logger.error(f"开始日期 {start_date} 晚于结束日期 {end_date}")
+                return pd.DataFrame()
             
-            # 如果解析成功，添加到总数据中
-            if not df.empty:
-                self.logger.info(f"成功获取 {current_date} 的数据，共 {len(df)} 条记录")
-                all_data = pd.concat([all_data, df], ignore_index=True)
+            # 计算日期范围内的所有日期
+            date_range = []
+            current_date = start_date_obj
+            while current_date <= end_date_obj:
+                date_range.append(current_date.strftime('%Y-%m-%d'))
+                current_date += timedelta(days=1)
+            
+            # 存储所有日期的数据
+            all_data = []
+            
+            # 遍历每一天获取数据
+            for date_str in date_range:
+                self.logger.info(f"获取 {date_str} 的光伏实时总出力数据")
+                
+                # 获取请求参数
+                request_params = self.get_request_params(date_str)
+                
+                # 发送请求
+                response_text = self.send_request(
+                    url=request_params['url'],
+                    method=request_params['method'],
+                    headers=request_params['headers'],
+                    params=request_params['params'],
+                    data=request_params['data'],
+                    cookies=request_params['cookies']
+                )
+                
+                if not response_text:
+                    self.logger.warning(f"获取 {date_str} 的数据失败，跳过")
+                    continue
+                
+                # 解析响应
+                df = self.parse_response(response_text, date_str)
+                
+                if not df.empty:
+                    # 不再过滤任何日期的v96点（下一天的00:00）
+                    # 我们会在后面的合并和去重步骤中处理重复的数据点
+                    all_data.append(df)
+                else:
+                    self.logger.warning(f"解析 {date_str} 的数据失败，跳过")
+            
+            # 如果有数据，合并所有日期的数据
+            if all_data:
+                combined_df = pd.concat(all_data, ignore_index=True)
+                self.logger.info(f"总共获取了 {len(combined_df)} 条记录")
+                
+                # 按照日期时间排序
+                combined_df = combined_df.sort_values(by='date_time')
+                
+                # 检查是否有重复的数据点
+                duplicates = combined_df.duplicated(subset=['date_time'], keep=False)
+                if duplicates.any():
+                    self.logger.warning(f"发现 {duplicates.sum()} 条重复的数据点")
+                    # 保留最后出现的重复项
+                    combined_df = combined_df.drop_duplicates(subset=['date_time'], keep='last')
+                    self.logger.info(f"删除重复数据点后，剩余 {len(combined_df)} 条记录")
+                
+                return combined_df
             else:
-                self.logger.warning(f"未获取到 {current_date} 的负荷数据，可能是官方尚未发布该日数据")
-                missing_dates.append(current_date)
-            
-            # 增加一天
-            current_dt += timedelta(days=1)
-        
-        # 如果有缺失的日期，输出汇总信息
-        if missing_dates:
-            self.logger.warning(f"以下日期的数据获取失败或为空: {', '.join(missing_dates)}")
-        
-        # 如果所有日期都失败，则返回空的DataFrame
-        if all_data.empty:
-            self.logger.error(f"所有日期 {start_date} 至 {end_date} 的数据获取失败")
+                self.logger.warning("未获取到任何数据")
+                
+                return pd.DataFrame()
+        except Exception as e:
+            self.logger.error(f"获取数据异常: {e}", exc_info=True)
             return pd.DataFrame()
-        
-        # 获取成功，返回合并后的数据
-        self.logger.info(f"总共获取了 {len(all_data)} 条数据")
-        
-        # 对数据进行排序，确保时间戳是有序的
-        all_data = all_data.sort_values(by='date_time')
-        
-        return all_data
     
     def save_to_db(self, df, update_columns=None):
         """
@@ -359,19 +374,34 @@ class ActualLoadCrawler(JSONCrawler):
             update_columns: 当记录已存在时要更新的列，默认为None（更新所有列）
         
         Returns:
-            success: 保存是否成功
+            success: 是否保存成功
         """
+        if df.empty:
+            self.logger.warning("没有数据需要保存")
+            return False
+        
+        # 如果未指定要更新的列，则更新所有列
+        if update_columns is None:
+            update_columns = [col for col in df.columns if col != 'date_time']
+        
         try:
-            # 保存数据到数据库
-            return save_to_db(df, table_name=self.target_table, update_columns=update_columns)
+            # 调用工具函数保存数据
+            result = save_to_db(df, self.target_table, update_columns)
+            
+            if result:
+                self.logger.info(f"成功将 {len(df)} 条记录保存到表 {self.target_table}")
+            else:
+                self.logger.error("保存数据失败")
+            
+            return result
         except Exception as e:
-            self.logger.error(f"保存数据失败: {e}")
+            self.logger.error(f"保存数据异常: {e}", exc_info=True)
             return False
 
-
-async def crawl_actual_load_for_date(date_str, target_table=None, cookie=None):
+# 异步函数，用于抓取指定日期的光伏实时总出力数据
+async def crawl_actual_solar_output_for_date(date_str, target_table=None, cookie=None):
     """
-    爬取指定日期的实际负荷数据
+    抓取指定日期的光伏实时总出力数据
     
     Args:
         date_str: 日期字符串，格式为YYYY-MM-DD
@@ -379,29 +409,35 @@ async def crawl_actual_load_for_date(date_str, target_table=None, cookie=None):
         cookie: API请求的Cookie，如果提供则使用此Cookie
     
     Returns:
-        success: 爬取是否成功
+        success: 是否抓取成功
     """
-    # 创建爬虫实例
-    crawler = ActualLoadCrawler(target_table=target_table, cookie=cookie)
+    logger = setup_logger('crawl_actual_solar_output')
+    logger.info(f"抓取 {date_str} 的光伏实时总出力数据")
     
-    # 获取数据
-    df = crawler.fetch_data(date_str)
-    
-    # 检查是否成功获取数据
-    if df.empty:
+    try:
+        # 创建爬虫实例
+        crawler = ActualSolarOutputCrawler(target_table=target_table, cookie=cookie)
+        
+        # 获取数据
+        df = crawler.fetch_data(date_str)
+        
+        if not df.empty:
+            # 保存数据到数据库
+            update_columns = [col for col in df.columns if col != 'date_time']
+            success = crawler.save_to_db(df, update_columns=update_columns)
+            
+            return success
+        else:
+            logger.warning(f"未获取到 {date_str} 的光伏实时总出力数据")
+            return False
+    except Exception as e:
+        logger.error(f"抓取 {date_str} 的光伏实时总出力数据异常: {e}", exc_info=True)
         return False
-    
-    # 获取需要更新的列
-    update_columns = list(df.columns)
-    update_columns.remove('date_time')  # 不更新date_time列
-    
-    # 保存到数据库
-    return crawler.save_to_db(df, update_columns=update_columns)
 
-
+# 异步函数，用于抓取历史数据
 async def run_historical_crawl(start_date, end_date, target_table=None, cookie=None):
     """
-    运行历史数据爬取
+    抓取历史数据
     
     Args:
         start_date: 开始日期，格式为YYYY-MM-DD
@@ -410,67 +446,61 @@ async def run_historical_crawl(start_date, end_date, target_table=None, cookie=N
         cookie: API请求的Cookie，如果提供则使用此Cookie
     
     Returns:
-        success: 爬取是否成功
+        success: 是否抓取成功
     """
-    # 创建爬虫实例
-    crawler = ActualLoadCrawler(target_table=target_table, cookie=cookie)
+    logger = setup_logger('run_historical_crawl')
+    logger.info(f"抓取历史数据: {start_date} 至 {end_date}")
     
-    # 获取数据
-    df = crawler.fetch_data(start_date, end_date)
-    
-    # 检查是否成功获取数据
-    if df.empty:
+    try:
+        # 创建爬虫实例
+        crawler = ActualSolarOutputCrawler(target_table=target_table, cookie=cookie)
+        
+        # 获取数据
+        df = crawler.fetch_data(start_date, end_date)
+        
+        if not df.empty:
+            # 保存数据到数据库
+            update_columns = [col for col in df.columns if col != 'date_time']
+            success = crawler.save_to_db(df, update_columns=update_columns)
+            
+            return success
+        else:
+            logger.warning(f"未获取到 {start_date} 至 {end_date} 的历史数据")
+            return False
+    except Exception as e:
+        logger.error(f"抓取历史数据异常: {e}", exc_info=True)
         return False
-    
-    # 获取需要更新的列
-    update_columns = list(df.columns)
-    update_columns.remove('date_time')  # 不更新date_time列
-    
-    # 保存到数据库
-    return crawler.save_to_db(df, update_columns=update_columns)
 
-
+# 异步函数，用于每日抓取数据
 async def run_daily_crawl(target_table=None, retry_days=3, cookie=None):
     """
-    运行每日爬取，会尝试获取最近几天的数据
+    每日抓取数据
     
     Args:
         target_table: 目标数据表名，默认使用config.py中的配置
-        retry_days: 如果当天没有数据，则尝试获取之前几天的数据
+        retry_days: 重试天数，如果当天数据不可用，会尝试抓取前几天的数据
         cookie: API请求的Cookie，如果提供则使用此Cookie
     
     Returns:
-        success: 爬取是否成功
+        success: 是否抓取成功
     """
-    logger = setup_logger('actual_load_daily')
-    
-    # 创建爬虫实例
-    crawler = ActualLoadCrawler(target_table=target_table, cookie=cookie)
+    logger = setup_logger('run_daily_crawl')
+    logger.info("开始每日抓取光伏实时总出力数据")
     
     # 获取当前日期
-    today = datetime.now().strftime('%Y-%m-%d')
+    current_date = datetime.now()
     
-    # 尝试获取当天的数据
-    df = crawler.fetch_data(today)
-    
-    # 如果当天没有数据，尝试获取之前几天的数据
-    if df.empty:
-        logger.warning(f"当天 {today} 没有数据，尝试获取之前 {retry_days} 天的数据")
+    # 尝试抓取当天和前几天的数据
+    for i in range(retry_days):
+        date_str = (current_date - timedelta(days=i)).strftime('%Y-%m-%d')
+        logger.info(f"尝试抓取 {date_str} 的数据")
         
-        # 计算开始日期
-        start_date = (datetime.now() - timedelta(days=retry_days)).strftime('%Y-%m-%d')
+        # 抓取数据
+        success = await crawl_actual_solar_output_for_date(date_str, target_table=target_table, cookie=cookie)
         
-        # 获取数据
-        df = crawler.fetch_data(start_date, today)
+        if success:
+            logger.info(f"成功抓取 {date_str} 的数据")
+            return True
     
-    # 检查是否成功获取数据
-    if df.empty:
-        logger.error(f"无法获取最近 {retry_days + 1} 天的实际负荷数据，爬取失败")
-        return False
-    
-    # 获取需要更新的列
-    update_columns = list(df.columns)
-    update_columns.remove('date_time')  # 不更新date_time列
-    
-    # 保存到数据库
-    return crawler.save_to_db(df, update_columns=update_columns) 
+    logger.warning(f"未能成功抓取最近 {retry_days} 天的数据")
+    return False 

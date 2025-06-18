@@ -338,4 +338,34 @@ def check_table_structure(table_name, required_columns):
         return False
     finally:
         if engine:
-            engine.dispose() 
+            engine.dispose()
+
+def get_test_db_connection():
+    """
+    获取测试数据库连接
+    
+    Returns:
+        connection: 数据库连接
+    """
+    try:
+        # 使用pub_tools.db_tools中的函数获取数据库连接
+        engine, metadata = get_db_connection(DB_CONFIG)
+        logger.info("数据库连接成功")
+        return engine
+    except Exception as e:
+        logger.error(f"数据库连接失败: {e}")
+        return None
+
+def close_db_connection(engine):
+    """
+    关闭数据库连接
+    
+    Args:
+        engine: 数据库连接
+    """
+    if engine:
+        try:
+            release_db_connection(engine)
+            logger.info("数据库连接已关闭")
+        except Exception as e:
+            logger.error(f"关闭数据库连接失败: {e}") 

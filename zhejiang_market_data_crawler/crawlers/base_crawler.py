@@ -19,12 +19,10 @@ class BaseCrawler(ABC):
         初始化爬虫
         
         Args:
-            name: 爬虫名称，用于日志记录和临时文件命名
+            name: 爬虫名称，用于日志记录
         """
         self.name = name
         self.logger = setup_logger(f'crawler.{name}')
-        self.temp_dir = os.path.join(DATA_DIR, 'temp')
-        os.makedirs(self.temp_dir, exist_ok=True)
     
     @abstractmethod
     def fetch_data(self, start_date=None, end_date=None):
@@ -118,17 +116,7 @@ class BaseCrawler(ABC):
             self.logger.error(f"爬虫 {self.name} 运行失败: {e}", exc_info=True)
             return False
     
-    def get_temp_file_path(self, filename):
-        """
-        获取临时文件路径
-        
-        Args:
-            filename: 文件名
-        
-        Returns:
-            path: 临时文件路径
-        """
-        return os.path.join(self.temp_dir, f"{self.name}_{filename}")
+    # 临时文件功能已移除
     
     def format_date(self, date_obj=None):
         """

@@ -21,6 +21,21 @@ from crawlers.actual_load_crawler import ActualLoadCrawler
 from crawlers.system_backup_crawler import SystemBackupCrawler
 from crawlers.total_generation_forecast_crawler import TotalGenerationForecastCrawler
 from crawlers.external_power_plan_crawler import ExternalPowerPlanCrawler
+from crawlers.non_market_solar_forecast_crawler import NonMarketSolarForecastCrawler
+from crawlers.non_market_wind_forecast_crawler import NonMarketWindForecastCrawler
+from crawlers.non_market_nuclear_forecast_crawler import NonMarketNuclearForecastCrawler
+from crawlers.non_market_hydro_forecast_crawler import NonMarketHydroForecastCrawler
+from crawlers.day_ahead_solar_total_forecast_crawler import DayAheadSolarTotalForecastCrawler
+from crawlers.day_ahead_wind_total_forecast_crawler import DayAheadWindTotalForecastCrawler
+from crawlers.week_ahead_pumped_storage_forecast_crawler import WeekAheadPumpedStorageForecastCrawler
+from crawlers.day_ahead_hydro_total_forecast_crawler import DayAheadHydroTotalForecastCrawler
+from crawlers.day_ahead_pumped_storage_forecast_crawler import DayAheadPumpedStorageForecastCrawler
+from crawlers.actual_total_generation_crawler import ActualTotalGenerationCrawler
+from crawlers.actual_solar_output_crawler import ActualSolarOutputCrawler
+from crawlers.actual_wind_output_crawler import ActualWindOutputCrawler
+from crawlers.actual_hydro_output_crawler import ActualHydroOutputCrawler
+from crawlers.actual_pumped_storage_output_crawler import ActualPumpedStorageOutputCrawler
+from crawlers.non_market_total_output_crawler import NonMarketTotalOutputCrawler
 
 # 设置日志记录器
 logger = setup_logger('main')
@@ -56,6 +71,81 @@ CRAWLERS = [
     {
         'name': '外来电受电计划爬虫',
         'crawler': ExternalPowerPlanCrawler,
+        'params': {}
+    },
+    {
+        'name': '非市场光伏出力预测爬虫',
+        'crawler': NonMarketSolarForecastCrawler,
+        'params': {}
+    },
+    {
+        'name': '非市场风电出力预测爬虫',
+        'crawler': NonMarketWindForecastCrawler,
+        'params': {}
+    },
+    {
+        'name': '非市场核电出力预测爬虫',
+        'crawler': NonMarketNuclearForecastCrawler,
+        'params': {}
+    },
+    {
+        'name': '非市场水电出力预测爬虫',
+        'crawler': NonMarketHydroForecastCrawler,
+        'params': {}
+    },
+    {
+        'name': '光伏总出力预测爬虫',
+        'crawler': DayAheadSolarTotalForecastCrawler,
+        'params': {}
+    },
+    {
+        'name': '风电总出力预测爬虫',
+        'crawler': DayAheadWindTotalForecastCrawler,
+        'params': {}
+    },
+    {
+        'name': '抽蓄总出力预测爬虫',
+        'crawler': WeekAheadPumpedStorageForecastCrawler,
+        'params': {}
+    },
+    {
+        'name': '水电总出力预测爬虫',
+        'crawler': DayAheadHydroTotalForecastCrawler,
+        'params': {}
+    },
+    {
+        'name': '日抽蓄总出力预测爬虫',
+        'crawler': DayAheadPumpedStorageForecastCrawler,
+        'params': {}
+    },
+    {
+        'name': '发电实时总出力爬虫',
+        'crawler': ActualTotalGenerationCrawler,
+        'params': {}
+    },
+    {
+        'name': '光伏实时总出力爬虫',
+        'crawler': ActualSolarOutputCrawler,
+        'params': {}
+    },
+    {
+        'name': '风电实时总出力爬虫',
+        'crawler': ActualWindOutputCrawler,
+        'params': {}
+    },
+    {
+        'name': '水电实时总出力爬虫',
+        'crawler': ActualHydroOutputCrawler,
+        'params': {}
+    },
+    {
+        'name': '抽蓄实时总出力爬虫',
+        'crawler': ActualPumpedStorageOutputCrawler,
+        'params': {}
+    },
+    {
+        'name': '非市场机组实时总出力爬虫',
+        'crawler': NonMarketTotalOutputCrawler,
         'params': {}
     }
 ]
@@ -185,6 +275,8 @@ def parse_arguments():
                        help='使用并行模式运行爬虫')
     parser.add_argument('--retry', type=int, default=3,
                        help='重试天数，默认为3天')
+    parser.add_argument('--crawler', type=str,
+                       help='只运行指定的爬虫，使用爬虫名称')
     
     return parser.parse_args()
 
@@ -208,8 +300,16 @@ def main():
     
     logger.info(f'开始运行爬虫，时间范围: {start_date} 至 {end_date}')
     
+    # 根据命令行参数筛选爬虫
+    selected_crawlers = CRAWLERS
+    if args.crawler:
+        selected_crawlers = [c for c in CRAWLERS if c['name'] == args.crawler]
+        if not selected_crawlers:
+            logger.error(f'未找到名为 {args.crawler} 的爬虫')
+            return
+    
     # 统计爬虫数量
-    crawler_count = len(CRAWLERS)
+    crawler_count = len(selected_crawlers)
     logger.info(f'共有 {crawler_count} 个爬虫需要运行')
     
     # 记录开始时间
@@ -217,9 +317,9 @@ def main():
     
     # 运行爬虫
     if args.parallel:
-        results = run_all_crawlers_parallel(CRAWLERS, start_date, end_date, retry_days)
+        results = run_all_crawlers_parallel(selected_crawlers, start_date, end_date, retry_days)
     else:
-        results = run_all_crawlers_serial(CRAWLERS, start_date, end_date, retry_days)
+        results = run_all_crawlers_serial(selected_crawlers, start_date, end_date, retry_days)
     
     # 计算运行时间
     end_time = time.time()
