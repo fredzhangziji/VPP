@@ -33,3 +33,5 @@ from .day_ahead_price_crawler import DayAheadPriceCrawler
 from .day_ahead_cleared_volume_crawler import DayAheadClearedVolumeCrawler
 from .real_time_market_price_crawler import RealTimeMarketPriceCrawler
 from .spot_cleared_volume_crawler import SpotClearedVolumeCrawler
+from .fixed_unit_generation_plan_crawler import FixedUnitGenerationPlanCrawler
+from .fixed_unit_generation_plan_crawler import FixedUnitGenerationPlanCrawler

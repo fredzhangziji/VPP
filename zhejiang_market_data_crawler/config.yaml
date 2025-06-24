@@ -9,14 +9,14 @@ database:
 # 目标数据表名
 target_table: 'power_market_data'
 
-# 请求间隔时间（秒）
-request_interval: 2
+# 请求间隔时间（秒）- 设置为3秒的中等等待时间
+request_interval: 3
 
 # 爬虫并发数（如果使用并行）
-concurrency: 5
+concurrency: 3
 
 # 请求超时时间（秒）
-request_timeout: 30
+request_timeout: 60
 
-# 最大重试次数
-max_retries: 3 
+# 最大重试次数 - 增加重试次数
+max_retries: 5 

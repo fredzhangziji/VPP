@@ -47,6 +47,7 @@ try:
     import tests.test_day_ahead_cleared_volume as test_day_ahead_cleared_volume
     import tests.test_real_time_market_price as test_real_time_market_price
     import tests.test_spot_cleared_volume as test_spot_cleared_volume
+    import tests.test_fixed_unit_generation_plan_crawler as test_fixed_unit_generation_plan
     
     logger.info("成功导入测试模块")
 except ImportError as e:
@@ -173,6 +174,10 @@ async def run_all_tests():
     logger.info("===== 运行实时市场出清总电量测试 =====")
     await test_spot_cleared_volume.main()
     
+    # 运行固定出力机组发电计划测试
+    logger.info("===== 运行固定出力机组发电计划测试 =====")
+    await test_fixed_unit_generation_plan.main()
+    
     logger.info("所有测试执行完毕")
 
 async def run_selected_test(test_name):
@@ -249,6 +254,9 @@ async def run_selected_test(test_name):
     elif test_name == "actual_total_generation":
         logger.info("===== 运行实际发电总出力测试 =====")
         await test_actual_total_generation.main()
+    elif test_name == "fixed_plan":
+        logger.info("===== 运行固定出力机组发电计划测试 =====")
+        await test_fixed_unit_generation_plan.main()
     elif test_name == "day_ahead_pumped_storage_forecast":
         logger.info("===== 运行日前抽蓄出力预测测试 =====")
         await test_day_ahead_pumped_storage_forecast.main()

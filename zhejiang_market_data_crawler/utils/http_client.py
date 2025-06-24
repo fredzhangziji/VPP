@@ -37,9 +37,10 @@ class HttpClient:
         # 配置重试策略
         retry_strategy = Retry(
             total=self.max_retries,
-            status_forcelist=[429, 500, 502, 503, 504],
+            status_forcelist=[429, 500, 501, 502, 503, 504],
             allowed_methods=["GET", "POST"],
-            backoff_factor=1
+            backoff_factor=2,  # 增加退避因子，使重试间隔更长
+            respect_retry_after_header=True
         )
         
         adapter = HTTPAdapter(max_retries=retry_strategy)
@@ -61,8 +62,8 @@ class HttpClient:
         elapsed = now - self.last_request_time
         
         if elapsed < self.interval:
-            # 添加一点随机性，避免请求过于规律
-            sleep_time = self.interval - elapsed + random.uniform(0, 1.5)
+            # 添加更多随机性，避免请求过于规律
+            sleep_time = self.interval - elapsed + random.uniform(0.5, 3.0)
             logger.debug(f"等待 {sleep_time:.2f} 秒后发送下一个请求")
             time.sleep(sleep_time)
         

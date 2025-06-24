@@ -44,6 +44,7 @@ from crawlers.day_ahead_price_crawler import DayAheadPriceCrawler
 from crawlers.day_ahead_cleared_volume_crawler import DayAheadClearedVolumeCrawler
 from crawlers.real_time_market_price_crawler import RealTimeMarketPriceCrawler
 from crawlers.spot_cleared_volume_crawler import SpotClearedVolumeCrawler
+from crawlers.fixed_unit_generation_plan_crawler import FixedUnitGenerationPlanCrawler
 
 # 设置日志记录器
 logger = setup_logger('main')
@@ -195,6 +196,11 @@ CRAWLERS = [
         'name': '实时市场出清总电量爬虫',
         'crawler': SpotClearedVolumeCrawler,
         'params': {}
+    },
+    {
+        'name': '固定出力机组发电计划爬虫',
+        'crawler': FixedUnitGenerationPlanCrawler,
+        'params': {}
     }
 ]
 
@@ -227,6 +233,13 @@ def run_crawler(crawler_info, start_date, end_date, retry_days=3):
         
         if result:
             logger.info(f'爬虫 {name} 运行成功')
+            # 添加一行代码，确保所有数据库连接被释放
+            from pub_tools.db_tools import release_db_connection
+            from utils.config import DB_CONFIG
+            from sqlalchemy import create_engine
+            engine = create_engine(f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}?charset=utf8mb4", echo=False)
+            release_db_connection(engine)
+            
             return True
         else:
             logger.warning(f'爬虫 {name} 运行失败')
@@ -234,6 +247,8 @@ def run_crawler(crawler_info, start_date, end_date, retry_days=3):
     except Exception as e:
         logger.error(f'爬虫 {name} 运行异常: {e}', exc_info=True)
         return False
+    finally:
+        logger.info(f'爬虫 {name} 已完成')
 
 
 def run_all_crawlers_parallel(crawlers, start_date, end_date, retry_days=3, max_workers=CONCURRENCY):
@@ -306,11 +321,11 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='浙江电力市场数据爬虫')
     parser.add_argument('--start-date', help='开始日期，格式为YYYY-MM-DD')
     parser.add_argument('--end-date', help='结束日期，格式为YYYY-MM-DD')
-    crawler_help = '要运行的爬虫名称，支持的值：all, week_ahead, day_ahead, actual_load, system_backup, total_generation_forecast, external_power_plan, non_market_solar_forecast, non_market_wind_forecast, non_market_nuclear_forecast, non_market_hydro_forecast, day_ahead_solar_total_forecast, day_ahead_wind_total_forecast, week_ahead_pumped_storage_forecast, day_ahead_hydro_total_forecast, day_ahead_pumped_storage_forecast, actual_total_generation, actual_solar_output, actual_wind_output, actual_hydro_output, actual_pumped_storage_output, non_market_total_output, non_market_solar_output, non_market_wind_output, non_market_nuclear_output, non_market_hydro_output, day_ahead_price, day_ahead_cleared_volume, real_time_market_price, spot_cleared_volume'
+    crawler_help = '要运行的爬虫名称，支持的值：all, week_ahead, day_ahead, actual_load, system_backup, total_generation_forecast, external_power_plan, non_market_solar_forecast, non_market_wind_forecast, non_market_nuclear_forecast, non_market_hydro_forecast, day_ahead_solar_total_forecast, day_ahead_wind_total_forecast, week_ahead_pumped_storage_forecast, day_ahead_hydro_total_forecast, day_ahead_pumped_storage_forecast, actual_total_generation, actual_solar_output, actual_wind_output, actual_hydro_output, actual_pumped_storage_output, non_market_total_output, non_market_solar_output, non_market_wind_output, non_market_nuclear_output, non_market_hydro_output, day_ahead_price, day_ahead_cleared_volume, real_time_market_price, spot_cleared_volume, fixed_plan'
     parser.add_argument('--crawler', help=crawler_help)
     parser.add_argument('--crawlers', dest='crawler', help=crawler_help)  # 添加别名
     parser.add_argument('--retry-days', type=int, default=3, help='重试天数')
-    parser.add_argument('--parallel', action='store_true', help='是否并行运行爬虫')
+    parser.add_argument('--serial', action='store_false', dest='parallel', help='是否串行运行爬虫')
     parser.add_argument('--max-workers', type=int, default=CONCURRENCY, help='最大并行工作线程数')
     return parser.parse_args()
 
@@ -319,6 +334,9 @@ def main():
     """
     主函数
     """
+    # 添加开始计时
+    start_time = time.time()
+    
     args = parse_arguments()
     
     # 设置开始日期和结束日期
@@ -332,9 +350,9 @@ def main():
     if not start_date:
         start_date = (datetime.now() - timedelta(days=retry_days)).strftime('%Y-%m-%d')
     
-    # 如果未指定结束日期，则使用当前日期
+    # 如果未指定结束日期，则使用当前日期加上retry_days天数
     if not end_date:
-        end_date = datetime.now().strftime('%Y-%m-%d')
+        end_date = (datetime.now() + timedelta(days=retry_days)).strftime('%Y-%m-%d')
     
     logger.info(f"开始运行爬虫，时间范围: {start_date} 至 {end_date}")
     
@@ -373,7 +391,8 @@ def main():
             'day_ahead_price': '日前市场出清负荷侧电价爬虫',
             'day_ahead_cleared_volume': '日前市场出清总电量爬虫',
             'real_time_market_price': '实时市场出清负荷侧电价爬虫',
-            'spot_cleared_volume': '实时市场出清总电量爬虫'
+            'spot_cleared_volume': '实时市场出清总电量爬虫',
+            'fixed_plan': '固定出力机组发电计划爬虫'
         }
         
         if args.crawler in crawler_name_map:
@@ -393,6 +412,9 @@ def main():
             logger.error(f"未找到名为 {args.crawler} 的爬虫")
             return
     
+    # 记录运行模式
+    run_mode = "并行" if args.parallel else "串行"
+    
     # 并行运行爬虫
     if args.parallel:
         logger.info(f"并行运行 {len(selected_crawlers)} 个爬虫，最大并行数: {args.max_workers}")
@@ -400,6 +422,13 @@ def main():
     else:
         logger.info(f"串行运行 {len(selected_crawlers)} 个爬虫")
         run_all_crawlers_serial(selected_crawlers, start_date, end_date, retry_days=retry_days)
+    
+    # 添加结束计时
+    end_time = time.time()
+    total_time = end_time - start_time
+    
+    # 记录总运行时间
+    logger.info(f"爬虫运行完成 - 运行模式: {run_mode}, 总运行时间: {total_time:.2f} 秒 ({total_time/60:.2f} 分钟)")
 
 
 if __name__ == '__main__':
