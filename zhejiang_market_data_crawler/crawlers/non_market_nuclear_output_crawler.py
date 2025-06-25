@@ -10,7 +10,6 @@ from .json_crawler import JSONCrawler
 from utils.logger import setup_logger
 from utils.http_client import get, post
 from utils.config import TARGET_TABLE, get_api_cookie
-from utils.db_helper import save_to_db
 
 class NonMarketNuclearOutputCrawler(JSONCrawler):
     """
@@ -308,72 +307,3 @@ class NonMarketNuclearOutputCrawler(JSONCrawler):
         else:
             self.logger.warning("未获取到任何非市场核电实时总出力数据")
             return pd.DataFrame()
-    
-    def save_to_db(self, df, update_columns=None):
-        """
-        保存数据到数据库
-        
-        Args:
-            df: 包含数据的DataFrame
-            update_columns: 当记录已存在时要更新的列，默认为None（更新所有列）
-        
-        Returns:
-            success: 是否保存成功
-        """
-        if df.empty:
-            self.logger.warning("没有数据需要保存")
-            return False
-        
-        try:
-            return save_to_db(df, self.target_table, update_columns=update_columns)
-        except Exception as e:
-            self.logger.error(f"保存数据失败: {e}")
-            return False
-
-async def crawl_non_market_nuclear_output_for_date(date_str, target_table=None, cookie=None):
-    """
-    爬取指定日期的非市场核电实时总出力数据
-    
-    Args:
-        date_str: 日期字符串，格式为YYYY-MM-DD
-        target_table: 目标表名
-        cookie: Cookie字符串
-    
-    Returns:
-        success: 是否成功
-    """
-    crawler = NonMarketNuclearOutputCrawler(target_table=target_table, cookie=cookie)
-    return crawler.run(start_date=date_str, end_date=date_str)
-
-async def run_historical_crawl(start_date, end_date, target_table=None, cookie=None):
-    """
-    爬取历史数据
-    
-    Args:
-        start_date: 开始日期，格式为YYYY-MM-DD
-        end_date: 结束日期，格式为YYYY-MM-DD
-        target_table: 目标表名
-        cookie: Cookie字符串
-    
-    Returns:
-        success: 是否成功
-    """
-    crawler = NonMarketNuclearOutputCrawler(target_table=target_table, cookie=cookie)
-    return crawler.run(start_date=start_date, end_date=end_date)
-
-async def run_daily_crawl(target_table=None, retry_days=3, cookie=None):
-    """
-    运行每日爬取任务
-    
-    Args:
-        target_table: 目标表名
-        retry_days: 重试天数
-        cookie: Cookie字符串
-    
-    Returns:
-        success: 是否成功
-    """
-    today = datetime.now().strftime('%Y-%m-%d')
-    retry_start = (datetime.now() - timedelta(days=retry_days)).strftime('%Y-%m-%d')
-    crawler = NonMarketNuclearOutputCrawler(target_table=target_table, cookie=cookie)
-    return crawler.run(start_date=retry_start, end_date=today) 

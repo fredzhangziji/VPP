@@ -3,23 +3,14 @@
 测试发电实时总出力爬虫
 """
 
-import os
-import sys
 import asyncio
 import pandas as pd
-import json
 import traceback
-from datetime import datetime, timedelta
-
-# 添加项目根目录到系统路径
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+from sqlalchemy import inspect
 from utils.logger import setup_logger
-from utils.config import DB_CONFIG, TARGET_TABLE
+from utils.config import DB_CONFIG
 from pub_tools.db_tools import get_db_connection, release_db_connection
-from crawlers.actual_total_generation_crawler import (
-    ActualTotalGenerationCrawler,
-)
+from crawlers.actual_total_generation_crawler import ActualTotalGenerationCrawler
 
 # 目标表名和字段名
 TABLE_NAME = 'power_market_data'
@@ -39,10 +30,9 @@ def check_db_config():
     logger.info(f"数据库配置: {safe_config}")
     logger.info(f"目标表名: {TABLE_NAME}")
     try:
-        engine, metadata = get_db_connection(DB_CONFIG)
+        engine, _ = get_db_connection(DB_CONFIG)
         logger.info("数据库连接成功")
         connection = engine.connect()
-        from sqlalchemy import inspect
         inspector = inspect(engine)
         tables = inspector.get_table_names()
         if TABLE_NAME in tables:

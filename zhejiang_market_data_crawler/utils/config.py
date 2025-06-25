@@ -21,7 +21,7 @@ TARGET_TABLE = 'power_market_data'
 REQUEST_INTERVAL = 2
 
 # 爬虫并发数（如果使用并发）
-CONCURRENCY = 5
+CONCURRENCY = 3
 
 # 请求超时时间（秒）
 REQUEST_TIMEOUT = 30
@@ -53,8 +53,8 @@ def load_custom_config():
                 if 'target_table' in custom_config:
                     TARGET_TABLE = custom_config['target_table']
 
-# API Cookie配置 - 所有爬虫共用一个Cookie
-API_COOKIE = "BIGipServerxyddljy_newmain_20080=1873222060.28750.0000; Gray-Tag=79793033; ClientTag=OUTNET_BROWSE; B-Digest=f1a823aaaaafe40e113c7f04dd72c289faf86252c4a9b57cf1d3c9e12547f9ad; P-Digest=70848ab0714944fc774f395610bf3288c028d6ec44badf47eae82ccf958449c8; CurrentRoute=/dashboard; X-Token=undefined; sidebarStatus=0; Huyi3DKbjTb1O=606_J_RlMbS8w.zV8fD9nR2.4F4.QULap7xzd50sC3JIof9xK2TPxJCTG4zbhGsVMrLvDCBl2w29OGag9lP8sfMq; Huyi3DKbjTb1P=0HAweT7j93ts4ibA3u3Foey54328edtoJctYi8Orj2yumtdiFmgPp5FZuQI4naqzJziQIcpn9NnKtxMwfYyvHH6gdVANgVcfevIHAkOiOFOoK8tbtvcMwQNK1tPY7GiZsC2rW60hLEt_OemcffAtgFUFQ9lN0dEC4smyK7XhsGhZY92xkhVI3raOC8yaX_PLhWKxQL5nG_fpSMmHx4Ie25QHOFZs4BIPF5ylEXwPDJUbrD04Wx_RuDZt_43_XB8OsSkW16zK41WDFZ2RPMhxgr0MDgniuyxxb4EH47IDhUo4yPFfpPamuO6PzhV3dZgEM7YvbsliPDAJH_POIBjAVt6Zau_QGH_Jr0GVjS.NECaVJQMa00Cb97QGzIMdeI2GuS5P79Sh9wFumqXpyUWRcuo49T65rrBLsb0bRDukbjR6gC4NZBuiWxt4q66wwxY45Kx8Zeq0DbBQEhUFber5YxG; Admin-Token=137858cc97bd45d57d65e792baa6f8b051ae4158684be628c8b8cf1a846106770f5ebfdbfed3e09dc83971bff90678a1.1899c5732daa3da09014ce88e1c4f72e160f7877; X-Ticket=137858cc97bd45d57d65e792baa6f8b051ae4158684be628c8b8cf1a846106770f5ebfdbfed3e09dc83971bff90678a1.1899c5732daa3da09014ce88e1c4f72e160f7877"
+# 临时硬编码API Cookie配置 - 所有爬虫共用一个Cookie
+API_COOKIE = "BIGipServerxyddljy_newmain_20080=1873222060.28750.0000; Gray-Tag=79793033; ClientTag=OUTNET_BROWSE; B-Digest=f1a823aaaaafe40e113c7f04dd72c289faf86252c4a9b57cf1d3c9e12547f9ad; P-Digest=70848ab0714944fc774f395610bf3288c028d6ec44badf47eae82ccf958449c8; CurrentRoute=/dashboard; X-Token=undefined; sidebarStatus=0; Huyi3DKbjTb1O=606_J_RlMbS8w.zV8fD9nR2.4F4.QULap7xzd50sC3JIof9xK2TPxJCTG4zbhGsVMrLvDCBl2w29OGag9lP8sfMq; Admin-Token=137858cc97bd45d57d65e792baa6f8b070ab47ac5a792844de7dce5d16034b8ecc4556bd90841cc1e47e39d08d989df9.adb65539d03d5990fdef897675c0154de37e2c55; X-Ticket=137858cc97bd45d57d65e792baa6f8b070ab47ac5a792844de7dce5d16034b8ecc4556bd90841cc1e47e39d08d989df9.adb65539d03d5990fdef897675c0154de37e2c55"
 
 def get_api_cookie():
     """

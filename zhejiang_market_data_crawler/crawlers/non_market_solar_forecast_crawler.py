@@ -10,7 +10,6 @@ from .json_crawler import JSONCrawler
 from utils.logger import setup_logger
 from utils.http_client import get, post
 from utils.config import TARGET_TABLE, get_api_cookie
-from utils.db_helper import save_to_db
 
 class NonMarketSolarForecastCrawler(JSONCrawler):
     """
@@ -192,27 +191,3 @@ class NonMarketSolarForecastCrawler(JSONCrawler):
         else:
             self.logger.warning("未获取到任何非市场光伏出力预测数据")
             return pd.DataFrame()
-
-    def save_to_db(self, df, update_columns=None):
-        if df.empty:
-            self.logger.warning("没有数据需要保存")
-            return False
-        try:
-            return save_to_db(df, self.target_table, update_columns=update_columns)
-        except Exception as e:
-            self.logger.error(f"保存数据失败: {e}")
-            return False
-
-async def crawl_non_market_solar_forecast_for_date(date_str, target_table=None, cookie=None):
-    crawler = NonMarketSolarForecastCrawler(target_table=target_table, cookie=cookie)
-    return crawler.run(start_date=date_str, end_date=date_str)
-
-async def run_historical_crawl(start_date, end_date, target_table=None, cookie=None):
-    crawler = NonMarketSolarForecastCrawler(target_table=target_table, cookie=cookie)
-    return crawler.run(start_date=start_date, end_date=end_date)
-
-async def run_daily_crawl(target_table=None, retry_days=3, cookie=None):
-    today = datetime.now().strftime('%Y-%m-%d')
-    retry_start = (datetime.now() - timedelta(days=retry_days)).strftime('%Y-%m-%d')
-    crawler = NonMarketSolarForecastCrawler(target_table=target_table, cookie=cookie)
-    return crawler.run(start_date=retry_start, end_date=today) 

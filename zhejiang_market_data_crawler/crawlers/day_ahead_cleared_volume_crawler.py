@@ -5,13 +5,11 @@
 
 import json
 import pandas as pd
-import asyncio
 from datetime import datetime, timedelta
 from .json_crawler import JSONCrawler
 from utils.logger import setup_logger
 from utils.http_client import get, post
 from utils.config import TARGET_TABLE, get_api_cookie
-from utils.db_helper import save_to_db
 import logging
 
 class DayAheadClearedVolumeCrawler(JSONCrawler):
@@ -474,142 +472,3 @@ class DayAheadClearedVolumeCrawler(JSONCrawler):
         else:
             self.logger.warning("未获取到任何数据")
             return pd.DataFrame()
-    
-    def save_to_db(self, df, update_columns=None):
-        """
-        保存数据到数据库
-        
-        Args:
-            df: 包含数据的DataFrame
-            update_columns: 当记录已存在时要更新的列，默认为None（更新所有列）
-        
-        Returns:
-            success: 是否保存成功
-        """
-        if df.empty:
-            self.logger.warning("没有数据需要保存")
-            return False
-        
-        self.logger.info(f"将 {len(df)} 条记录保存到表 {self.target_table}")
-        
-        try:
-            # 确保数据类型正确
-            df[self.field_name] = df[self.field_name].astype(float)
-            
-            # 保存到数据库
-            success = save_to_db(df, self.target_table, update_columns=update_columns)
-            
-            if success:
-                self.logger.info("数据保存成功")
-            else:
-                self.logger.error("数据保存失败")
-            
-            return success
-        except Exception as e:
-            self.logger.error(f"保存数据时发生异常: {e}")
-            return False
-
-
-# 异步函数，用于爬取单一日期的数据
-async def crawl_day_ahead_cleared_volume_for_date(date_str, target_table=None, cookie=None):
-    """
-    异步爬取指定日期的日前市场出清总电量数据
-    
-    Args:
-        date_str: 日期字符串，格式为YYYY-MM-DD
-        target_table: 目标数据表名，默认使用config.py中的配置
-        cookie: API请求的Cookie，如果提供则使用此Cookie
-    
-    Returns:
-        df: 包含数据的DataFrame
-    """
-    logger = setup_logger('crawler.day_ahead_cleared_volume.async')
-    logger.info(f"异步爬取 {date_str} 的日前市场出清总电量数据")
-    
-    crawler = DayAheadClearedVolumeCrawler(target_table=target_table, cookie=cookie)
-    df = crawler.fetch_data(date_str)
-    
-    if df is not None and not df.empty:
-        logger.info(f"成功爬取 {date_str} 的数据，共 {len(df)} 条记录")
-        
-        # 保存到数据库
-        update_columns = [col for col in df.columns if col != 'date_time']
-        crawler.save_to_db(df, update_columns=update_columns)
-        
-        return df
-    else:
-        logger.warning(f"爬取 {date_str} 的数据失败")
-        return pd.DataFrame()
-
-# 异步函数，用于爬取历史数据
-async def run_historical_crawl(start_date, end_date, target_table=None, cookie=None):
-    """
-    异步爬取指定日期范围的历史数据
-    
-    Args:
-        start_date: 开始日期，格式为YYYY-MM-DD
-        end_date: 结束日期，格式为YYYY-MM-DD
-        target_table: 目标数据表名，默认使用config.py中的配置
-        cookie: API请求的Cookie，如果提供则使用此Cookie
-    
-    Returns:
-        success: 是否成功爬取所有数据
-    """
-    logger = setup_logger('crawler.day_ahead_cleared_volume.historical')
-    logger.info(f"异步爬取历史数据，时间范围: {start_date} 至 {end_date}")
-    
-    # 计算日期范围
-    start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
-    end_datetime = datetime.strptime(end_date, '%Y-%m-%d')
-    date_range = []
-    
-    current_datetime = start_datetime
-    while current_datetime <= end_datetime:
-        date_range.append(current_datetime.strftime('%Y-%m-%d'))
-        current_datetime += timedelta(days=1)
-    
-    logger.info(f"将爬取以下日期的数据: {date_range}")
-    
-    success_count = 0
-    
-    # 遍历日期范围
-    for date_str in date_range:
-        df = await crawl_day_ahead_cleared_volume_for_date(date_str, target_table, cookie)
-        
-        if not df.empty:
-            success_count += 1
-        
-        # 避免请求过于频繁
-        await asyncio.sleep(1)
-    
-    success_rate = success_count / len(date_range) if date_range else 0
-    logger.info(f"历史数据爬取完成，成功率: {success_rate:.2%} ({success_count}/{len(date_range)})")
-    
-    return success_rate == 1.0
-
-# 异步函数，用于每日定时爬取数据
-async def run_daily_crawl(target_table=None, retry_days=3, cookie=None):
-    """
-    异步爬取当天和过去几天的数据
-    
-    Args:
-        target_table: 目标数据表名，默认使用config.py中的配置
-        retry_days: 重试天数，默认为3天
-        cookie: API请求的Cookie，如果提供则使用此Cookie
-    
-    Returns:
-        success: 是否成功爬取所有数据
-    """
-    logger = setup_logger('crawler.day_ahead_cleared_volume.daily')
-    logger.info(f"开始每日定时爬取，将尝试获取当天和过去 {retry_days} 天的数据")
-    
-    # 计算日期范围
-    end_date = datetime.now()
-    start_date = end_date - timedelta(days=retry_days)
-    
-    # 格式化日期
-    start_date_str = start_date.strftime('%Y-%m-%d')
-    end_date_str = end_date.strftime('%Y-%m-%d')
-    
-    # 调用历史爬取函数
-    return await run_historical_crawl(start_date_str, end_date_str, target_table, cookie)

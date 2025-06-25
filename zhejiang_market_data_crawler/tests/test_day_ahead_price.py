@@ -3,26 +3,14 @@
 测试日前市场出清负荷侧电价爬虫
 """
 
-import os
-import sys
 import asyncio
 import pandas as pd
-import json
 import traceback
-from datetime import datetime, timedelta
-
-# 添加项目根目录到系统路径
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from utils.logger import setup_logger
-from utils.config import DB_CONFIG, TARGET_TABLE
+from utils.config import DB_CONFIG
 from pub_tools.db_tools import get_db_connection, release_db_connection
-from crawlers.day_ahead_price_crawler import (
-    DayAheadPriceCrawler, 
-    crawl_day_ahead_price_for_date,
-    run_historical_crawl,
-    run_daily_crawl
-)
+from crawlers.day_ahead_price_crawler import DayAheadPriceCrawler
+from sqlalchemy import inspect
 
 # 目标表名和字段名
 TABLE_NAME = 'power_market_data'
@@ -44,12 +32,11 @@ def check_db_config():
     
     try:
         # 尝试连接数据库
-        engine, metadata = get_db_connection(DB_CONFIG)
+        engine, _ = get_db_connection(DB_CONFIG)
         logger.info("数据库连接成功")
         
         # 检查表是否存在
         connection = engine.connect()
-        from sqlalchemy import inspect
         inspector = inspect(engine)
         tables = inspector.get_table_names()
         

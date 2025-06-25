@@ -3,26 +3,14 @@
 测试周前负荷预测爬虫
 """
 
-import os
-import sys
 import asyncio
 import pandas as pd
-import json
 import traceback
-from datetime import datetime, timedelta
-
-# 添加项目根目录到系统路径
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
+from sqlalchemy import inspect, Column, DateTime, Float, MetaData, Table
 from utils.logger import setup_logger
-from utils.config import DB_CONFIG, TARGET_TABLE
+from utils.config import DB_CONFIG
 from pub_tools.db_tools import get_db_connection, release_db_connection
-from crawlers.week_ahead_load_crawler import (
-    WeekAheadLoadCrawler, 
-    crawl_week_ahead_load_for_date,
-    run_historical_crawl,
-    run_daily_crawl
-)
+from crawlers.week_ahead_load_crawler import WeekAheadLoadCrawler
 
 # 目标表名和字段名
 TABLE_NAME = 'power_market_data'
@@ -39,16 +27,14 @@ def check_db_config():
     logger.info("检查数据库配置")
     logger.info(f"数据库配置: {DB_CONFIG}")
     logger.info(f"目标表名: {TABLE_NAME}")
-    logger.info(f"字段名: {FIELD_NAME}")
     
     try:
         # 尝试连接数据库
-        engine, metadata = get_db_connection(DB_CONFIG)
+        engine, _ = get_db_connection(DB_CONFIG)
         logger.info("数据库连接成功")
         
         # 检查表是否存在
         connection = engine.connect()
-        from sqlalchemy import inspect
         inspector = inspect(engine)
         tables = inspector.get_table_names()
         
@@ -69,9 +55,6 @@ def check_db_config():
             logger.error(f"表 {TABLE_NAME} 不存在，需要创建")
             
             # 尝试创建表
-            from sqlalchemy import Column, DateTime, Float, MetaData, Table
-            
-            # 创建表
             metadata = MetaData()
             table_columns = [
                 Column('date_time', DateTime, primary_key=True)

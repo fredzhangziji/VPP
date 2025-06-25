@@ -3,7 +3,6 @@ JSON爬虫，用于处理JSON格式的数据
 """
 
 import json
-import pandas as pd
 from abc import abstractmethod
 from .base_crawler import BaseCrawler
 from utils.http_client import get, post

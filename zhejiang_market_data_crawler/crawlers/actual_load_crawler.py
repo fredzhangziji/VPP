@@ -5,13 +5,11 @@
 
 import json
 import pandas as pd
-import asyncio
 from datetime import datetime, timedelta
 from .json_crawler import JSONCrawler
 from utils.logger import setup_logger
 from utils.http_client import get, post
 from utils.config import TARGET_TABLE, get_api_cookie
-from utils.db_helper import save_to_db
 
 class ActualLoadCrawler(JSONCrawler):
     """实际负荷爬虫"""
@@ -349,128 +347,3 @@ class ActualLoadCrawler(JSONCrawler):
         all_data = all_data.sort_values(by='date_time')
         
         return all_data
-    
-    def save_to_db(self, df, update_columns=None):
-        """
-        保存数据到数据库
-        
-        Args:
-            df: 包含数据的DataFrame
-            update_columns: 当记录已存在时要更新的列，默认为None（更新所有列）
-        
-        Returns:
-            success: 保存是否成功
-        """
-        try:
-            # 保存数据到数据库
-            return save_to_db(df, table_name=self.target_table, update_columns=update_columns)
-        except Exception as e:
-            self.logger.error(f"保存数据失败: {e}")
-            return False
-
-
-async def crawl_actual_load_for_date(date_str, target_table=None, cookie=None):
-    """
-    爬取指定日期的实际负荷数据
-    
-    Args:
-        date_str: 日期字符串，格式为YYYY-MM-DD
-        target_table: 目标数据表名，默认使用config.py中的配置
-        cookie: API请求的Cookie，如果提供则使用此Cookie
-    
-    Returns:
-        success: 爬取是否成功
-    """
-    # 创建爬虫实例
-    crawler = ActualLoadCrawler(target_table=target_table, cookie=cookie)
-    
-    # 获取数据
-    df = crawler.fetch_data(date_str)
-    
-    # 检查是否成功获取数据
-    if df.empty:
-        return False
-    
-    # 获取需要更新的列
-    update_columns = list(df.columns)
-    update_columns.remove('date_time')  # 不更新date_time列
-    
-    # 保存到数据库
-    return crawler.save_to_db(df, update_columns=update_columns)
-
-
-async def run_historical_crawl(start_date, end_date, target_table=None, cookie=None):
-    """
-    运行历史数据爬取
-    
-    Args:
-        start_date: 开始日期，格式为YYYY-MM-DD
-        end_date: 结束日期，格式为YYYY-MM-DD
-        target_table: 目标数据表名，默认使用config.py中的配置
-        cookie: API请求的Cookie，如果提供则使用此Cookie
-    
-    Returns:
-        success: 爬取是否成功
-    """
-    # 创建爬虫实例
-    crawler = ActualLoadCrawler(target_table=target_table, cookie=cookie)
-    
-    # 获取数据
-    df = crawler.fetch_data(start_date, end_date)
-    
-    # 检查是否成功获取数据
-    if df.empty:
-        return False
-    
-    # 获取需要更新的列
-    update_columns = list(df.columns)
-    update_columns.remove('date_time')  # 不更新date_time列
-    
-    # 保存到数据库
-    return crawler.save_to_db(df, update_columns=update_columns)
-
-
-async def run_daily_crawl(target_table=None, retry_days=3, cookie=None):
-    """
-    运行每日爬取，会尝试获取最近几天的数据
-    
-    Args:
-        target_table: 目标数据表名，默认使用config.py中的配置
-        retry_days: 如果当天没有数据，则尝试获取之前几天的数据
-        cookie: API请求的Cookie，如果提供则使用此Cookie
-    
-    Returns:
-        success: 爬取是否成功
-    """
-    logger = setup_logger('actual_load_daily')
-    
-    # 创建爬虫实例
-    crawler = ActualLoadCrawler(target_table=target_table, cookie=cookie)
-    
-    # 获取当前日期
-    today = datetime.now().strftime('%Y-%m-%d')
-    
-    # 尝试获取当天的数据
-    df = crawler.fetch_data(today)
-    
-    # 如果当天没有数据，尝试获取之前几天的数据
-    if df.empty:
-        logger.warning(f"当天 {today} 没有数据，尝试获取之前 {retry_days} 天的数据")
-        
-        # 计算开始日期
-        start_date = (datetime.now() - timedelta(days=retry_days)).strftime('%Y-%m-%d')
-        
-        # 获取数据
-        df = crawler.fetch_data(start_date, today)
-    
-    # 检查是否成功获取数据
-    if df.empty:
-        logger.error(f"无法获取最近 {retry_days + 1} 天的实际负荷数据，爬取失败")
-        return False
-    
-    # 获取需要更新的列
-    update_columns = list(df.columns)
-    update_columns.remove('date_time')  # 不更新date_time列
-    
-    # 保存到数据库
-    return crawler.save_to_db(df, update_columns=update_columns) 

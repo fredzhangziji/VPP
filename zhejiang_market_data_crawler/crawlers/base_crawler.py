@@ -2,14 +2,10 @@
 爬虫基类，定义通用方法和接口
 """
 
-import os
-import pandas as pd
 from abc import ABC, abstractmethod
 from datetime import datetime
 from utils.logger import setup_logger
-from utils.http_client import get, post, download_file
 from utils.db_helper import save_to_db
-from utils.config import DATA_DIR
 
 class BaseCrawler(ABC):
     """爬虫基类，定义通用方法和接口"""
@@ -64,7 +60,7 @@ class BaseCrawler(ABC):
         """
         pass
     
-    def save_to_db(self, df, update_columns=None):
+    def save_to_db(self, df, table_name=None, update_columns=None):
         """
         保存数据到数据库
         
@@ -80,7 +76,7 @@ class BaseCrawler(ABC):
             return False
         
         try:
-            return save_to_db(df, update_columns=update_columns)
+            return save_to_db(df, table_name=table_name, update_columns=update_columns)
         except Exception as e:
             self.logger.error(f"保存数据失败: {e}")
             return False
@@ -115,9 +111,7 @@ class BaseCrawler(ABC):
         except Exception as e:
             self.logger.error(f"爬虫 {self.name} 运行失败: {e}", exc_info=True)
             return False
-    
-    # 临时文件功能已移除
-    
+        
     def format_date(self, date_obj=None):
         """
         格式化日期

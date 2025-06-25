@@ -8,7 +8,6 @@ import time
 import argparse
 import concurrent.futures
 from datetime import datetime, timedelta
-import pandas as pd
 
 # 添加项目根目录到系统路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -215,7 +214,7 @@ def run_crawler(crawler_info, start_date, end_date, retry_days=3):
         retry_days: 重试天数
 
     Returns:
-        bool: 爬虫是否成功运行
+        DataFrame: 爬虫获取的数据
     """
     name = crawler_info['name']
     crawler_class = crawler_info['crawler']
@@ -229,24 +228,17 @@ def run_crawler(crawler_info, start_date, end_date, retry_days=3):
         
         # 运行爬虫
         logger.info(f'时间范围: {start_date} 至 {end_date}')
-        result = crawler.run(start_date, end_date)
+        df = crawler.fetch_data(start_date, end_date)
         
-        if result:
-            logger.info(f'爬虫 {name} 运行成功')
-            # 添加一行代码，确保所有数据库连接被释放
-            from pub_tools.db_tools import release_db_connection
-            from utils.config import DB_CONFIG
-            from sqlalchemy import create_engine
-            engine = create_engine(f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}?charset=utf8mb4", echo=False)
-            release_db_connection(engine)
-            
-            return True
+        if not df.empty:
+            logger.info(f'爬虫 {name} 运行成功，获取 {len(df)} 条数据')
+            return df
         else:
-            logger.warning(f'爬虫 {name} 运行失败')
-            return False
+            logger.warning(f'爬虫 {name} 运行失败，未获取到数据')
+            return df
     except Exception as e:
         logger.error(f'爬虫 {name} 运行异常: {e}', exc_info=True)
-        return False
+        return None
     finally:
         logger.info(f'爬虫 {name} 已完成')
 
@@ -282,7 +274,7 @@ def run_all_crawlers_parallel(crawlers, start_date, end_date, retry_days=3, max_
                 results[crawler_name] = result
                 logger.info(f'爬虫 {crawler_name} 已完成')
             except Exception as e:
-                results[crawler_name] = False
+                results[crawler_name] = None
                 logger.error(f'爬虫 {crawler_name} 运行异常: {e}', exc_info=True)
     
     return results
@@ -363,8 +355,8 @@ def main():
     else:
         # 根据爬虫名称选择要运行的爬虫
         crawler_name_map = {
-            'week_ahead': '周前负荷预测爬虫',
-            'day_ahead': '日前负荷预测爬虫',
+            'week_ahead_load': '周前负荷预测爬虫',
+            'day_ahead_load': '日前负荷预测爬虫',
             'actual_load': '实际负荷爬虫',
             'system_backup': '系统备用爬虫',
             'total_generation_forecast': '发电总出力预测爬虫',
@@ -431,5 +423,48 @@ def main():
     logger.info(f"爬虫运行完成 - 运行模式: {run_mode}, 总运行时间: {total_time:.2f} 秒 ({total_time/60:.2f} 分钟)")
 
 
+def main_test(crawler_name, start_date, end_date):
+    """
+    测试运行单个爬虫
+
+    Args:
+        crawler_name: 爬虫名称
+        start_date: 开始日期
+        end_date: 结束日期
+    """
+    # 查找匹配的爬虫
+    crawler_info = None
+    for c in CRAWLERS:
+        if c['crawler'].__name__.lower() == crawler_name.lower():
+            crawler_info = c
+            break
+    
+    if crawler_info is None:
+        logger.error(f'未找到爬虫: {crawler_name}')
+        print(f'未找到爬虫: {crawler_name}')
+        print('可用爬虫:')
+        for c in CRAWLERS:
+            print(f'- {c["crawler"].__name__}')
+        return
+    
+    # 运行爬虫
+    df = run_crawler(crawler_info, start_date, end_date)
+    
+    if df is not None and not df.empty:
+        print(f'成功获取 {len(df)} 条数据')
+        print('数据预览:')
+        print(df.head())
+        print('数据统计:')
+        print(df.describe())
+    else:
+        print('未获取到数据')
+
+
 if __name__ == '__main__':
-    main() 
+    args = parse_arguments()
+    
+    if args.crawler:
+        # 测试运行单个爬虫
+        main_test(args.crawler, args.start_date, args.end_date)
+    else:
+        main() 

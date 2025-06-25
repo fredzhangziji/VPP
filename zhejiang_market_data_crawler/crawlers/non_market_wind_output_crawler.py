@@ -10,7 +10,6 @@ from .json_crawler import JSONCrawler
 from utils.logger import setup_logger
 from utils.http_client import get, post
 from utils.config import TARGET_TABLE, get_api_cookie
-from utils.db_helper import save_to_db
 
 class NonMarketWindOutputCrawler(JSONCrawler):
     """
@@ -308,20 +307,3 @@ class NonMarketWindOutputCrawler(JSONCrawler):
         else:
             self.logger.warning("未获取到任何非市场风电实时总出力数据")
             return pd.DataFrame()
-
-
-# 异步函数，用于获取指定日期的数据
-async def crawl_non_market_wind_output_for_date(date_str, target_table=None, cookie=None):
-    """
-    获取指定日期的非市场风电实时总出力数据
-    
-    Args:
-        date_str: 日期字符串，格式为YYYY-MM-DD
-        target_table: 目标数据表名，默认使用config.py中的配置
-        cookie: API请求的Cookie，如果提供则使用此Cookie
-        
-    Returns:
-        success: 是否成功
-    """
-    crawler = NonMarketWindOutputCrawler(target_table=target_table, cookie=cookie)
-    return crawler.run(start_date=date_str, end_date=date_str)

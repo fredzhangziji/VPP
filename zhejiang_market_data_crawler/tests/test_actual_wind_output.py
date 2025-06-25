@@ -3,24 +3,14 @@
 测试风电实时总出力爬虫
 """
 
-import os
-import sys
 import asyncio
 import pandas as pd
-from datetime import datetime, timedelta
-
-# 添加项目根目录到Python路径
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-# 导入爬虫
-from crawlers.actual_wind_output_crawler import (
-    ActualWindOutputCrawler, 
-    crawl_actual_wind_output_for_date,
-    run_historical_crawl,
-    run_daily_crawl
-)
+from crawlers.actual_wind_output_crawler import ActualWindOutputCrawler
 from utils.logger import setup_logger
 from utils.config import TARGET_TABLE
+from utils.db_helper import get_db_connection
+from sqlalchemy import text
+from utils.config import DB_CONFIG
 
 # 设置日志
 logger = setup_logger('test_actual_wind_output')
@@ -113,10 +103,7 @@ async def test_date_range():
 async def main():
     """主函数"""
     logger.info("开始测试风电实时总出力爬虫")
-    
-    # 检查数据库配置
-    from utils.config import DB_CONFIG
-    
+        
     # 打印数据库配置（隐藏密码）
     db_config_to_print = DB_CONFIG.copy()
     if 'password' in db_config_to_print:
@@ -125,9 +112,6 @@ async def main():
     logger.info(f"目标表名: {TARGET_TABLE}")
     
     # 检查数据库连接
-    from utils.db_helper import get_db_connection
-    from sqlalchemy import text
-    
     try:
         engine, _ = get_db_connection(DB_CONFIG)
         logger.info("数据库连接成功")

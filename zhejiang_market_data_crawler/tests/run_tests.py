@@ -182,7 +182,7 @@ async def run_all_tests():
 
 async def run_selected_test(test_name):
     """运行选定的测试"""
-    if test_name == "day_ahead":
+    if test_name == "day_ahead_load":
         logger.info("===== 运行日前负荷预测测试 =====")
         await test_day_ahead_load.main()
     elif test_name == "actual_load":

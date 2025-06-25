@@ -47,29 +47,23 @@ VPP/zhejiang_market_data_crawler/
 
 ## 安装指南
 
-1. 克隆代码库:
-```bash
-git clone <repository-url>
-cd VPP/zhejiang_market_data_crawler
-```
-
-2. 安装依赖:
+1. 安装依赖:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. 创建配置文件:
+2. 创建配置文件:
 ```bash
 cp config.yaml.example config.yaml
 ```
 
-4. 编辑配置文件 `config.yaml`，填写数据库连接信息和API Cookie。
+3. 编辑配置文件 `config.yaml`，填写数据库连接信息和API Cookie。
 
 ## 使用说明
 
 ### 运行主程序
 
-获取最近一天的数据:
+获取d-3 ~ d+3的数据:
 ```bash
 python main.py
 ```
@@ -84,9 +78,14 @@ python main.py --days 7
 python main.py --start-date 2024-06-01 --end-date 2024-06-07
 ```
 
-使用并行模式:
+使用并行模式（默认为并行）:
 ```bash
 python main.py --parallel
+```
+
+使用串行模式（默认为并行）:
+```bash
+python main.py --serial
 ```
 
 ### 运行测试
@@ -101,7 +100,7 @@ python tests/run_tests.py
 python tests/run_tests.py -t actual_load
 ```
 
-## 爬虫说明
+## 爬虫举例说明
 
 ### 实际负荷爬虫 (ActualLoadCrawler)
 

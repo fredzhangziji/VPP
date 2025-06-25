@@ -1,25 +1,16 @@
 #!/usr/bin/env python3
 """
-测试抽蓄总出力预测爬虫
+测试周前抽蓄总出力预测爬虫
 """
 
-import os
-import sys
 import asyncio
 import pandas as pd
-import json
 import traceback
-from datetime import datetime, timedelta
-
-# 添加项目根目录到系统路径
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+from sqlalchemy import inspect
 from utils.logger import setup_logger
-from utils.config import DB_CONFIG, TARGET_TABLE
+from utils.config import DB_CONFIG
 from pub_tools.db_tools import get_db_connection, release_db_connection
-from crawlers.week_ahead_pumped_storage_forecast_crawler import (
-    WeekAheadPumpedStorageForecastCrawler,
-)
+from crawlers.week_ahead_pumped_storage_forecast_crawler import WeekAheadPumpedStorageForecastCrawler
 
 # 目标表名和字段名
 TABLE_NAME = 'power_market_data'
@@ -39,10 +30,9 @@ def check_db_config():
     logger.info(f"数据库配置: {safe_config}")
     logger.info(f"目标表名: {TABLE_NAME}")
     try:
-        engine, metadata = get_db_connection(DB_CONFIG)
+        engine, _ = get_db_connection(DB_CONFIG)
         logger.info("数据库连接成功")
         connection = engine.connect()
-        from sqlalchemy import inspect
         inspector = inspect(engine)
         tables = inspector.get_table_names()
         if TABLE_NAME in tables:
@@ -137,7 +127,7 @@ async def main():
     """
     主函数
     """
-    logger.info("开始测试抽蓄总出力预测爬虫")
+    logger.info("开始测试周前抽蓄总出力预测爬虫")
     if not check_db_config():
         logger.error("数据库配置检查失败，请检查配置后重试")
         return

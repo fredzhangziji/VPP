@@ -9,12 +9,11 @@ from datetime import datetime, timedelta
 from .json_crawler import JSONCrawler
 from utils.logger import setup_logger
 from utils.http_client import get, post
-from utils.config import TARGET_TABLE, get_api_cookie
+from utils.config import get_api_cookie
 from pub_tools.db_tools import get_db_connection, release_db_connection, upsert_multiple_columns_to_db
 import random
 import time
 import requests
-from sqlalchemy import text
 
 class FixedUnitGenerationPlanCrawler(JSONCrawler):
     """固定出力机组发电计划爬虫"""
@@ -571,58 +570,3 @@ class FixedUnitGenerationPlanCrawler(JSONCrawler):
         except Exception as e:
             self.logger.error(f"爬虫 {self.name} 运行失败: {e}", exc_info=True)
             return False
-
-# 异步函数，用于爬取固定出力机组发电计划数据
-async def crawl_fixed_unit_generation_plan_for_date(date_str, target_table=None, cookie=None):
-    """
-    爬取特定日期的固定出力机组发电计划数据
-    
-    Args:
-        date_str: 日期字符串，格式为YYYY-MM-DD
-        target_table: 目标表名，默认为None（使用配置中的表名）
-        cookie: API请求用的Cookie，默认为None（自动获取）
-    
-    Returns:
-        df: 爬取到的数据，DataFrame格式
-    """
-    crawler = FixedUnitGenerationPlanCrawler(target_table=target_table, cookie=cookie)
-    return crawler.fetch_data(date_str)
-
-# 异步函数，用于爬取历史数据
-async def run_historical_crawl(start_date, end_date, target_table=None, cookie=None):
-    """
-    爬取指定日期范围的历史数据
-    
-    Args:
-        start_date: 开始日期，格式为YYYY-MM-DD
-        end_date: 结束日期，格式为YYYY-MM-DD
-        target_table: 目标表名，默认为None（使用配置中的表名）
-        cookie: API请求用的Cookie，默认为None（自动获取）
-    
-    Returns:
-        success: 是否成功爬取
-    """
-    crawler = FixedUnitGenerationPlanCrawler(target_table=target_table, cookie=cookie)
-    df = crawler.fetch_data(start_date, end_date)
-    return not df.empty
-
-# 异步函数，用于日常爬取
-async def run_daily_crawl(target_table=None, retry_days=3, cookie=None):
-    """
-    运行日常爬取任务，获取最近几天的数据
-    
-    Args:
-        target_table: 目标表名，默认为None（使用配置中的表名）
-        retry_days: 重试天数，默认为3（获取最近3天的数据）
-        cookie: API请求用的Cookie，默认为None（自动获取）
-    
-    Returns:
-        success: 是否成功爬取
-    """
-    today = datetime.now()
-    start_date = (today - timedelta(days=retry_days - 1)).strftime('%Y-%m-%d')
-    end_date = today.strftime('%Y-%m-%d')
-    
-    crawler = FixedUnitGenerationPlanCrawler(target_table=target_table, cookie=cookie)
-    df = crawler.fetch_data(start_date, end_date)
-    return not df.empty 

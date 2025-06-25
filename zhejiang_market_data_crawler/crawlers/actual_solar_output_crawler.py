@@ -5,13 +5,11 @@
 
 import json
 import pandas as pd
-import asyncio
 from datetime import datetime, timedelta
 from .json_crawler import JSONCrawler
 from utils.logger import setup_logger
 from utils.http_client import get, post
 from utils.config import TARGET_TABLE, get_api_cookie
-from utils.db_helper import save_to_db
 
 class ActualSolarOutputCrawler(JSONCrawler):
     """光伏实时总出力爬虫"""
@@ -364,143 +362,3 @@ class ActualSolarOutputCrawler(JSONCrawler):
         except Exception as e:
             self.logger.error(f"获取数据异常: {e}", exc_info=True)
             return pd.DataFrame()
-    
-    def save_to_db(self, df, update_columns=None):
-        """
-        保存数据到数据库
-        
-        Args:
-            df: 包含数据的DataFrame
-            update_columns: 当记录已存在时要更新的列，默认为None（更新所有列）
-        
-        Returns:
-            success: 是否保存成功
-        """
-        if df.empty:
-            self.logger.warning("没有数据需要保存")
-            return False
-        
-        # 如果未指定要更新的列，则更新所有列
-        if update_columns is None:
-            update_columns = [col for col in df.columns if col != 'date_time']
-        
-        try:
-            # 调用工具函数保存数据
-            result = save_to_db(df, self.target_table, update_columns)
-            
-            if result:
-                self.logger.info(f"成功将 {len(df)} 条记录保存到表 {self.target_table}")
-            else:
-                self.logger.error("保存数据失败")
-            
-            return result
-        except Exception as e:
-            self.logger.error(f"保存数据异常: {e}", exc_info=True)
-            return False
-
-# 异步函数，用于抓取指定日期的光伏实时总出力数据
-async def crawl_actual_solar_output_for_date(date_str, target_table=None, cookie=None):
-    """
-    抓取指定日期的光伏实时总出力数据
-    
-    Args:
-        date_str: 日期字符串，格式为YYYY-MM-DD
-        target_table: 目标数据表名，默认使用config.py中的配置
-        cookie: API请求的Cookie，如果提供则使用此Cookie
-    
-    Returns:
-        success: 是否抓取成功
-    """
-    logger = setup_logger('crawl_actual_solar_output')
-    logger.info(f"抓取 {date_str} 的光伏实时总出力数据")
-    
-    try:
-        # 创建爬虫实例
-        crawler = ActualSolarOutputCrawler(target_table=target_table, cookie=cookie)
-        
-        # 获取数据
-        df = crawler.fetch_data(date_str)
-        
-        if not df.empty:
-            # 保存数据到数据库
-            update_columns = [col for col in df.columns if col != 'date_time']
-            success = crawler.save_to_db(df, update_columns=update_columns)
-            
-            return success
-        else:
-            logger.warning(f"未获取到 {date_str} 的光伏实时总出力数据")
-            return False
-    except Exception as e:
-        logger.error(f"抓取 {date_str} 的光伏实时总出力数据异常: {e}", exc_info=True)
-        return False
-
-# 异步函数，用于抓取历史数据
-async def run_historical_crawl(start_date, end_date, target_table=None, cookie=None):
-    """
-    抓取历史数据
-    
-    Args:
-        start_date: 开始日期，格式为YYYY-MM-DD
-        end_date: 结束日期，格式为YYYY-MM-DD
-        target_table: 目标数据表名，默认使用config.py中的配置
-        cookie: API请求的Cookie，如果提供则使用此Cookie
-    
-    Returns:
-        success: 是否抓取成功
-    """
-    logger = setup_logger('run_historical_crawl')
-    logger.info(f"抓取历史数据: {start_date} 至 {end_date}")
-    
-    try:
-        # 创建爬虫实例
-        crawler = ActualSolarOutputCrawler(target_table=target_table, cookie=cookie)
-        
-        # 获取数据
-        df = crawler.fetch_data(start_date, end_date)
-        
-        if not df.empty:
-            # 保存数据到数据库
-            update_columns = [col for col in df.columns if col != 'date_time']
-            success = crawler.save_to_db(df, update_columns=update_columns)
-            
-            return success
-        else:
-            logger.warning(f"未获取到 {start_date} 至 {end_date} 的历史数据")
-            return False
-    except Exception as e:
-        logger.error(f"抓取历史数据异常: {e}", exc_info=True)
-        return False
-
-# 异步函数，用于每日抓取数据
-async def run_daily_crawl(target_table=None, retry_days=3, cookie=None):
-    """
-    每日抓取数据
-    
-    Args:
-        target_table: 目标数据表名，默认使用config.py中的配置
-        retry_days: 重试天数，如果当天数据不可用，会尝试抓取前几天的数据
-        cookie: API请求的Cookie，如果提供则使用此Cookie
-    
-    Returns:
-        success: 是否抓取成功
-    """
-    logger = setup_logger('run_daily_crawl')
-    logger.info("开始每日抓取光伏实时总出力数据")
-    
-    # 获取当前日期
-    current_date = datetime.now()
-    
-    # 尝试抓取当天和前几天的数据
-    for i in range(retry_days):
-        date_str = (current_date - timedelta(days=i)).strftime('%Y-%m-%d')
-        logger.info(f"尝试抓取 {date_str} 的数据")
-        
-        # 抓取数据
-        success = await crawl_actual_solar_output_for_date(date_str, target_table=target_table, cookie=cookie)
-        
-        if success:
-            logger.info(f"成功抓取 {date_str} 的数据")
-            return True
-    
-    logger.warning(f"未能成功抓取最近 {retry_days} 天的数据")
-    return False 

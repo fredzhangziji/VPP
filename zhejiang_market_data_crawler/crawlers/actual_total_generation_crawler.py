@@ -5,13 +5,11 @@
 
 import json
 import pandas as pd
-import asyncio
 from datetime import datetime, timedelta
 from .json_crawler import JSONCrawler
 from utils.logger import setup_logger
 from utils.http_client import get, post
 from utils.config import TARGET_TABLE, get_api_cookie
-from utils.db_helper import save_to_db
 
 class ActualTotalGenerationCrawler(JSONCrawler):
     """发电实时总出力爬虫"""
@@ -281,98 +279,3 @@ class ActualTotalGenerationCrawler(JSONCrawler):
         else:
             self.logger.warning("未获取到任何发电实时总出力数据")
             return pd.DataFrame()
-
-    def save_to_db(self, df, update_columns=None):
-        """
-        保存数据到数据库
-        
-        Args:
-            df: 包含数据的DataFrame
-            update_columns: 需要更新的列
-            
-        Returns:
-            bool: 是否保存成功
-        """
-        if df.empty:
-            self.logger.warning("没有数据需要保存")
-            return False
-            
-        try:
-            return save_to_db(df, self.target_table, update_columns=update_columns)
-        except Exception as e:
-            self.logger.error(f"保存数据失败: {e}")
-            return False
-
-async def crawl_actual_total_generation_for_date(date_str, target_table=None, cookie=None):
-    """
-    获取指定日期的发电实时总出力数据
-    
-    Args:
-        date_str: 日期字符串
-        target_table: 目标表名
-        cookie: API请求Cookie
-    
-    Returns:
-        DataFrame: 包含数据的DataFrame
-    """
-    crawler = ActualTotalGenerationCrawler(target_table=target_table, cookie=cookie)
-    return crawler.fetch_data(start_date=date_str, end_date=date_str)
-
-async def run_historical_crawl(start_date, end_date, target_table=None, cookie=None):
-    """
-    批量爬取历史数据
-    
-    Args:
-        start_date: 开始日期
-        end_date: 结束日期
-        target_table: 目标表名
-        cookie: API请求Cookie
-    
-    Returns:
-        bool: 是否成功
-    """
-    crawler = ActualTotalGenerationCrawler(target_table=target_table, cookie=cookie)
-    df = crawler.fetch_data(start_date=start_date, end_date=end_date)
-    
-    if not df.empty:
-        update_columns = [col for col in df.columns if col != 'date_time']
-        return crawler.save_to_db(df, update_columns=update_columns)
-        
-    return False
-
-async def run_daily_crawl(target_table=None, retry_days=3, cookie=None):
-    """
-    运行每日爬虫
-    
-    Args:
-        target_table: 目标表名
-        retry_days: 重试天数
-        cookie: API请求Cookie
-        
-    Returns:
-        bool: 是否成功
-    """
-    today = datetime.now().strftime('%Y-%m-%d')
-    crawler = ActualTotalGenerationCrawler(target_table=target_table, cookie=cookie)
-    crawler.logger.info(f"开始爬取当天({today})的数据")
-    today_df = crawler.fetch_data(start_date=today, end_date=today)
-    
-    success = False
-    if not today_df.empty:
-        update_columns = [col for col in today_df.columns if col != 'date_time']
-        success = crawler.save_to_db(today_df, update_columns=update_columns)
-    
-    if retry_days > 0:
-        crawler.logger.info(f"尝试补充之前 {retry_days} 天的数据")
-        
-        for i in range(1, retry_days + 1):
-            retry_date = (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d')
-            crawler.logger.info(f"补充 {retry_date} 的数据")
-            retry_df = crawler.fetch_data(start_date=retry_date, end_date=retry_date)
-            
-            if not retry_df.empty:
-                update_columns = [col for col in retry_df.columns if col != 'date_time']
-                retry_success = crawler.save_to_db(retry_df, update_columns=update_columns)
-                success = success or retry_success
-                
-    return success 
