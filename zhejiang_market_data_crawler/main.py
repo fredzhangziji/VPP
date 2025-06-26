@@ -355,8 +355,8 @@ def main():
     else:
         # 根据爬虫名称选择要运行的爬虫
         crawler_name_map = {
-            'week_ahead_load': '周前负荷预测爬虫',
-            'day_ahead_load': '日前负荷预测爬虫',
+            'week_ahead_load_forecast': '周前负荷预测爬虫',
+            'day_ahead_load_forecast': '日前负荷预测爬虫',
             'actual_load': '实际负荷爬虫',
             'system_backup': '系统备用爬虫',
             'total_generation_forecast': '发电总出力预测爬虫',
