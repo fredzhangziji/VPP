@@ -92,8 +92,8 @@ class FixedUnitGenerationPlanCrawler(JSONCrawler):
             publish_name = unit.get('publishName', '')
             
             # 检查是否为浙江总输出数据
-            is_total_output = (unit_id == '320000CA00000002' or unit_id == '1013300000' or 
-                              name == '浙江' or publish_name == '浙江')
+            is_total_output = (unit_id == '320000CA00000002' or unit_id == '1013300000' or unit_id == '0101330000' or
+                              name == '浙江' or publish_name == '浙江' or name == '浙江电网' or publish_name == '浙江电网')
             
             if is_total_output:
                 # 处理总输出数据

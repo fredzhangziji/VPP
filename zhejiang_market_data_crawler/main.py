@@ -422,49 +422,5 @@ def main():
     # 记录总运行时间
     logger.info(f"爬虫运行完成 - 运行模式: {run_mode}, 总运行时间: {total_time:.2f} 秒 ({total_time/60:.2f} 分钟)")
 
-
-def main_test(crawler_name, start_date, end_date):
-    """
-    测试运行单个爬虫
-
-    Args:
-        crawler_name: 爬虫名称
-        start_date: 开始日期
-        end_date: 结束日期
-    """
-    # 查找匹配的爬虫
-    crawler_info = None
-    for c in CRAWLERS:
-        if c['crawler'].__name__.lower() == crawler_name.lower():
-            crawler_info = c
-            break
-    
-    if crawler_info is None:
-        logger.error(f'未找到爬虫: {crawler_name}')
-        print(f'未找到爬虫: {crawler_name}')
-        print('可用爬虫:')
-        for c in CRAWLERS:
-            print(f'- {c["crawler"].__name__}')
-        return
-    
-    # 运行爬虫
-    df = run_crawler(crawler_info, start_date, end_date)
-    
-    if df is not None and not df.empty:
-        print(f'成功获取 {len(df)} 条数据')
-        print('数据预览:')
-        print(df.head())
-        print('数据统计:')
-        print(df.describe())
-    else:
-        print('未获取到数据')
-
-
 if __name__ == '__main__':
-    args = parse_arguments()
-    
-    if args.crawler:
-        # 测试运行单个爬虫
-        main_test(args.crawler, args.start_date, args.end_date)
-    else:
-        main() 
+    main()
