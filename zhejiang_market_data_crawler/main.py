@@ -2,18 +2,15 @@
 主程序入口，用于调用各个爬虫
 """
 
-import os
-import sys
 import time
 import argparse
 import concurrent.futures
 from datetime import datetime, timedelta
-
-# 添加项目根目录到系统路径
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from utils.logger import setup_logger
-from utils.config import CONCURRENCY, REQUEST_INTERVAL, get_api_cookie
+from utils.config import CONCURRENCY
+from pub_tools.db_tools import release_db_connection
+from utils.config import DB_CONFIG
+from sqlalchemy import create_engine
 from crawlers.week_ahead_load_crawler import WeekAheadLoadCrawler
 from crawlers.day_ahead_load_crawler import DayAheadLoadCrawler
 from crawlers.actual_load_crawler import ActualLoadCrawler
@@ -214,7 +211,7 @@ def run_crawler(crawler_info, start_date, end_date, retry_days=3):
         retry_days: 重试天数
 
     Returns:
-        DataFrame: 爬虫获取的数据
+        bool: 爬虫是否运行成功
     """
     name = crawler_info['name']
     crawler_class = crawler_info['crawler']
@@ -228,20 +225,23 @@ def run_crawler(crawler_info, start_date, end_date, retry_days=3):
         
         # 运行爬虫
         logger.info(f'时间范围: {start_date} 至 {end_date}')
-        df = crawler.fetch_data(start_date, end_date)
+        result = crawler.run(start_date, end_date)
         
-        if not df.empty:
-            logger.info(f'爬虫 {name} 运行成功，获取 {len(df)} 条数据')
-            return df
+        if result:
+            logger.info(f'爬虫 {name} 运行成功')
+            # 确保所有数据库连接被释放
+            engine = create_engine(f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}?charset=utf8mb4", echo=False)
+            release_db_connection(engine)
+
+            return True
         else:
-            logger.warning(f'爬虫 {name} 运行失败，未获取到数据')
-            return df
+            logger.warning(f'爬虫 {name} 运行失败')
+            return False
     except Exception as e:
         logger.error(f'爬虫 {name} 运行异常: {e}', exc_info=True)
         return None
     finally:
         logger.info(f'爬虫 {name} 已完成')
-
 
 def run_all_crawlers_parallel(crawlers, start_date, end_date, retry_days=3, max_workers=CONCURRENCY):
     """
@@ -305,7 +305,6 @@ def run_all_crawlers_serial(crawlers, start_date, end_date, retry_days=3):
     
     return results
 
-
 def parse_arguments():
     """
     解析命令行参数
@@ -313,14 +312,22 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='浙江电力市场数据爬虫')
     parser.add_argument('--start-date', help='开始日期，格式为YYYY-MM-DD')
     parser.add_argument('--end-date', help='结束日期，格式为YYYY-MM-DD')
-    crawler_help = '要运行的爬虫名称，支持的值：all, week_ahead, day_ahead, actual_load, system_backup, total_generation_forecast, external_power_plan, non_market_solar_forecast, non_market_wind_forecast, non_market_nuclear_forecast, non_market_hydro_forecast, day_ahead_solar_total_forecast, day_ahead_wind_total_forecast, week_ahead_pumped_storage_forecast, day_ahead_hydro_total_forecast, day_ahead_pumped_storage_forecast, actual_total_generation, actual_solar_output, actual_wind_output, actual_hydro_output, actual_pumped_storage_output, non_market_total_output, non_market_solar_output, non_market_wind_output, non_market_nuclear_output, non_market_hydro_output, day_ahead_price, day_ahead_cleared_volume, real_time_market_price, spot_cleared_volume, fixed_plan'
+    crawler_help = '要运行的爬虫名称，支持的值：\
+        all, week_ahead_load_forecast, day_ahead_load_forecast, actual_load, system_backup, \
+        total_generation_forecast, external_power_plan, non_market_solar_forecast, \
+        non_market_wind_forecast, non_market_nuclear_forecast, non_market_hydro_forecast, \
+        day_ahead_solar_total_forecast, day_ahead_wind_total_forecast, week_ahead_pumped_storage_forecast, \
+        day_ahead_hydro_total_forecast, day_ahead_pumped_storage_forecast, actual_total_generation, \
+        actual_solar_output, actual_wind_output, actual_hydro_output, actual_pumped_storage_output, \
+        non_market_total_output, non_market_solar_output, non_market_wind_output, non_market_nuclear_output, \
+        non_market_hydro_output, day_ahead_price, day_ahead_cleared_volume, real_time_market_price, \
+        spot_cleared_volume, fixed_plan'
     parser.add_argument('--crawler', help=crawler_help)
     parser.add_argument('--crawlers', dest='crawler', help=crawler_help)  # 添加别名
     parser.add_argument('--retry-days', type=int, default=3, help='重试天数')
     parser.add_argument('--serial', action='store_false', dest='parallel', help='是否串行运行爬虫')
     parser.add_argument('--max-workers', type=int, default=CONCURRENCY, help='最大并行工作线程数')
     return parser.parse_args()
-
 
 def main():
     """
