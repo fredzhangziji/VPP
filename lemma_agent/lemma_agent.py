@@ -23,6 +23,9 @@ from datetime import datetime
 from qwen_agent.tools.base import BaseTool, register_tool
 from qwen_agent.agents import Assistant
 from qwen_agent.llm.base import Message
+import pandas as pd
+from datetime import datetime
+from sqlalchemy import create_engine
 
 # 终端颜色设置
 class Colors:
@@ -52,6 +55,15 @@ for handler in logger.handlers:
     if isinstance(handler, logging.StreamHandler):
         handler.setLevel(logging.ERROR)
 
+# 数据库配置 - 模块级别，便于所有工具共享
+DB_CONFIG_VPP_SERVICE = {
+    'host': '10.5.0.10',
+    'user': 'root',
+    'password': 'kunyu2023rds',
+    'database': 'vpp_service',
+    'port': 3306
+}
+
 @register_tool('get_price_deviation_report')
 class PriceDeviationTool(BaseTool):
     """用于获取电价偏差报告的工具。"""
@@ -70,35 +82,233 @@ class PriceDeviationTool(BaseTool):
         "required": False
     }]
     
+    def parse_date(self, date_str: str) -> tuple:
+        """
+        解析日期字符串，返回用于查询的开始和结束时间
+        
+        Args:
+            date_str: 日期字符串，可以是YYYY-MM-DD格式或描述性日期
+            
+        Returns:
+            tuple: (start_time, end_time) 用于SQL查询的时间范围
+        """
+        from datetime import datetime, timedelta
+        import re
+        
+        # 处理"昨天"、"今天"等描述性日期
+        if date_str == "昨天":
+            target_date = datetime.now() - timedelta(days=1)
+        elif date_str == "今天":
+            target_date = datetime.now()
+        elif date_str == "前天":
+            target_date = datetime.now() - timedelta(days=2)
+        # 处理"6月24日"格式
+        elif re.match(r'(\d+)月(\d+)日', date_str):
+            match = re.match(r'(\d+)月(\d+)日', date_str)
+            month, day = int(match.group(1)), int(match.group(2))
+            current_year = datetime.now().year
+            target_date = datetime(current_year, month, day)
+        # 处理YYYY-MM-DD格式
+        else:
+            try:
+                target_date = datetime.strptime(date_str, "%Y-%m-%d")
+            except ValueError:
+                # 如果无法解析，默认使用昨天
+                logger.warning(f"无法解析日期'{date_str}'，使用昨天作为默认值")
+                target_date = datetime.now() - timedelta(days=1)
+        
+        # 生成该日的起止时间
+        start_time = target_date.replace(hour=0, minute=0, second=0)
+        end_time = target_date.replace(hour=23, minute=59, second=59)
+        
+        return start_time.strftime("%Y-%m-%d %H:%M:%S"), end_time.strftime("%Y-%m-%d %H:%M:%S")
+    
     def call(self, params: str, **kwargs) -> str:
-        """执行电价偏差报告获取操作。"""
+        """执行电价偏差报告获取操作。""" 
         logger.debug(f"PriceDeviationTool被调用，参数: {params}")
         print(f"{Colors.CYAN}[工具] 获取电价偏差报告...{Colors.RESET}")
         
         # 解析参数
         try:
             parsed_params = json.loads(params)
-            date = parsed_params.get("date", "")
-            region = parsed_params.get("region", "全国")
+            date_str = parsed_params.get("date", "")
+            region = parsed_params.get("region", "呼包东")  # 默认分析呼包东
         except Exception as e:
             logger.error(f"参数解析错误: {e}")
             return json.dumps({"error": f"参数解析错误: {e}"}, ensure_ascii=False)
         
-        # TODO: 实现与数据库的连接和查询
-        # 当前返回模拟数据
-        mock_report = {
-            "date": date,
-            "region": region,
-            "market_price": 456.78,
-            "forecast_price": 420.25,
-            "actual_price": 510.35,
-            "deviation_percentage": 21.5,
-            "peak_hours_deviation": 28.7,
-            "valley_hours_deviation": 15.2,
-            "analysis_summary": "该日期电价出现较大偏差，特别是在用电高峰期。实际价格比预测高出约21.5%，超出正常波动范围。"
-        }
+        # 解析日期参数
+        try:
+            start_time, end_time = self.parse_date(date_str)
+        except Exception as e:
+            logger.error(f"日期解析错误: {e}")
+            return json.dumps({"error": f"日期解析错误: {e}"}, ensure_ascii=False)
         
-        return json.dumps(mock_report, ensure_ascii=False)
+        # 确定价格字段
+        if region == "呼包西":
+            price_field = "west_price"
+            price_region_filter = "呼包西"
+        else:  # 默认为呼包东
+            price_field = "east_price"
+            price_region_filter = "呼包东"
+            region = "呼包东"  # 确保region值一致
+        
+        # 使用SQLAlchemy创建数据库连接
+        engine = None
+        try:
+            db_url = f"mysql+pymysql://{DB_CONFIG_VPP_SERVICE['user']}:{DB_CONFIG_VPP_SERVICE['password']}@{DB_CONFIG_VPP_SERVICE['host']}:{DB_CONFIG_VPP_SERVICE['port']}/{DB_CONFIG_VPP_SERVICE['database']}"
+            engine = create_engine(db_url)
+            
+            # 查询1: 实际电价数据
+            actual_price_query = f"""
+            SELECT date_time, {price_field} as actual_price
+            FROM neimeng_market_actual
+            WHERE date_time BETWEEN %s AND %s
+            ORDER BY date_time
+            """
+            
+            df_actual = pd.read_sql_query(
+                actual_price_query, 
+                engine, 
+                params=(start_time, end_time)
+            )
+            
+            # 查询2: 预测电价数据 (SE模型) - 只获取每个时间点最新的预测
+            forecast_price_query = """
+            SELECT s.date_time, s.price as forecast_price
+            FROM spotprice_forecast s
+            INNER JOIN (
+                SELECT date_time, price_region, MAX(fcst_time) as latest_fcst_time
+                FROM spotprice_forecast
+                WHERE date_time BETWEEN %s AND %s
+                AND price_region = %s
+                AND model = 'SE模型'
+                GROUP BY date_time, price_region
+            ) t ON s.date_time = t.date_time 
+                  AND s.price_region = t.price_region 
+                  AND s.fcst_time = t.latest_fcst_time
+            WHERE s.model = 'SE模型'
+            ORDER BY s.date_time
+            """
+            
+            df_forecast = pd.read_sql_query(
+                forecast_price_query, 
+                engine, 
+                params=(start_time, end_time, price_region_filter)
+            )
+            
+            # 检查查询结果
+            if df_actual.empty or df_forecast.empty:
+                logger.warning(f"查询结果为空: actual={len(df_actual)}, forecast={len(df_forecast)}")
+                return json.dumps({
+                    "error": f"未找到{start_time}至{end_time}期间的{region}电价数据"
+                }, ensure_ascii=False)
+            
+            # 合并数据集
+            df_actual['date_time'] = pd.to_datetime(df_actual['date_time'])
+            df_forecast['date_time'] = pd.to_datetime(df_forecast['date_time'])
+            df_merged = pd.merge(df_actual, df_forecast, on='date_time', how='inner')
+            
+            if df_merged.empty:
+                logger.warning("合并后的数据集为空，可能是实际价格和预测价格的时间戳不匹配")
+                return json.dumps({
+                    "error": f"实际价格和预测价格数据无法匹配，请检查数据"
+                }, ensure_ascii=False)
+            
+            # 计算指标
+            # 1. 整体偏差百分比
+            overall_actual_avg = df_merged['actual_price'].mean()
+            overall_forecast_avg = df_merged['forecast_price'].mean()
+            deviation_percentage = round((overall_actual_avg - overall_forecast_avg) / overall_forecast_avg * 100, 2)
+            
+            # 计算每个时间点的价格差异
+            df_merged['price_diff'] = df_merged['actual_price'] - df_merged['forecast_price']
+            df_merged['price_diff_pct'] = (df_merged['price_diff'] / df_merged['forecast_price']) * 100
+            
+            # 计算绝对价差
+            df_merged['abs_price_diff'] = abs(df_merged['price_diff'])
+            df_merged['abs_price_diff_pct'] = abs(df_merged['price_diff_pct'])
+            
+            # 找出最大绝对价差和最小绝对价差
+            max_abs_diff_row = df_merged.loc[df_merged['abs_price_diff'].idxmax()]
+            min_abs_diff_row = df_merged.loc[df_merged['abs_price_diff'].idxmin()]
+            
+            # 提取最大价差信息
+            max_abs_price_diff = round(max_abs_diff_row['price_diff'], 2)
+            max_abs_diff_time = max_abs_diff_row['date_time'].strftime('%Y-%m-%d %H:%M:%S')
+            max_abs_price_diff_pct = round(max_abs_diff_row['price_diff_pct'], 2)
+            max_abs_direction = "高于" if max_abs_price_diff > 0 else "低于"
+            
+            # 提取最小价差信息
+            min_abs_price_diff = round(min_abs_diff_row['price_diff'], 2)
+            min_abs_diff_time = min_abs_diff_row['date_time'].strftime('%Y-%m-%d %H:%M:%S')
+            min_abs_price_diff_pct = round(min_abs_diff_row['price_diff_pct'], 2)
+            min_abs_direction = "高于" if min_abs_price_diff > 0 else "低于"
+            
+            # 2. 定义高峰和低谷时段
+            df_merged['hour'] = df_merged['date_time'].dt.hour
+            peak_hours = df_merged[(df_merged['hour'] >= 8) & (df_merged['hour'] < 20)]
+            valley_hours = df_merged[(df_merged['hour'] < 8) | (df_merged['hour'] >= 20)]
+            
+            # 3. 计算高峰时段偏差
+            if not peak_hours.empty:
+                peak_actual_avg = peak_hours['actual_price'].mean()
+                peak_forecast_avg = peak_hours['forecast_price'].mean()
+                peak_hours_deviation = round((peak_actual_avg - peak_forecast_avg) / peak_forecast_avg * 100, 2)
+            else:
+                peak_hours_deviation = 0.0
+            
+            # 4. 计算低谷时段偏差
+            if not valley_hours.empty:
+                valley_actual_avg = valley_hours['actual_price'].mean()
+                valley_forecast_avg = valley_hours['forecast_price'].mean()
+                valley_hours_deviation = round((valley_actual_avg - valley_forecast_avg) / valley_forecast_avg * 100, 2)
+            else:
+                valley_hours_deviation = 0.0
+            
+            # 生成分析摘要
+            deviation_direction = "高于" if deviation_percentage > 0 else "低于"
+            deviation_magnitude = "较大" if abs(deviation_percentage) > 15 else "轻微"
+            peak_valley_comparison = ""
+            
+            if abs(peak_hours_deviation) > abs(valley_hours_deviation):
+                peak_valley_comparison = f"偏差在高峰期（{peak_hours_deviation}%）更为显著，而低谷期偏差较小（{valley_hours_deviation}%）。"
+            elif abs(valley_hours_deviation) > abs(peak_hours_deviation):
+                peak_valley_comparison = f"偏差在低谷期（{valley_hours_deviation}%）更为显著，而高峰期偏差较小（{peak_hours_deviation}%）。"
+            
+            max_min_info = f"最大价差发生在{max_abs_diff_time}，实际价格比预测{max_abs_direction}了{abs(max_abs_price_diff)}元/MWh（{abs(max_abs_price_diff_pct)}%）；最小价差发生在{min_abs_diff_time}，实际价格比预测{min_abs_direction}了{abs(min_abs_price_diff)}元/MWh（{abs(min_abs_price_diff_pct)}%）。"
+            
+            analysis_summary = f"该日期{region}电价出现{deviation_magnitude}偏差，平均实际价格比平均预测价格{deviation_direction}约{abs(deviation_percentage)}%。{peak_valley_comparison}{max_min_info}"
+            
+            # 计算市场价格（这里假设市场价格就是实际价格）
+            market_price = round(overall_actual_avg, 2)
+            
+            # 构建报告
+            report = {
+                "date": date_str,
+                "region": region,
+                "market_price": market_price,
+                "forecast_price": round(overall_forecast_avg, 2),
+                "actual_price": round(overall_actual_avg, 2),
+                "deviation_percentage": deviation_percentage,
+                "peak_hours_deviation": peak_hours_deviation,
+                "valley_hours_deviation": valley_hours_deviation,
+                "max_price_diff": abs(max_abs_price_diff),
+                "max_price_diff_pct": abs(max_abs_price_diff_pct),
+                "max_diff_time": max_abs_diff_time,
+                "max_diff_direction": max_abs_direction,
+                "min_price_diff": abs(min_abs_price_diff),
+                "min_price_diff_pct": abs(min_abs_price_diff_pct),
+                "min_diff_time": min_abs_diff_time,
+                "min_diff_direction": min_abs_direction,
+                "analysis_summary": analysis_summary
+            }
+            
+            return json.dumps(report, ensure_ascii=False)
+            
+        except Exception as e:
+            logger.error(f"处理数据时出错: {e}", exc_info=True)
+            return json.dumps({"error": f"处理数据时出错: {e}"}, ensure_ascii=False)
 
 @register_tool('analyze_bidding_space_deviation')
 class BiddingSpaceTool(BaseTool):
@@ -289,116 +499,99 @@ class RegionalCapacityTool(BaseTool):
         
         return json.dumps(mock_info, ensure_ascii=False)
 
-def extract_content(response):
+def find_final_assistant_message(response: Any) -> Optional[Message]:
     """
-    从响应中提取纯文本内容，去除思考过程。
-    支持各种可能的响应格式，包括列表、字典、字符串和嵌套内容。
-    参考了Qwen-Agent的消息处理方式。
+    从agent.run()返回的复杂response中找出代表最终助手回答的消息对象。
     
     Args:
-        response: 各种可能的响应格式
+        response: agent.run()返回的响应，可能是任何类型
         
     Returns:
-        str: 提取的纯文本内容
+        Message对象（如果找到），或者None（如果未找到）
     """
-    content = ""
+    # 处理列表类型响应（最常见的情况）
+    if isinstance(response, list):
+        # 从后向前遍历查找最终的助手回复
+        for item in reversed(response):
+            # 检查是否为Message对象
+            if hasattr(item, 'role') and item.role == 'assistant':
+                # 确保这不是工具调用消息
+                if hasattr(item, 'content') and isinstance(item.content, str):
+                    if '<tool_call>' not in item.content:
+                        return item
+            # 处理字典类型元素
+            elif isinstance(item, dict) and item.get('role') == 'assistant':
+                content = item.get('content', '')
+                if isinstance(content, str) and '<tool_call>' not in content:
+                    return item
+    
+    # 处理单个Message对象
+    elif hasattr(response, 'role') and response.role == 'assistant':
+        if hasattr(response, 'content') and '<tool_call>' not in response.content:
+            return response
     
     # 处理字典类型响应
-    if isinstance(response, dict):
-        if 'content' in response:
-            content = response['content']
-        elif 'message' in response and isinstance(response['message'], dict):
-            if 'content' in response['message']:
-                content = response['message']['content']
+    elif isinstance(response, dict) and response.get('role') == 'assistant':
+        content = response.get('content', '')
+        if isinstance(content, str) and '<tool_call>' not in content:
+            return response
     
-    # 处理具有content属性的对象
-    elif hasattr(response, 'content'):
-        if isinstance(response.content, str):
-            content = response.content
-        elif hasattr(response.content, 'content'):  # 处理嵌套content
-            content = response.content.content
+    # 未找到合适的助手消息
+    return None
+
+def extract_content(content: str) -> str:
+    """
+    清洗单个消息内容的字符串，移除思考过程和工具调用标签。
     
-    # 处理列表类型响应 - 通常由多个消息组成
-    elif isinstance(response, list):
-        # 优先查找最后一个元素中的内容(通常包含最终回答)
-        if len(response) > 0:
-            for i in range(len(response)-1, -1, -1):  # 从后往前查找
-                item = response[i]
-                # 处理字典类型元素
-                if isinstance(item, dict) and 'content' in item:
-                    if 'role' in item and item['role'] == 'assistant':  # 优先选择助手角色的消息
-                        content = item['content']
-                        break
-                    elif not content:  # 如果还没找到内容，先保存着
-                        content = item['content']
-                
-                # 处理字符串类型元素 - 可能直接包含文本或XML标签
-                elif isinstance(item, str):
-                    # 优先查找不含工具调用/响应的内容
-                    if '<tool_call>' not in item and '<tool_response>' not in item:
-                        if not content:  # 如果还没找到内容
-                            content = item
-                    elif not content:  # 如果还没找到内容，可以先保存工具相关内容
-                        content = item
-    
-    # 直接处理字符串类型响应
-    elif isinstance(response, str):
-        content = response
-    
-    # 确保content是字符串类型
+    Args:
+        content: 需要清洗的文本内容字符串
+        
+    Returns:
+        清洗后的纯净字符串
+    """
+    # 确保输入是字符串
     if not isinstance(content, str):
         content = str(content)
-    
-    # 处理消息格式
-    message_patterns = [
-        r"\[Message\({.*?'content':\s*'(.*?)'}.*?\)\]",  # 单引号格式
-        r"\[Message\({.*?'content':\s*\"(.*?)\".*?\)\]",  # 双引号格式
-        r"Message\({'role':.*?'content':\s*['\"](.+?)['\"].*?\}\)"  # 第三种格式
-    ]
-    
-    for pattern in message_patterns:
-        match = re.search(pattern, content, re.DOTALL)
-        if match:
-            content = match.group(1)
-            break
     
     # 处理转义的换行符
     content = content.replace('\\n', '\n')
     
-    # 移除思考过程 - 更全面的模式匹配
-    # 1. 移除<think>标签及其内容
-    answer = re.sub(r'<think>[\s\S]*?</think>', '', content)
-    # 2. 处理不闭合的think标签
-    answer = re.sub(r'<think>[\s\S]*', '', answer)
-    # 3. 处理其他思考格式
-    answer = re.sub(r'\[thinking\][\s\S]*?\[/thinking\]', '', answer)
-    answer = re.sub(r'thinking:[\s\S]*?thinking end', '', answer, flags=re.IGNORECASE)
-    answer = re.sub(r'好的，用户问的是.*?。首先', '首先', answer, flags=re.DOTALL)
-    answer = re.sub(r'用户问的是.*?。(我需要|我将)', r'\1', answer, flags=re.DOTALL)
-    answer = re.sub(r'接下来，我应该.*?工具', '使用工具', answer, flags=re.DOTALL)
-    answer = re.sub(r'因此，(步骤|流程)可能是：.*?首先', '首先', answer, flags=re.DOTALL)
-    answer = re.sub(r'现在需要按照步骤调用工具.*?首先', '首先', answer, flags=re.DOTALL)
+    # 1. 移除思考过程 - 使用更通用的模式
+    # 移除<think>标签及其内容
+    clean_text = re.sub(r'<think>[\s\S]*?</think>', '', content)
     
-    # 移除工具调用和响应
-    answer = re.sub(r'<tool_call>[\s\S]*?</tool_call>', '', answer)
-    answer = re.sub(r'<tool_response>[\s\S]*?</tool_response>', '', answer)
+    # 处理其他常见思考格式（更简洁的模式）
+    patterns = [
+        r'\[thinking\][\s\S]*?\[/thinking\]',
+        r'<思考>[\s\S]*?</思考>',
+        r'思考[:：][\s\S]*?(?:思考结束|思考完毕)',
+        r'<think>[\s\S]*', # 处理不闭合的think标签
+        r'[\s\S]*</think>', # 处理不闭合的think标签结束
+    ]
     
-    # 清理格式
-    # 1. 移除LEMMA前缀
-    answer = re.sub(r'^LEMMA: ', '', answer)
-    # 2. 清理多余换行
-    answer = re.sub(r'^\n+', '', answer)
-    answer = re.sub(r'\n{3,}', '\n\n', answer)
-    answer = answer.strip()
+    for pattern in patterns:
+        clean_text = re.sub(pattern, '', clean_text)
     
-    # 最后检查think标签
-    if '<think>' in answer or '</think>' in answer:
-        answer = re.sub(r'<think>[\s\S]*?</think>', '', answer)
-        answer = re.sub(r'<think>[\s\S]*', '', answer)
-        answer = re.sub(r'[\s\S]*</think>', '', answer)
+    # 2. 移除工具调用和响应标签
+    tool_patterns = [
+        r'<tool_call>[\s\S]*?</tool_call>',
+        r'<tool_response>[\s\S]*?</tool_response>'
+    ]
+    
+    for pattern in tool_patterns:
+        clean_text = re.sub(pattern, '', clean_text)
+    
+    # 3. 基础格式清理
+    # 移除可能的前缀
+    clean_text = re.sub(r'^(LEMMA|Assistant|AI): ', '', clean_text)
+    
+    # 清理多余换行和空白
+    clean_text = re.sub(r'^\n+', '', clean_text)
+    clean_text = re.sub(r'\n{3,}', '\n\n', clean_text)
+    clean_text = clean_text.strip()
     
     # 如果提取结果为空，但看起来应该有内容(包含字母或数字字符)
-    if not answer.strip() and re.search(r'[a-zA-Z0-9]', content):
+    if not clean_text.strip() and re.search(r'[a-zA-Z0-9]', content):
         # 检查是否完整是工具调用
         if (('<tool_call>' in content and '</tool_call>' in content) or 
             ('<tool_response>' in content and '</tool_response>' in content)):
@@ -410,7 +603,7 @@ def extract_content(response):
         if text_fragments:
             return ' '.join(text_fragments)
     
-    return answer
+    return clean_text
 
 def extract_tool_responses(messages: List[Message]) -> Dict[str, Any]:
     """
@@ -523,8 +716,20 @@ def typewriter_print(content, previous_content=""):
     Returns:
         返回当前打印的内容，用于下次比较
     """
-    # 先提取内容
-    clean_content = extract_content(content)
+    # 先提取内容 - 现在只需处理字符串
+    if isinstance(content, str):
+        clean_content = extract_content(content)
+    else:
+        # 如果是复杂对象，先尝试找出最终消息
+        final_message = find_final_assistant_message(content)
+        if final_message:
+            if hasattr(final_message, 'content'):
+                clean_content = extract_content(final_message.content)
+            else:
+                clean_content = extract_content(final_message.get('content', ''))
+        else:
+            # 如果找不到最终消息，退回到原来的处理方式
+            clean_content = extract_content(str(content))
     
     # 如果提取的内容为空但原始内容不为空，可能是工具调用或未识别格式
     # 此时不输出任何内容，等待实际结果
@@ -576,8 +781,6 @@ def get_session_id():
     return datetime.now().strftime("%Y%m%d%H%M%S")
 
 if __name__ == "__main__":
-    # ... 您之前的代码，直到 get_session_id() 函数定义结束 ...
-
     # 清屏和打印欢迎横幅保持不变
     os.system('cls' if os.name == 'nt' else 'clear')
     print_welcome_banner()
@@ -587,14 +790,14 @@ if __name__ == "__main__":
 
     # LLM配置保持不变
     llm_cfg = {
-        'model': 'qwen3:32b',  # 已根据您的要求更新
+        'model': 'qwen3:32b',
         'model_server': 'http://10.5.0.100:11434/v1',
         'api_key': 'EMPTY',
         'generate_cfg': {
             'temperature': 0.7,
             'top_p': 0.8
         },
-        'request_timeout': 120  # 建议将超时时间设置得更长，以应对复杂的多步调用
+        'request_timeout': 120 
     }
 
     # 工具列表和系统提示词保持不变
@@ -602,9 +805,49 @@ if __name__ == "__main__":
         'get_price_deviation_report', 'analyze_bidding_space_deviation',
         'analyze_power_generation_deviation', 'get_regional_capacity_info'
     ]
-    system_message = """你是LEMMA，一个专注于电力市场分析的专业智能助手...（您的系统提示词内容）"""
+    system_message = """# 角色
+你是一个名为LEMMA的、顶级的电力市场AI Co-pilot。你的用户是专业的电力交易员，他们每天都在瞬息万变的市场中进行高风险的决策。你的核心目标是通过快速、精准、数据驱动的分析，帮助交易员洞察市场动态、进行精准的复盘、辅助交易决策，最终实现风险控制和利润最大化。
 
-    # Agent初始化，使用我们之前确认的 Assistant 类
+# 核心能力
+市场复盘分析：深度复盘历史市场事件（如价格异常、新能源出力偏差），穿透表象，精准定位根本原因，形成可供决策参考的、逻辑严谨的复盘报告。
+
+交易决策辅助：实时分析市场信号，预判价格趋势，为日前、实时交易提供申报策略建议。
+
+# 工作原则
+数据驱动：你的所有结论都必须基于通过工具获取的量化数据。避免主观臆断和模糊不清的表述。你的语言就是数据。
+
+效率至上：交易员的时间极其宝贵。你的回答必须直击要点、简洁、结构化。使用项目符号或编号列表来呈现关键发现，使信息一目了然。
+
+量化影响：在分析原因时，不仅要说明“是什么”，更要量化“影响有多大”。
+
+错误示范： “因为光伏出力不足导致价格上涨。”
+
+正确示范： “价格上涨的核心驱动因素是光伏出力严重低于预期（偏差-33.7%），这导致约XX兆瓦的电力缺口需要由成本更高的火电机组（成本约XXX元/兆瓦时）来填补。”
+
+主动洞察：在完成分析报告后，在有实际数据支持的情况下，请主动提出1-2个关键的、面向未来的洞察或风险提示。例如：“结论：本次事件暴露了该地区在午间高峰期对光伏的过度依赖。建议关注未来几日的天气预报，如果再次出现多云天气，类似的日前高价风险可能重现。”
+
+# 可用工具
+你有以下工具可用，请根据需要自由选择一个或多个进行调用：
+
+get_price_deviation_report: 用于获取价格偏差的基本情况和量化数据。
+
+analyze_bidding_space_deviation: 用于分析市场供需失衡情况。
+
+analyze_power_generation_deviation: 用于分析各类电源（尤其是新能源）的实际出力与预测的偏差。
+
+get_regional_capacity_info: 用于了解地区的能源结构和装机容量。
+
+# 核心指令：并行规划与一次性综合分析
+面对用户的复杂分析请求（例如“复盘一下昨天XX地区的价格异常”），你必须遵循以下高效的工作流程：
+
+全面规划：进行一次全面的思考，不要采用逐一问答、逐步执行的模式。
+
+批量执行：一次性地决定并返回回答该问题所需的所有工具调用指令 (<tool_call>)。
+
+综合报告：在收到所有工具的返回数据后，一次性地生成一份遵循上述所有工作原则（数据驱动、效率至上、量化影响、主动洞察）的、综合性的最终分析报告。
+    """
+
+    # Agent初始化，使用 Assistant 类
     try:
         print(f"{Colors.BLUE}初始化LEMMA Agent...{Colors.RESET}")
         agent = Assistant(llm=llm_cfg,
@@ -618,9 +861,7 @@ if __name__ == "__main__":
     # 初始化消息历史
     messages = []
 
-    # =================================================================
-    # ↓↓↓ 这是重构后的、更简洁、更可靠的交互循环 ↓↓↓
-    # =================================================================
+    # 交互循环
     while True:
         try:
             user_input = input(f"\n{Colors.BOLD}{Colors.YELLOW}用户: {Colors.RESET}")
@@ -676,27 +917,42 @@ if __name__ == "__main__":
             # 循环结束后，打印一个换行符，让格式更美观
             print()
 
-            # 整个循环结束后，我们需要判断最终状态
-            # 使用 extract_content 函数来判断最终内容是否是干净的回答
-            clean_final_answer = extract_content(full_response_content)
-
-            if clean_final_answer:
-                # 如果有干净的回答，说明Agent自己完成了总结
-                final_message_object = Message(role='assistant', content=clean_final_answer)
-                logger.info("Agent已生成最终回答。")
-            else:
-                # 如果最后一步仍然是工具调用，或者内容为空，说明Agent没能自己总结
-                # 此时，我们调用您编写的 generate_final_analysis 函数来强制生成总结
-                logger.warning("Agent未生成最终文本回答，尝试手动生成分析报告。")
-                manual_summary = generate_final_analysis(messages + [Message(role='assistant', content=full_response_content)])
-                if manual_summary:
-                    print(f"{Colors.BOLD}{Colors.GREEN}LEMMA (分析总结):{Colors.RESET}\n{manual_summary}")
-                    final_message_object = Message(role='assistant', content=manual_summary)
+            # 使用新的find_final_assistant_message函数查找最终回答
+            final_message = find_final_assistant_message(response_chunk)
+            
+            if final_message:
+                # 如果找到了最终回答消息，提取并清洗它的内容
+                if hasattr(final_message, 'content'):
+                    clean_final_answer = extract_content(final_message.content)
                 else:
-                    logger.error("手动生成分析报告也失败了。")
-                    print(f"{Colors.RED}无法生成最终分析报告。{Colors.RESET}")
+                    clean_final_answer = extract_content(final_message.get('content', ''))
+                
+                if clean_final_answer:
+                    # 如果有干净的回答，将它作为最终消息对象
+                    final_message_object = Message(role='assistant', content=clean_final_answer)
+                    logger.info("成功找到并提取了最终回答。")
+                else:
+                    logger.warning("找到了最终消息，但内容提取为空。")
+            else:
+                # 如果没有找到最终消息，尝试直接从full_response_content提取
+                clean_final_answer = extract_content(full_response_content)
+                
+                if clean_final_answer:
+                    # 如果提取成功，创建一个新的消息对象
+                    final_message_object = Message(role='assistant', content=clean_final_answer)
+                    logger.info("从完整响应中提取了最终回答。")
+                else:
+                    # 如果都失败了，尝试手动生成分析报告
+                    logger.warning("未能提取到最终回答，尝试手动生成分析报告。")
+                    manual_summary = generate_final_analysis(messages + [Message(role='assistant', content=full_response_content)])
+                    if manual_summary:
+                        print(f"{Colors.BOLD}{Colors.GREEN}LEMMA (分析总结):{Colors.RESET}\n{manual_summary}")
+                        final_message_object = Message(role='assistant', content=manual_summary)
+                    else:
+                        logger.error("手动生成分析报告也失败了。")
+                        print(f"{Colors.RED}无法生成最终分析报告。{Colors.RESET}")
 
-            # 将最终有效的回复（无论是Agent自生成的还是我们手动总结的）加入历史记录
+            # 将最终有效的回复加入历史记录
             if final_message_object:
                 messages.append(final_message_object)
 
