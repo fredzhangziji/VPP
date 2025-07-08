@@ -4,7 +4,7 @@
 """
 LEMMA: 电力市场分析智能体
 
-基于Qwen-Agent框架开发的电力市场分析智能体，可以分析电价偏差事件，连接到远程Ollama服务。
+基于Qwen-Agent框架开发的电力市场分析智能体，可以分析电价偏差事件，连接到远程Ollama服务和Qwen3:32b LLM模型。
 具有以下核心工具：
 1. 价格偏差分析工具
 2. 竞价空间分析工具 
@@ -24,7 +24,7 @@ from qwen_agent.tools.base import BaseTool, register_tool
 from qwen_agent.agents import Assistant
 from qwen_agent.llm.base import Message
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import create_engine
 
 # 终端颜色设置
@@ -42,7 +42,7 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 # 配置日志
 logging.basicConfig(
-    level=logging.WARNING,
+    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler("lemma_agent.log"),  # 文件日志
@@ -68,7 +68,7 @@ DB_CONFIG_VPP_SERVICE = {
 class PriceDeviationTool(BaseTool):
     """用于获取电价偏差报告的工具。"""
     
-    description = "获取特定日期的电价偏差报告，包括市场价格、预测价格和实际价格之间的偏差情况。"
+    description = "获取特定日期的电价偏差报告，包括预测价格和实际价格之间的偏差情况。"
     
     parameters = [{
         "name": "date",
@@ -92,8 +92,6 @@ class PriceDeviationTool(BaseTool):
         Returns:
             tuple: (start_time, end_time) 用于SQL查询的时间范围
         """
-        from datetime import datetime, timedelta
-        import re
         
         # 处理"昨天"、"今天"等描述性日期
         if date_str == "昨天":
@@ -314,7 +312,9 @@ class PriceDeviationTool(BaseTool):
 class BiddingSpaceTool(BaseTool):
     """用于分析竞价空间偏差的工具。"""
     
-    description = "分析特定日期和区域的电力市场竞价空间偏差，包括供应曲线、需求曲线和出清价格的变化。"
+    description = """分析特定日期和区域的电力市场竞价空间偏差。
+    竞价空间是电力市场中的一个重要概念，电力市场的竞价空间（Bidding Space）可以被视为火电机组的“市场容量”或“博弈空间”。这个空间越大，火电的议价能力越强，电价越高；这个空间越小，火电的竞争越激烈，电价越低。因此，竞价空间对于现货电价的影响是显著的。
+    内蒙省份的竞价空间的公式为：竞价空间 = 总负荷 - 总新能源发电量 - 非市场发电量 + 总东送电量（输往内蒙外部的电量）"""
     
     parameters = [{
         "name": "date",
@@ -333,6 +333,90 @@ class BiddingSpaceTool(BaseTool):
         "required": False
     }]
     
+    def parse_date(self, date_str: str) -> tuple:
+        """
+        解析日期字符串，返回用于查询的开始和结束时间
+        
+        Args:
+            date_str: 日期字符串，可以是YYYY-MM-DD格式或描述性日期
+            
+        Returns:
+            tuple: (start_time, end_time) 用于SQL查询的时间范围
+        """
+        from datetime import datetime, timedelta
+        import re
+        
+        # 处理"昨天"、"今天"等描述性日期
+        if date_str == "昨天":
+            target_date = datetime.now() - timedelta(days=1)
+        elif date_str == "今天":
+            target_date = datetime.now()
+        elif date_str == "前天":
+            target_date = datetime.now() - timedelta(days=2)
+        # 处理"6月24日"格式
+        elif re.match(r'(\d+)月(\d+)日', date_str):
+            match = re.match(r'(\d+)月(\d+)日', date_str)
+            month, day = int(match.group(1)), int(match.group(2))
+            current_year = datetime.now().year
+            target_date = datetime(current_year, month, day)
+        # 处理YYYY-MM-DD格式
+        else:
+            try:
+                target_date = datetime.strptime(date_str, "%Y-%m-%d")
+            except ValueError:
+                # 如果无法解析，默认使用昨天
+                logger.warning(f"无法解析日期'{date_str}'，使用昨天作为默认值")
+                target_date = datetime.now() - timedelta(days=1)
+        
+        # 生成该日的起止时间
+        start_time = target_date.replace(hour=0, minute=0, second=0)
+        end_time = target_date.replace(hour=23, minute=59, second=59)
+        
+        return start_time.strftime("%Y-%m-%d %H:%M:%S"), end_time.strftime("%Y-%m-%d %H:%M:%S")
+
+    def parse_time_period(self, time_period: str, start_time: str, end_time: str) -> tuple:
+        """
+        解析时间段参数，返回调整后的开始和结束时间
+        
+        Args:
+            time_period: 时间段描述，如"全天"、"高峰期"或"08:00-16:00"
+            start_time: 初始开始时间
+            end_time: 初始结束时间
+            
+        Returns:
+            tuple: 调整后的(start_time, end_time)
+        """
+        
+        # 如果是"全天"或为空，直接返回原始时间范围
+        if not time_period or time_period == "全天":
+            return start_time, end_time
+        
+        # 解析日期部分
+        base_date = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S").date()
+        
+        # 处理"高峰期"(8:00-20:00)
+        if time_period == "高峰期":
+            new_start = datetime.combine(base_date, datetime.strptime("08:00", "%H:%M").time())
+            new_end = datetime.combine(base_date, datetime.strptime("20:00", "%H:%M").time())
+        # 处理"低谷期"(20:00-次日8:00)
+        elif time_period == "低谷期":
+            new_start = datetime.combine(base_date, datetime.strptime("20:00", "%H:%M").time())
+            new_end = datetime.combine(base_date, datetime.strptime("08:00", "%H:%M").time())
+        # 处理具体时间范围，如"08:00-16:00"
+        elif re.match(r'(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})', time_period):
+            match = re.match(r'(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})', time_period)
+            start_h, start_m = int(match.group(1)), int(match.group(2))
+            end_h, end_m = int(match.group(3)), int(match.group(4))
+            
+            new_start = datetime.combine(base_date, datetime.strptime(f"{start_h:02d}:{start_m:02d}", "%H:%M").time())
+            new_end = datetime.combine(base_date, datetime.strptime(f"{end_h:02d}:{end_m:02d}", "%H:%M").time())
+        else:
+            # 无法解析时，返回原始时间范围
+            logger.warning(f"无法解析时间段'{time_period}'，使用全天作为默认值")
+            return start_time, end_time
+        
+        return new_start.strftime("%Y-%m-%d %H:%M:%S"), new_end.strftime("%Y-%m-%d %H:%M:%S")
+
     def call(self, params: str, **kwargs) -> str:
         """执行竞价空间偏差分析操作。"""
         logger.debug(f"BiddingSpaceTool被调用，参数: {params}")
@@ -341,29 +425,132 @@ class BiddingSpaceTool(BaseTool):
         # 解析参数
         try:
             parsed_params = json.loads(params)
-            date = parsed_params.get("date", "")
-            region = parsed_params.get("region", "全国")
+            date_str = parsed_params.get("date", "")
+            region = parsed_params.get("region", "内蒙全省")
             time_period = parsed_params.get("time_period", "全天")
         except Exception as e:
             logger.error(f"参数解析错误: {e}")
             return json.dumps({"error": f"参数解析错误: {e}"}, ensure_ascii=False)
         
-        # TODO: 实现与数据库的连接和查询
-        # 当前返回模拟数据
-        mock_analysis = {
-            "date": date,
-            "region": region,
-            "time_period": time_period,
-            "supply_curve_shift": "上移约15%",
-            "demand_curve_shift": "基本稳定，小时尖峰需求增加8%",
-            "clearing_price_change": "+85.4元/MWh",
-            "bid_concentration_index": 0.68,
-            "unusual_bidding_patterns": True,
-            "key_market_participants_impact": "某些大型新能源供应商的出力显著低于预期，导致供应曲线上移",
-            "analysis_summary": "该日期的竞价空间出现明显异常，主要表现为供应曲线整体上移，而需求相对稳定，导致出清价格显著上升。这可能与新能源出力不足有关。"
-        }
+        # 解析日期参数
+        try:
+            start_time, end_time = self.parse_date(date_str)
+            # 解析时间段
+            start_time, end_time = self.parse_time_period(time_period, start_time, end_time)
+        except Exception as e:
+            logger.error(f"日期解析错误: {e}")
+            return json.dumps({"error": f"日期解析错误: {e}"}, ensure_ascii=False)
         
-        return json.dumps(mock_analysis, ensure_ascii=False)
+        # 使用SQLAlchemy创建数据库连接
+        engine = None
+        try:
+            db_url = f"mysql+pymysql://{DB_CONFIG_VPP_SERVICE['user']}:{DB_CONFIG_VPP_SERVICE['password']}@{DB_CONFIG_VPP_SERVICE['host']}:{DB_CONFIG_VPP_SERVICE['port']}/{DB_CONFIG_VPP_SERVICE['database']}"
+            engine = create_engine(db_url)
+            
+            # 查询1: 预测的竞价空间数据
+            forecast_query = """
+            SELECT date_time, bidding_space AS bidding_space_forecast
+            FROM neimeng_market_forecast
+            WHERE date_time BETWEEN %s AND %s
+            ORDER BY date_time
+            """
+            
+            df_forecast = pd.read_sql_query(
+                forecast_query, 
+                engine, 
+                params=(start_time, end_time)
+            )
+            
+            # 查询2: 实际的竞价空间数据
+            actual_query = """
+            SELECT date_time, bidding_space AS bidding_space_actual
+            FROM neimeng_market_actual
+            WHERE date_time BETWEEN %s AND %s
+            ORDER BY date_time
+            """
+            
+            df_actual = pd.read_sql_query(
+                actual_query, 
+                engine, 
+                params=(start_time, end_time)
+            )
+            
+            # 检查查询结果
+            if df_forecast.empty and df_actual.empty:
+                logger.warning(f"查询结果为空: forecast={len(df_forecast)}, actual={len(df_actual)}")
+                return json.dumps({
+                    "error": f"未找到{start_time}至{end_time}期间的竞价空间数据"
+                }, ensure_ascii=False)
+            
+            # 合并数据集 (外连接，保留所有时间点)
+            df_forecast['date_time'] = pd.to_datetime(df_forecast['date_time'])
+            df_actual['date_time'] = pd.to_datetime(df_actual['date_time'])
+            df_merged = pd.merge(df_forecast, df_actual, on='date_time', how='outer')
+            
+            # 处理缺失值
+            df_merged = df_merged.interpolate(method='linear')
+            df_merged = df_merged.ffill().bfill()
+            
+            # 计算每个时间点的偏差
+            df_merged['deviation'] = df_merged['bidding_space_actual'] - df_merged['bidding_space_forecast']
+            df_merged['abs_deviation'] = abs(df_merged['deviation'])
+            
+            # 计算核心指标
+            forecast_mean = round(df_merged['bidding_space_forecast'].mean(), 2)
+            actual_mean = round(df_merged['bidding_space_actual'].mean(), 2)
+            mean_deviation = round(abs(actual_mean - forecast_mean), 2)
+            mean_deviation_percentage = round((mean_deviation / forecast_mean) * 100 if forecast_mean else 0, 2)
+            
+            # 找出最大和最小偏差点
+            max_dev_idx = df_merged['abs_deviation'].idxmax()
+            min_dev_idx = df_merged['abs_deviation'].idxmin()
+            
+            max_dev_time = df_merged.loc[max_dev_idx, 'date_time'].strftime('%Y-%m-%d %H:%M:%S')
+            min_dev_time = df_merged.loc[min_dev_idx, 'date_time'].strftime('%Y-%m-%d %H:%M:%S')
+            
+            max_dev_value = round(df_merged.loc[max_dev_idx, 'abs_deviation'], 2)
+            min_dev_value = round(df_merged.loc[min_dev_idx, 'abs_deviation'], 2)
+            
+            # 生成分析摘要
+            deviation_direction = "高于" if actual_mean > forecast_mean else "低于"
+            deviation_magnitude = "显著" if abs(mean_deviation_percentage) > 15 else "轻微"
+            
+            analysis_summary = (
+                f"在{date_str}的{time_period}，{region}实际竞价空间均值为{actual_mean} MW，{deviation_magnitude}{deviation_direction}预测的{forecast_mean} MW，"
+                f"平均偏差率达到{mean_deviation_percentage}%。偏差最大的时刻发生在{max_dev_time}，偏差值为{max_dev_value} MW；"
+                f"偏差最小的时刻在{min_dev_time}，偏差值仅为{min_dev_value} MW。"
+                f"根据公式'竞价空间 = 统调负荷 + 东送计划 - 新能源出力 - 非市场出力'，"
+                f"本次偏差可能源于对统调负荷预测不足或新能源出力预测过高。"
+            )
+            
+            # 构建报告
+            report = {
+                "date": date_str,
+                "region": region,
+                "time_period": time_period,
+                "forecast_mean": forecast_mean,
+                "actual_mean": actual_mean,
+                "mean_deviation": mean_deviation,
+                "mean_deviation_percentage": mean_deviation_percentage,
+                "min_abs_deviation_point": {
+                    "time": min_dev_time,
+                    "deviation": min_dev_value
+                },
+                "max_abs_deviation_point": {
+                    "time": max_dev_time,
+                    "deviation": max_dev_value
+                },
+                "analysis_summary": analysis_summary
+            }
+            
+            return json.dumps(report, ensure_ascii=False)
+            
+        except Exception as e:
+            logger.error(f"处理数据时出错: {e}", exc_info=True)
+            return json.dumps({"error": f"处理数据时出错: {e}"}, ensure_ascii=False)
+        finally:
+            if engine:
+                engine.dispose()
 
 @register_tool('analyze_power_generation_deviation')
 class PowerGenerationTool(BaseTool):
@@ -388,6 +575,47 @@ class PowerGenerationTool(BaseTool):
         "required": False
     }]
     
+    def parse_date(self, date_str: str) -> tuple:
+        """
+        解析日期字符串，返回用于查询的开始和结束时间
+        
+        Args:
+            date_str: 日期字符串，可以是YYYY-MM-DD格式或描述性日期
+            
+        Returns:
+            tuple: (start_time, end_time) 用于SQL查询的时间范围
+        """
+        from datetime import datetime, timedelta
+        import re
+        
+        # 处理"昨天"、"今天"等描述性日期
+        if date_str == "昨天":
+            target_date = datetime.now() - timedelta(days=1)
+        elif date_str == "今天":
+            target_date = datetime.now()
+        elif date_str == "前天":
+            target_date = datetime.now() - timedelta(days=2)
+        # 处理"6月24日"格式
+        elif re.match(r'(\d+)月(\d+)日', date_str):
+            match = re.match(r'(\d+)月(\d+)日', date_str)
+            month, day = int(match.group(1)), int(match.group(2))
+            current_year = datetime.now().year
+            target_date = datetime(current_year, month, day)
+        # 处理YYYY-MM-DD格式
+        else:
+            try:
+                target_date = datetime.strptime(date_str, "%Y-%m-%d")
+            except ValueError:
+                # 如果无法解析，默认使用昨天
+                logger.warning(f"无法解析日期'{date_str}'，使用昨天作为默认值")
+                target_date = datetime.now() - timedelta(days=1)
+        
+        # 生成该日的起止时间
+        start_time = target_date.replace(hour=0, minute=0, second=0)
+        end_time = target_date.replace(hour=23, minute=59, second=59)
+        
+        return start_time.strftime("%Y-%m-%d %H:%M:%S"), end_time.strftime("%Y-%m-%d %H:%M:%S")
+    
     def call(self, params: str, **kwargs) -> str:
         """执行电力生成偏差分析操作。"""
         logger.debug(f"PowerGenerationTool被调用，参数: {params}")
@@ -396,61 +624,400 @@ class PowerGenerationTool(BaseTool):
         # 解析参数
         try:
             parsed_params = json.loads(params)
-            date = parsed_params.get("date", "")
-            region = parsed_params.get("region", "全国")
-            energy_type = parsed_params.get("energy_type", "全部")
+            date_str = parsed_params.get("date", "")
+            region = parsed_params.get("region", "内蒙全省")  # 默认为内蒙全省
+            energy_type = parsed_params.get("energy_type", "全部")  # 默认分析所有能源类型
         except Exception as e:
             logger.error(f"参数解析错误: {e}")
             return json.dumps({"error": f"参数解析错误: {e}"}, ensure_ascii=False)
         
-        # TODO: 实现与数据库的连接和查询
-        # 当前返回模拟数据
-        mock_analysis = {
-            "date": date,
-            "region": region,
-            "energy_type": energy_type,
-            "forecast_generation": {
-                "wind": 12500,  # 单位: MWh
-                "solar": 18700,
-                "hydro": 8500,
-                "thermal": 45000
-            },
-            "actual_generation": {
-                "wind": 8200,  # 单位: MWh
-                "solar": 12400,
-                "hydro": 8300,
-                "thermal": 48000
-            },
-            "deviation_percentage": {
-                "wind": -34.4,
-                "solar": -33.7,
-                "hydro": -2.4,
-                "thermal": +6.7
-            },
-            "weather_impact": "该日期出现大面积云层覆盖和弱风天气，显著影响了风电和光伏发电效率",
-            "analysis_summary": "新能源出力严重不足，风电和光伏分别比预期低了34.4%和33.7%，导致火电增发以弥补缺口。这是价格偏差的主要原因之一。"
-        }
+        # 解析日期参数
+        try:
+            start_time, end_time = self.parse_date(date_str)
+        except Exception as e:
+            logger.error(f"日期解析错误: {e}")
+            return json.dumps({"error": f"日期解析错误: {e}"}, ensure_ascii=False)
         
-        return json.dumps(mock_analysis, ensure_ascii=False)
-
+        # 使用SQLAlchemy创建数据库连接
+        engine = None
+        try:
+            db_url = f"mysql+pymysql://{DB_CONFIG_VPP_SERVICE['user']}:{DB_CONFIG_VPP_SERVICE['password']}@{DB_CONFIG_VPP_SERVICE['host']}:{DB_CONFIG_VPP_SERVICE['port']}/{DB_CONFIG_VPP_SERVICE['database']}"
+            engine = create_engine(db_url)
+            
+            # 查询1: 获取预测的风电和光伏数据
+            forecast_query = """
+            SELECT date_time, wind_power, solar_power
+            FROM neimeng_market_forecast
+            WHERE date_time BETWEEN %s AND %s
+            ORDER BY date_time
+            """
+            
+            df_forecast = pd.read_sql_query(
+                forecast_query, 
+                engine, 
+                params=(start_time, end_time)
+            )
+            
+            # 查询2: 获取实际的风电和光伏数据
+            actual_query = """
+            SELECT date_time, wind_power, solar_power
+            FROM neimeng_market_actual
+            WHERE date_time BETWEEN %s AND %s
+            ORDER BY date_time
+            """
+            
+            df_actual = pd.read_sql_query(
+                actual_query, 
+                engine, 
+                params=(start_time, end_time)
+            )
+            
+            # 检查查询结果
+            if df_forecast.empty or df_actual.empty:
+                logger.warning(f"查询结果为空: forecast={len(df_forecast)}, actual={len(df_actual)}")
+                return json.dumps({
+                    "error": f"未找到{start_time}至{end_time}期间的完整风电和光伏数据",
+                    "forecast_empty": df_forecast.empty,
+                    "actual_empty": df_actual.empty
+                }, ensure_ascii=False)
+            
+            # 确保数据类型正确
+            df_forecast['date_time'] = pd.to_datetime(df_forecast['date_time'])
+            df_actual['date_time'] = pd.to_datetime(df_actual['date_time'])
+            
+            # 记录合并前数据状态
+            logger.debug(f"合并前数据状态: forecast={df_forecast.shape}, actual={df_actual.shape}")
+            logger.debug(f"预测数据列: {df_forecast.columns.tolist()}")
+            logger.debug(f"实际数据列: {df_actual.columns.tolist()}")
+            
+            # 合并数据集 (内连接，只保留两边都有的时间点，避免过多NaN)
+            df_merged = pd.merge(
+                df_forecast, 
+                df_actual, 
+                on='date_time', 
+                how='inner',  # 改为inner连接确保两边都有数据
+                suffixes=('_forecast', '_actual')
+            )
+            
+            # 检查合并后的数据
+            if df_merged.empty:
+                logger.warning("合并后数据为空，预测和实际数据时间点可能不匹配")
+                return json.dumps({
+                    "error": "预测和实际数据时间点不匹配，无法进行有效分析",
+                    "forecast_times": df_forecast['date_time'].min().strftime('%Y-%m-%d %H:%M:%S') + " 至 " + df_forecast['date_time'].max().strftime('%Y-%m-%d %H:%M:%S') if not df_forecast.empty else "无数据",
+                    "actual_times": df_actual['date_time'].min().strftime('%Y-%m-%d %H:%M:%S') + " 至 " + df_actual['date_time'].max().strftime('%Y-%m-%d %H:%M:%S') if not df_actual.empty else "无数据"
+                }, ensure_ascii=False)
+            
+            # 检查合并后是否有NaN值
+            nan_count = df_merged.isna().sum().sum()
+            if nan_count > 0:
+                logger.warning(f"合并后数据包含{nan_count}个NaN值，尝试插值处理")
+                # 处理缺失值 - 逐列检查并处理
+                for col in df_merged.columns:
+                    if df_merged[col].isna().any():
+                        # 跳过日期时间列
+                        if col == 'date_time':
+                            continue
+                        # 对数值列进行插值
+                        df_merged[col] = df_merged[col].interpolate(method='linear')
+                
+                # 检查处理后是否仍有NaN
+                remaining_nan = df_merged.isna().sum().sum()
+                if remaining_nan > 0:
+                    logger.warning(f"插值后仍有{remaining_nan}个NaN值，使用向前和向后填充")
+                    df_merged = df_merged.ffill().bfill()
+                
+                # 最后检查
+                if df_merged.isna().sum().sum() > 0:
+                    logger.warning("数据存在无法填充的NaN值，这可能影响分析结果")
+            
+            # 初始化分析结果字典
+            analysis_result = {
+                "date": date_str,
+                "region": region,
+                "energy_type": energy_type,
+                "analysis": {}
+            }
+            
+            try:
+                # 处理风电数据
+                wind_analysis = {}
+                
+                # 安全地计算风电平均值
+                wind_forecast_avg = round(df_merged['wind_power_forecast'].mean(), 2)
+                wind_actual_avg = round(df_merged['wind_power_actual'].mean(), 2)
+                wind_deviation = round(wind_actual_avg - wind_forecast_avg, 2)
+                # 安全处理除零情况
+                if abs(wind_forecast_avg) < 0.01:
+                    wind_deviation_pct = 0 if abs(wind_deviation) < 0.01 else 100.0
+                    logger.warning("风电预测平均值接近零，无法计算准确的偏差百分比")
+                else:
+                    wind_deviation_pct = round((wind_deviation / wind_forecast_avg) * 100, 2)
+                
+                # 计算每个时间点的风电偏差并找出最大和最小偏差点
+                df_merged['wind_deviation'] = df_merged['wind_power_actual'] - df_merged['wind_power_forecast']
+                df_merged['wind_abs_deviation'] = abs(df_merged['wind_deviation'])
+                
+                # 安全获取最大和最小偏差点
+                if not df_merged['wind_abs_deviation'].empty:
+                    try:
+                        wind_max_dev_idx = df_merged['wind_abs_deviation'].idxmax()
+                        wind_min_dev_idx = df_merged['wind_abs_deviation'].idxmin()
+                        
+                        wind_max_dev_time = df_merged.loc[wind_max_dev_idx, 'date_time'].strftime('%Y-%m-%d %H:%M:%S')
+                        wind_min_dev_time = df_merged.loc[wind_min_dev_idx, 'date_time'].strftime('%Y-%m-%d %H:%M:%S')
+                        
+                        wind_max_dev_value = round(df_merged.loc[wind_max_dev_idx, 'wind_deviation'], 2)
+                        wind_min_dev_value = round(df_merged.loc[wind_min_dev_idx, 'wind_deviation'], 2)
+                    except Exception as e:
+                        logger.error(f"计算风电偏差点时出错: {e}")
+                        wind_max_dev_time = "未知"
+                        wind_min_dev_time = "未知"
+                        wind_max_dev_value = 0
+                        wind_min_dev_value = 0
+                else:
+                    wind_max_dev_time = "未知"
+                    wind_min_dev_time = "未知"
+                    wind_max_dev_value = 0
+                    wind_min_dev_value = 0
+                    
+                # 保存风电分析结果
+                wind_analysis = {
+                    "forecast_avg_power": wind_forecast_avg,
+                    "actual_avg_power": wind_actual_avg,
+                    "deviation_absolute": wind_deviation,
+                    "deviation_percentage": wind_deviation_pct,
+                    "max_abs_deviation_point": {
+                        "time": wind_max_dev_time,
+                        "deviation": wind_max_dev_value
+                    },
+                    "min_abs_deviation_point": {
+                        "time": wind_min_dev_time,
+                        "deviation": wind_min_dev_value
+                    }
+                }
+                
+                # 处理光伏数据
+                solar_analysis = {}
+                
+                # 安全地计算光伏平均值
+                solar_forecast_avg = round(df_merged['solar_power_forecast'].mean(), 2)
+                solar_actual_avg = round(df_merged['solar_power_actual'].mean(), 2)
+                solar_deviation = round(solar_actual_avg - solar_forecast_avg, 2)
+                # 安全处理除零情况
+                if abs(solar_forecast_avg) < 0.01:
+                    solar_deviation_pct = 0 if abs(solar_deviation) < 0.01 else 100.0
+                    logger.warning("光伏预测平均值接近零，无法计算准确的偏差百分比")
+                else:
+                    solar_deviation_pct = round((solar_deviation / solar_forecast_avg) * 100, 2)
+                
+                # 计算每个时间点的光伏偏差并找出最大和最小偏差点
+                df_merged['solar_deviation'] = df_merged['solar_power_actual'] - df_merged['solar_power_forecast']
+                df_merged['solar_abs_deviation'] = abs(df_merged['solar_deviation'])
+                
+                # 安全获取最大和最小偏差点
+                if not df_merged['solar_abs_deviation'].empty:
+                    try:
+                        solar_max_dev_idx = df_merged['solar_abs_deviation'].idxmax()
+                        solar_min_dev_idx = df_merged['solar_abs_deviation'].idxmin()
+                        
+                        solar_max_dev_time = df_merged.loc[solar_max_dev_idx, 'date_time'].strftime('%Y-%m-%d %H:%M:%S')
+                        solar_min_dev_time = df_merged.loc[solar_min_dev_idx, 'date_time'].strftime('%Y-%m-%d %H:%M:%S')
+                        
+                        solar_max_dev_value = round(df_merged.loc[solar_max_dev_idx, 'solar_deviation'], 2)
+                        solar_min_dev_value = round(df_merged.loc[solar_min_dev_idx, 'solar_deviation'], 2)
+                    except Exception as e:
+                        logger.error(f"计算光伏偏差点时出错: {e}")
+                        solar_max_dev_time = "未知"
+                        solar_min_dev_time = "未知"
+                        solar_max_dev_value = 0
+                        solar_min_dev_value = 0
+                else:
+                    solar_max_dev_time = "未知"
+                    solar_min_dev_time = "未知"
+                    solar_max_dev_value = 0
+                    solar_min_dev_value = 0
+                
+                # 保存光伏分析结果
+                solar_analysis = {
+                    "forecast_avg_power": solar_forecast_avg,
+                    "actual_avg_power": solar_actual_avg,
+                    "deviation_absolute": solar_deviation,
+                    "deviation_percentage": solar_deviation_pct,
+                    "max_abs_deviation_point": {
+                        "time": solar_max_dev_time,
+                        "deviation": solar_max_dev_value
+                    },
+                    "min_abs_deviation_point": {
+                        "time": solar_min_dev_time,
+                        "deviation": solar_min_dev_value
+                    }
+                }
+            except KeyError as ke:
+                logger.error(f"访问数据列时出错: {ke}")
+                return json.dumps({
+                    "error": f"数据处理过程中遇到列访问错误: {ke}",
+                    "available_columns": df_merged.columns.tolist()
+                }, ensure_ascii=False)
+            except Exception as e:
+                logger.error(f"数据分析过程中出错: {e}")
+                return json.dumps({
+                    "error": f"数据分析过程中出错: {e}"
+                }, ensure_ascii=False)
+            
+            # 根据能源类型参数过滤分析结果
+            if energy_type.lower() == "风电" or energy_type.lower() == "全部":
+                analysis_result["analysis"]["wind_power"] = wind_analysis
+            
+            if energy_type.lower() == "光伏" or energy_type.lower() == "全部":
+                analysis_result["analysis"]["solar_power"] = solar_analysis
+            
+            # 生成分析摘要
+            wind_status = "高于" if wind_deviation_pct > 0 else "低于"
+            solar_status = "高于" if solar_deviation_pct > 0 else "低于"
+            
+            wind_magnitude = "严重" if abs(wind_deviation_pct) > 20 else "轻微"
+            solar_magnitude = "严重" if abs(solar_deviation_pct) > 20 else "轻微"
+            
+            # 安全计算风电和光伏偏差最大的时段统计
+            try:
+                wind_peak_hours = df_merged.loc[df_merged['wind_abs_deviation'] > df_merged['wind_abs_deviation'].quantile(0.75), 'date_time']
+                wind_peak_period = "未能确定明显高偏差时段"
+                
+                if not wind_peak_hours.empty and len(wind_peak_hours) >= 3:
+                    wind_peak_hours = [hour.hour for hour in wind_peak_hours]
+                    if sum(1 for h in wind_peak_hours if 6 <= h <= 11) >= len(wind_peak_hours) * 0.5:
+                        wind_peak_period = "上午时段"
+                    elif sum(1 for h in wind_peak_hours if 12 <= h <= 17) >= len(wind_peak_hours) * 0.5:
+                        wind_peak_period = "午后时段"
+                    elif sum(1 for h in wind_peak_hours if 18 <= h <= 23) >= len(wind_peak_hours) * 0.5:
+                        wind_peak_period = "晚间时段"
+                    elif sum(1 for h in wind_peak_hours if 0 <= h <= 5) >= len(wind_peak_hours) * 0.5:
+                        wind_peak_period = "深夜时段"
+            except Exception as e:
+                logger.error(f"计算风电峰值时段时出错: {e}")
+                wind_peak_period = "未能确定明显高偏差时段"
+            
+            try:
+                solar_peak_hours = df_merged.loc[df_merged['solar_abs_deviation'] > df_merged['solar_abs_deviation'].quantile(0.75), 'date_time']
+                solar_peak_period = "未能确定明显高偏差时段"
+                
+                if not solar_peak_hours.empty and len(solar_peak_hours) >= 3:
+                    solar_peak_hours = [hour.hour for hour in solar_peak_hours]
+                    if sum(1 for h in solar_peak_hours if 8 <= h <= 11) >= len(solar_peak_hours) * 0.5:
+                        solar_peak_period = "上午时段"
+                    elif sum(1 for h in solar_peak_hours if 12 <= h <= 15) >= len(solar_peak_hours) * 0.5:
+                        solar_peak_period = "正午时段"
+                    elif sum(1 for h in solar_peak_hours if 16 <= h <= 19) >= len(solar_peak_hours) * 0.5:
+                        solar_peak_period = "傍晚时段"
+            except Exception as e:
+                logger.error(f"计算光伏峰值时段时出错: {e}")
+                solar_peak_period = "未能确定明显高偏差时段"
+            
+            # 构建摘要
+            summary = ""
+            if "wind_power" in analysis_result["analysis"] and "solar_power" in analysis_result["analysis"]:
+                summary = f"该日{region}新能源出力{wind_magnitude if abs(wind_deviation_pct) > abs(solar_deviation_pct) else solar_magnitude}不足，" \
+                         f"风电实际出力比预期{wind_status}约{abs(wind_deviation_pct)}%，" \
+                         f"光伏出力{solar_status}约{abs(solar_deviation_pct)}%。" \
+                         f"风电偏差最大时间点在{wind_max_dev_time}，光伏偏差最大时间点在{solar_max_dev_time}。" \
+                         f"风电偏差主要集中在{wind_peak_period}，光伏偏差主要集中在{solar_peak_period}。"
+            elif "wind_power" in analysis_result["analysis"]:
+                summary = f"该日{region}风电出力{wind_magnitude}不足，" \
+                         f"实际出力比预期{wind_status}约{abs(wind_deviation_pct)}%。" \
+                         f"偏差最大的时间点在{wind_max_dev_time}，偏差主要集中在{wind_peak_period}。"
+            elif "solar_power" in analysis_result["analysis"]:
+                summary = f"该日{region}光伏出力{solar_magnitude}不足，" \
+                         f"实际出力比预期{solar_status}约{abs(solar_deviation_pct)}%。" \
+                         f"偏差最大的时间点在{solar_max_dev_time}，偏差主要集中在{solar_peak_period}。"
+            
+            analysis_result["analysis_summary"] = summary
+            logger.debug(f"新能源出力分析结果: {summary}")
+            
+            # 最后进行JSON序列化，并处理可能的序列化错误
+            try:
+                result_json = json.dumps(analysis_result, ensure_ascii=False)
+                logger.debug(f"成功生成分析结果JSON，长度: {len(result_json)}")
+                return result_json
+            except Exception as e:
+                logger.error(f"JSON序列化错误: {e}")
+                # 尝试一个简化的响应
+                return json.dumps({
+                    "error": "结果序列化失败，请检查数据格式",
+                    "message": str(e)
+                }, ensure_ascii=False)
+            
+        except Exception as e:
+            logger.error(f"处理数据时出错: {e}", exc_info=True)
+            return json.dumps({"error": f"处理数据时出错: {e}"}, ensure_ascii=False)
+        finally:
+            if engine:
+                engine.dispose()
 
 @register_tool('get_regional_capacity_info')
 class RegionalCapacityTool(BaseTool):
     """用于获取区域发电容量信息的工具。"""
     
-    description = "获取特定区域的发电容量结构信息，包括不同类型能源的装机容量、占比以及近期变化趋势。"
+    description = "获取特定区域的发电容量结构信息，包括不同类型能源的装机容量、占比。"
     
     parameters = [{
         "name": "region",
         "type": "string",
         "description": "电力市场区域，例如'华东'、'华北'、'南方'等",
         "required": True
-    }, {
-        "name": "year",
-        "type": "string",
-        "description": "查询年份，例如'2024'、'今年'等",
-        "required": False
     }]
+    
+    # 硬编码的区域容量数据
+    REGIONAL_CAPACITY_DATA = {
+        '呼包东': {
+            'capacity_by_type': {
+                'wind': 21414.75,  # 单位: MW
+                'solar': 4340.87,
+                'thermal': 12319.00,
+                'other': 70.36,
+                'hydro': 1204.50
+            },
+            'total_capacity': 39349.43,
+            'percentage_in_mengxi': {  # 占全蒙西地区的百分比
+                'wind': 53.9,
+                'solar': 18.1,
+                'thermal': 28.0,
+                'other': 15.3,
+                'hydro': 57.8
+            },
+            'percentage_in_region': {  # 区内占比
+                'wind': 54.4,
+                'solar': 11.0,
+                'thermal': 31.3,
+                'other': 0.2,
+                'hydro': 3.1
+            }
+        },
+        '呼包西': {
+            'capacity_by_type': {
+                'wind': 18332.56,  # 单位: MW
+                'solar': 19689.21,
+                'thermal': 31648.00,
+                'other': 390.70,
+                'hydro': 880.91
+            },
+            'total_capacity': 70941.38,
+            'percentage_in_mengxi': {  # 占全蒙西地区的百分比
+                'wind': 46.1,
+                'solar': 81.9,
+                'thermal': 72.0,
+                'other': 84.7,
+                'hydro': 42.2
+            },
+            'percentage_in_region': {  # 区内占比
+                'wind': 25.8,
+                'solar': 27.8,
+                'thermal': 44.6,
+                'other': 0.6,
+                'hydro': 1.2
+            }
+        }
+    }
     
     def call(self, params: str, **kwargs) -> str:
         """执行区域容量信息获取操作。"""
@@ -461,43 +1028,60 @@ class RegionalCapacityTool(BaseTool):
         try:
             parsed_params = json.loads(params)
             region = parsed_params.get("region", "")
-            year = parsed_params.get("year", "2024")
         except Exception as e:
             logger.error(f"参数解析错误: {e}")
             return json.dumps({"error": f"参数解析错误: {e}"}, ensure_ascii=False)
         
-        # TODO: 实现与数据库的连接和查询
-        # 当前返回模拟数据
-        mock_info = {
+        # 查找区域数据
+        if region not in self.REGIONAL_CAPACITY_DATA:
+            available_regions = ", ".join(self.REGIONAL_CAPACITY_DATA.keys())
+            error_msg = f"未找到'{region}'地区的装机容量数据，可选地区为：{available_regions}"
+            logger.warning(error_msg)
+            return json.dumps({"error": error_msg}, ensure_ascii=False)
+        
+        # 获取区域数据
+        region_data = self.REGIONAL_CAPACITY_DATA[region]
+        
+        # 提取数据
+        capacity_by_type = region_data['capacity_by_type']
+        total_capacity = region_data['total_capacity']
+        percentage_in_region = region_data['percentage_in_region']
+        
+        # 计算新能源渗透率（风电+光伏占比）
+        new_energy_penetration = percentage_in_region['wind'] + percentage_in_region['solar']
+        
+        # 生成分析摘要
+        primary_source = max(percentage_in_region.items(), key=lambda x: x[1])
+        analysis_summary = f"{region}地区总装机容量为{total_capacity}MW，其中{primary_source[0]}为第一大电源，占比达{primary_source[1]}%。"
+        
+        if primary_source[0] == 'wind' or primary_source[0] == 'solar':
+            analysis_summary += f"新能源（风电+光伏）装机占比达{new_energy_penetration}%，使得该区域电网对天气条件较为敏感。"
+        else:
+            analysis_summary += f"传统能源仍占主导，新能源（风电+光伏）渗透率为{new_energy_penetration}%。"
+        
+        # 构建响应
+        response = {
             "region": region,
-            "year": year,
-            "total_capacity": 158500,  # 单位: MW
+            "total_capacity": total_capacity,
             "capacity_by_type": {
-                "wind": 28500,  # 单位: MW
-                "solar": 42300,
-                "hydro": 15700,
-                "thermal": 68000,
-                "nuclear": 4000
+                "wind": capacity_by_type['wind'],
+                "solar": capacity_by_type['solar'],
+                "hydro": capacity_by_type['hydro'],
+                "thermal": capacity_by_type['thermal'],
+                "other": capacity_by_type['other']
             },
             "percentage_by_type": {
-                "wind": 18.0,
-                "solar": 26.7,
-                "hydro": 9.9,
-                "thermal": 42.9,
-                "nuclear": 2.5
+                "wind": percentage_in_region['wind'],
+                "solar": percentage_in_region['solar'],
+                "hydro": percentage_in_region['hydro'],
+                "thermal": percentage_in_region['thermal'],
+                "other": percentage_in_region['other']
             },
-            "year_on_year_change": {
-                "wind": +21.5,
-                "solar": +35.8,
-                "hydro": +2.1,
-                "thermal": -5.3,
-                "nuclear": 0.0
-            },
-            "new_energy_penetration": 44.7,  # 风电+光伏占比
-            "analysis_summary": "该区域新能源占比接近45%，而且仍在快速增长。风电和光伏的装机容量在过去一年分别增长了21.5%和35.8%。高新能源渗透率使得电网对天气条件更加敏感，导致价格波动加剧。"
+            "new_energy_penetration": new_energy_penetration,
+            "analysis_summary": analysis_summary
         }
         
-        return json.dumps(mock_info, ensure_ascii=False)
+        return json.dumps(response, ensure_ascii=False)
 
 def find_final_assistant_message(response: Any) -> Optional[Message]:
     """
@@ -781,14 +1365,14 @@ def get_session_id():
     return datetime.now().strftime("%Y%m%d%H%M%S")
 
 if __name__ == "__main__":
-    # 清屏和打印欢迎横幅保持不变
+    # 清屏和打印欢迎横幅
     os.system('cls' if os.name == 'nt' else 'clear')
     print_welcome_banner()
 
     session_id = get_session_id()
     logger.info(f"开始新会话，ID: {session_id}")
 
-    # LLM配置保持不变
+    # LLM配置
     llm_cfg = {
         'model': 'qwen3:32b',
         'model_server': 'http://10.5.0.100:11434/v1',
@@ -800,51 +1384,40 @@ if __name__ == "__main__":
         'request_timeout': 120 
     }
 
-    # 工具列表和系统提示词保持不变
+    # 工具列表和系统提示词
     tools = [
         'get_price_deviation_report', 'analyze_bidding_space_deviation',
         'analyze_power_generation_deviation', 'get_regional_capacity_info'
     ]
     system_message = """# 角色
-你是一个名为LEMMA的、顶级的电力市场AI Co-pilot。你的用户是专业的电力交易员，他们每天都在瞬息万变的市场中进行高风险的决策。你的核心目标是通过快速、精准、数据驱动的分析，帮助交易员洞察市场动态、进行精准的复盘、辅助交易决策，最终实现风险控制和利润最大化。
-
+你是一个名为LEMMA的、顶级的电力市场AI Co-pilot。你的用户是售电公司电力交易员，他们负责帮助客户进行电力交易以套利。你的核心目标是通过快速、精准、数据驱动的分析，帮助交易员洞察市场动态、进行精准的电力市场复盘，最终实现利润最大化。
 # 核心能力
-市场复盘分析：深度复盘历史市场事件（如价格异常、新能源出力偏差），穿透表象，精准定位根本原因，形成可供决策参考的、逻辑严谨的复盘报告。
-
-交易决策辅助：实时分析市场信号，预判价格趋势，为日前、实时交易提供申报策略建议。
+- 市场复盘分析：深度复盘历史市场事件（如价格异常、新能源出力偏差），穿透表象，精准定位根本原因，形成从售电公司角度出发的、可供决策参考的、逻辑严谨的复盘报告。
 
 # 工作原则
-数据驱动：你的所有结论都必须基于通过工具获取的量化数据。避免主观臆断和模糊不清的表述。你的语言就是数据。
-
-效率至上：交易员的时间极其宝贵。你的回答必须直击要点、简洁、结构化。使用项目符号或编号列表来呈现关键发现，使信息一目了然。
-
-量化影响：在分析原因时，不仅要说明“是什么”，更要量化“影响有多大”。
-
-错误示范： “因为光伏出力不足导致价格上涨。”
-
-正确示范： “价格上涨的核心驱动因素是光伏出力严重低于预期（偏差-33.7%），这导致约XX兆瓦的电力缺口需要由成本更高的火电机组（成本约XXX元/兆瓦时）来填补。”
-
-主动洞察：在完成分析报告后，在有实际数据支持的情况下，请主动提出1-2个关键的、面向未来的洞察或风险提示。例如：“结论：本次事件暴露了该地区在午间高峰期对光伏的过度依赖。建议关注未来几日的天气预报，如果再次出现多云天气，类似的日前高价风险可能重现。”
+- 数据驱动：你的所有结论都必须基于通过工具获取的量化数据。避免主观臆断和模糊不清的表述。你的语言就是数据。
+- 效率至上：交易员的时间极其宝贵。你的回答必须直击要点、简洁、结构化。使用项目符号或编号列表来呈现关键发现，使信息一目了然。
+- 量化影响：在分析原因时，不仅要说明"是什么"，更要量化"影响有多大"。
+- - 错误示范： "因为光伏出力不足导致价格上涨。"
+- - 正确示范： "价格上涨的核心驱动因素是光伏出力严重低于预期（偏差-33.7%），这导致约XX兆瓦的电力缺口需要由成本更高的火电机组（成本约XXX元/兆瓦时）来填补。"
+- 主动洞察：在完成分析报告后，在有实际数据支持的情况下，请主动提出1-2个关键的、面向未来的洞察或风险提示。例如："结论：本次事件暴露了该地区在午间高峰期对光伏的过度依赖。建议关注未来几日的天气预报，如果再次出现多云天气，类似的日前高价风险可能重现。"
+- 回答语言：必须用简体中文进行思考以及回答。
 
 # 可用工具
-你有以下工具可用，请根据需要自由选择一个或多个进行调用：
+你有以下工具可用，每轮问答只能调用一个工具，并在对话末尾询问用户是否要进行下一个工具的调用（但是不能暴露工具的名字），如果用户同意，则继续调用下一个工具，直到用户不同意为止：
+1. get_price_deviation_report: 用于获取价格偏差的基本情况和量化数据。
+2. analyze_bidding_space_deviation: 用于分析市场供需情况。
+3. analyze_power_generation_deviation: 用于分析各类电源（尤其是新能源）的实际出力与预测的偏差。
+4. get_regional_capacity_info: 用于了解地区的能源结构和装机容量。
 
-get_price_deviation_report: 用于获取价格偏差的基本情况和量化数据。
-
-analyze_bidding_space_deviation: 用于分析市场供需失衡情况。
-
-analyze_power_generation_deviation: 用于分析各类电源（尤其是新能源）的实际出力与预测的偏差。
-
-get_regional_capacity_info: 用于了解地区的能源结构和装机容量。
-
-# 核心指令：并行规划与一次性综合分析
-面对用户的复杂分析请求（例如“复盘一下昨天XX地区的价格异常”），你必须遵循以下高效的工作流程：
-
-全面规划：进行一次全面的思考，不要采用逐一问答、逐步执行的模式。
-
-批量执行：一次性地决定并返回回答该问题所需的所有工具调用指令 (<tool_call>)。
-
-综合报告：在收到所有工具的返回数据后，一次性地生成一份遵循上述所有工作原则（数据驱动、效率至上、量化影响、主动洞察）的、综合性的最终分析报告。
+# 核心指令：
+面对用户的复杂分析请求（例如"复盘一下昨天XX地区的价格异常"），你必须遵循以下高效的工作流程：
+- 不能暴露具体的工具名称。
+- 逐一问答、逐步执行的模式：首先调用get_price_deviation_report分析价格偏差，结束之后询问用户是否需要分析市场供需情况（竞价空间）。
+- 如果用户同意，调用analyze_bidding_space_deviation分析市场供需情况，结束之后询问用户是否需要分析各类能源的实际出力与预测的偏差。
+- 如果用户同意，调用analyze_power_generation_deviation分析各类电源（尤其是新能源）的实际出力与预测的偏差，结束之后询问用户是否需要分析地区的能源结构和装机容量。
+- 如果用户同意，调用get_regional_capacity_info，根据地区的能源结构和装机容量进行简单分析，结束之后询问用户是否需要总结一份综合性的分析报告。
+- 如果用户同意，根据上述四个工具的结果分析结果，生成一份从售电公司角度出发的综合性的最终分析报告。
     """
 
     # Agent初始化，使用 Assistant 类
