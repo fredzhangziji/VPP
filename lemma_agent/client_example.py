@@ -12,6 +12,7 @@ import json
 import os
 import time
 import sys
+import logging
 from typing import Dict, List, Optional
 from datetime import datetime
 
@@ -24,6 +25,14 @@ from rich.live import Live
 
 # 设置服务器地址和端口
 SERVER_URL = "http://127.0.0.1:8000"
+
+# 配置日志
+logging.basicConfig(
+    filename='client_example.log',
+    level=logging.INFO,
+    format='%(asctime)s - RAW: %(message)s',
+    encoding='utf-8'
+)
 
 # 初始化Rich控制台
 console = Console()
@@ -66,8 +75,7 @@ async def stream_chat(message: str, session_id: Optional[str] = None) -> Dict:
     console.print(f"\n[bold blue]用户:[/bold blue] {message}\n")
     
     # 准备接收AI回复的变量
-    thinking_content = ""
-    answer_content = ""
+    full_content = ""
     done = False
     start_time = time.time()
     last_update = start_time
@@ -82,76 +90,62 @@ async def stream_chat(message: str, session_id: Optional[str] = None) -> Dict:
                     return {"session_id": current_session_id}
                 
                 # 使用Rich的Live显示来创建动态更新的区域
-                with Live("", refresh_per_second=10) as live:
+                with Live(console=console, auto_refresh=False) as live:
                     # 读取SSE流
                     async for line in response.content:
                         line = line.decode('utf-8')
+                        
+                        # 将原始响应写入日志
+                        if line.strip():
+                            logging.info(line.strip())
                         
                         if not line.strip() or not line.startswith("data: "):
                             continue
                         
                         # 解析SSE数据
                         try:
-                            data = json.loads(line[6:])  # 去掉 "data: " 前缀
+                            data = json.loads(line[6:])
                             
                             if DEBUG_MODE:
-                                console.print(f"[dim]调试: 收到事件类型: {data.get('type')}[/dim]")
+                                console.print(f"[dim]调试: 收到事件: {data}[/dim]")
                             
-                            # 处理不同类型的事件
-                            if data.get("type") == "thinking" and show_thinking:
-                                # 思考内容增量更新
-                                thinking_content += data.get("content", "")
-                                current_display = f"[yellow]【思考过程】[/yellow]\n{thinking_content}\n\n"
-                                
-                                if answer_content:
-                                    current_display += f"[green]【回答内容】[/green]\n{answer_content}"
-                                
-                                live.update(current_display)
+                            event_type = data.get("type")
+                            
+                            if event_type == "streaming_content":
+                                full_content += data.get("delta", "")
+                                last_update = time.time()
+                            
+                            elif event_type == "tool_call":
+                                tool_name = data.get('name', '未知工具')
+                                full_content += f"\n\n[bold yellow]正在使用工具: {tool_name}...[/bold yellow]\n"
                                 last_update = time.time()
                                 
-                            elif data.get("type") == "answer":
-                                # 回答内容增量更新
-                                answer_content += data.get("content", "")
-                                current_display = ""
-                                
-                                if show_thinking and thinking_content:
-                                    current_display += f"[yellow]【思考过程】[/yellow]\n{thinking_content}\n\n"
-                                
-                                current_display += f"[green]【回答内容】[/green]\n{answer_content}"
-                                live.update(current_display)
-                                last_update = time.time()
-                                
-                            elif data.get("type") == "done":
-                                # 对话完成
+                            elif event_type == "done":
                                 done = True
                                 current_session_id = data.get("session_id")
                                 
                                 if DEBUG_MODE:
                                     elapsed_time = time.time() - start_time
                                     console.print(f"\n[dim]对话完成 | 会话ID: {current_session_id} | 耗时: {elapsed_time:.2f}秒[/dim]")
-                                    console.print("=" * 50)
                                 
-                            elif data.get("type") == "error":
-                                # 错误信息
+                            elif event_type == "error":
                                 console.print(f"\n[bold red]错误:[/bold red] {data.get('content', '未知错误')}")
-                        
+                                
+                            # 统一更新显示
+                            live.update(Markdown(full_content), refresh=True)
+
                         except json.JSONDecodeError as e:
                             if DEBUG_MODE:
                                 console.print(f"[bold red]解析JSON错误:[/bold red] {e} | 原始数据: {line}")
-                        
-                        # 检查是否长时间没有更新，显示等待消息
-                        current_time = time.time()
-                        if not done and current_time - last_update > 3 and current_time - start_time > 5:
-                            live.update(f"{live.renderable}\n[dim]正在生成回复...[/dim]")
-                            last_update = current_time
         
-        # 输出最终结果
-        if not answer_content and thinking_content:
-            console.print("\n[bold red]警告:[/bold red] 接收到思考过程但没有回答内容")
-            
-        if DEBUG_MODE:
-            console.print(f"\n思考字符数: {len(thinking_content)} | 回答字符数: {len(answer_content)}")
-        
+        # 最终输出（Live组件结束后会自动保留最后的内容）
+        if DEBUG_MODE and not done:
+            console.print("[dim]流式传输未收到'done'事件[/dim]")
+
+        # 确保在Live上下文之外，最终内容被正确打印
+        # Live组件在退出时会打印最后的状态，所以这里不需要再次打印full_content
+        console.print("=" * 50)
+
         return {"session_id": current_session_id}
         
     except aiohttp.ClientError as e:

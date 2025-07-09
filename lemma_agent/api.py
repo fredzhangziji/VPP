@@ -254,81 +254,48 @@ async def chat(request: ChatRequest):
                 # 调用agent.run()并流式处理响应
                 response_generator = agent.run(messages=messages, stream=True)
                 
-                # 用于跟踪思考和回答的累积内容
-                accumulated_thinking = ""
-                accumulated_answer = ""
-                last_emitted_thinking = ""
-                last_emitted_answer = ""
-                full_content = ""
-                thinking_detected = False
-                in_answer_phase = False  # 标记是否已进入回答阶段
+                last_assistant_content = ""
+                final_assistant_content = ""
                 
                 for response_chunk in response_generator:
                     # 对于流式响应，处理每个chunk
                     if isinstance(response_chunk, list) and response_chunk:
-                        # 通常是列表的最后一个元素
                         latest_message = response_chunk[-1]
                         
                         if hasattr(latest_message, 'role') and latest_message.role == 'assistant':
-                            full_content = latest_message.content
-                            api_logger.debug(f"收到助手消息: {full_content[:100]}...")
+                            current_content = latest_message.content or ""
+                            # 始终记录最新的完整内容
+                            final_assistant_content = current_content
                             
-                            # 首先提取思考内容
-                            current_thinking = extract_thinking(full_content)
+                            delta = ""
+                            if current_content.startswith(last_assistant_content):
+                                # 计算增量内容
+                                delta = current_content[len(last_assistant_content):]
+                            else:
+                                # 内容出现非追加式变化，将当前全部内容作为增量
+                                # 前端需要能够处理这种情况，例如直接替换之前的内容
+                                api_logger.warning("检测到非追加式内容更新，将发送完整内容作为增量。")
+                                delta = current_content
                             
-                            # 检测是否已经开始输出实际回答（不含思考标签的内容）
-                            # 判断依据：如果内容中有不被<think>标签包裹的实质性文本
-                            cleaned_content = extract_content(full_content)
-                            if cleaned_content and not in_answer_phase:
-                                in_answer_phase = True
-                                api_logger.debug("检测到回答阶段开始")
-                            
-                            # 处理思考内容
-                            if current_thinking:
-                                thinking_detected = True
-                                if current_thinking != last_emitted_thinking:
-                                    # 提取增量思考内容
-                                    if last_emitted_thinking and current_thinking.startswith(last_emitted_thinking):
-                                        thinking_increment = current_thinking[len(last_emitted_thinking):]
-                                    else:
-                                        thinking_increment = current_thinking
-                                    
-                                    if thinking_increment:
-                                        last_emitted_thinking = current_thinking
-                                        accumulated_thinking = current_thinking
-                                        # 只发送增量思考
-                                        yield f"data: {json.dumps({'type': 'thinking', 'content': thinking_increment}, ensure_ascii=False)}\n\n"
-                            
-                            # 处理回答内容
-                            if in_answer_phase and cleaned_content:
-                                if cleaned_content != last_emitted_answer:
-                                    # 提取增量回答内容
-                                    if last_emitted_answer and cleaned_content.startswith(last_emitted_answer):
-                                        answer_increment = cleaned_content[len(last_emitted_answer):]
-                                    else:
-                                        answer_increment = cleaned_content
-                                    
-                                    if answer_increment:
-                                        last_emitted_answer = cleaned_content
-                                        accumulated_answer = cleaned_content
-                                        # 只发送增量回答
-                                        yield f"data: {json.dumps({'type': 'answer', 'content': answer_increment}, ensure_ascii=False)}\n\n"
+                            if delta:
+                                last_assistant_content = current_content
+                                # 发送统一的流式内容事件
+                                yield f"data: {json.dumps({'type': 'streaming_content', 'delta': delta}, ensure_ascii=False)}\n\n"
                         
-                        # 检查是否有工具调用消息，记录日志
+                        # 检查是否有工具调用消息，记录日志并通知前端
                         elif hasattr(latest_message, 'role') and latest_message.role == 'tool':
-                            api_logger.info(f"工具调用: {latest_message.name if hasattr(latest_message, 'name') else '未知工具'}")
+                            tool_name = getattr(latest_message, 'name', '未知工具')
+                            api_logger.info(f"工具调用: {tool_name}")
+                            # 根据需求，发送工具调用事件给前端
+                            yield f"data: {json.dumps({'type': 'tool_call', 'name': tool_name}, ensure_ascii=False)}\n\n"
                 
-                # 流式响应完成后，将最终的助手消息添加到会话历史
-                if accumulated_answer:
-                    assistant_message = Message(role="assistant", content=full_content)
+                # 流式响应完成后，将最终的、完整的助手消息添加到会话历史
+                if final_assistant_content:
+                    assistant_message = Message(role="assistant", content=final_assistant_content)
                     messages.append(assistant_message)
                     
                     # 更新会话最后活跃时间
                     session_data["last_active"] = datetime.now().isoformat()
-                
-                # 如果没有检测到任何思考内容，记录警告
-                if not thinking_detected:
-                    api_logger.warning(f"会话 {session_id} 未检测到任何思考内容，请检查系统提示和模型输出")
                 
                 # 发送完成事件
                 yield f"data: {json.dumps({'type': 'done', 'session_id': session_id}, ensure_ascii=False)}\n\n"
