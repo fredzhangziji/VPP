@@ -67,15 +67,18 @@ async def stream_chat(message: str, session_id: Optional[str] = None) -> Dict:
         "session_id": session_id
     }
     
-    # 清屏显示新对话
+    # 清屏或打印空行以准备显示新对话
     if clear_screen:
         os.system('cls' if os.name == 'nt' else 'clear')
-    
-    # 显示用户消息
-    console.print(f"\n[bold blue]用户:[/bold blue] {message}\n")
-    
+        # 如果清屏，则需要重新显示用户输入
+        console.print(f"\n[bold blue]用户:[/bold blue] {message}\n")
+    else:
+        # 在不清屏模式下，用户输入已经显示，我们只添加一个换行来分隔。
+        console.print()
+
     # 准备接收AI回复的变量
     full_content = ""
+    is_first_content_chunk = True
     done = False
     start_time = time.time()
     last_update = start_time
@@ -117,7 +120,7 @@ async def stream_chat(message: str, session_id: Optional[str] = None) -> Dict:
                             
                             elif event_type == "tool_call":
                                 tool_name = data.get('name', '未知工具')
-                                full_content += f"\n\n[bold yellow]正在使用工具: {tool_name}...[/bold yellow]\n"
+                                full_content += f"\n\n[bold yellow]LEMMA 正在思考... (调用工具: {tool_name})[/bold yellow]\n"
                                 last_update = time.time()
                                 
                             elif event_type == "done":
@@ -131,20 +134,16 @@ async def stream_chat(message: str, session_id: Optional[str] = None) -> Dict:
                             elif event_type == "error":
                                 console.print(f"\n[bold red]错误:[/bold red] {data.get('content', '未知错误')}")
                                 
-                            # 统一更新显示
-                            live.update(Markdown(full_content), refresh=True)
+                            # 统一更新显示，将所有内容放入一个带标题的面板中
+                            live.update(Panel(Text.from_markup(full_content), title="[bold green]LEMMA[/bold green]", border_style="green"), refresh=True)
 
                         except json.JSONDecodeError as e:
                             if DEBUG_MODE:
                                 console.print(f"[bold red]解析JSON错误:[/bold red] {e} | 原始数据: {line}")
         
-        # 最终输出（Live组件结束后会自动保留最后的内容）
-        if DEBUG_MODE and not done:
-            console.print("[dim]流式传输未收到'done'事件[/dim]")
-
         # 确保在Live上下文之外，最终内容被正确打印
         # Live组件在退出时会打印最后的状态，所以这里不需要再次打印full_content
-        console.print("=" * 50)
+        console.print()
 
         return {"session_id": current_session_id}
         
