@@ -2,3 +2,12 @@ pandas
 sqlalchemy
 pymysql
 qwen_agent
+fastapi==0.109.0
+uvicorn==0.27.0
+pydantic==2.6.0
+requests==2.31.0
+sseclient-py==1.8.0
+python-dotenv==1.0.0
+python-multipart==0.0.6
+aiohttp==3.9.5
+rich==13.7.1

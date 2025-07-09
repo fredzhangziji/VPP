@@ -4,7 +4,7 @@
 """
 LEMMA: 电力市场分析智能体
 
-基于Qwen-Agent框架开发的电力市场分析智能体，可以分析电价偏差事件，连接到远程Ollama服务和Qwen3:32b LLM模型。
+基于Qwen-Agent框架开发的电力市场分析智能体，可以分析电价偏差事件，连接到远程Ollama服务和qwen3:32b-q8_0 LLM模型。
 具有以下核心工具：
 1. 价格偏差分析工具
 2. 竞价空间分析工具 
@@ -42,7 +42,7 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.WARNING,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler("lemma_agent.log"),  # 文件日志
@@ -1347,7 +1347,7 @@ def print_welcome_banner():
 ║                                                                    ║
 ║  {Colors.BOLD}LEMMA - 电力市场分析智能体{Colors.RESET}{Colors.GREEN}                                        ║
 ║                                                                    ║
-║  基于Qwen-Agent框架和远程Ollama服务 (qwen3:32b)                    ║
+║  基于Qwen-Agent框架和远程Ollama服务 (qwen3:32b-q8_0)                    ║
 ║                                                                    ║
 ║  {Colors.YELLOW}核心功能:{Colors.GREEN}                                                         ║
 ║  • 价格偏差分析           • 竞价空间分析                           ║
@@ -1374,7 +1374,7 @@ if __name__ == "__main__":
 
     # LLM配置
     llm_cfg = {
-        'model': 'qwen3:32b',
+        'model': 'qwen3:32b-q8_0',
         'model_server': 'http://10.5.0.100:11434/v1',
         'api_key': 'EMPTY',
         'generate_cfg': {
