@@ -423,6 +423,7 @@ class BiddingSpaceTool(BaseTool):
             # 准备Sidecar数据
             sidecar_data = kwargs.get("sidecar_data")
             if sidecar_data is not None:
+                sidecar_data['type'] = 'bidding_space_data'
                 # 准备x轴数据 (时间戳)
                 sidecar_data['x'] = [index.strftime('%H:%M') for index, row in df_hourly.iterrows()]
                 
@@ -636,6 +637,46 @@ class PowerGenerationTool(BaseTool):
                 if df_merged.isna().sum().sum() > 0:
                     logger.warning("数据存在无法填充的NaN值，这可能影响分析结果")
             
+            # --- 新增：为前端准备每小时的比率数据 ---
+            df_hourly = df_merged.set_index('date_time').resample('H').sum()
+            
+            # 定义一个通用的比率计算函数
+            def calculate_ratio_for_row(row, actual_col, forecast_col):
+                actual, forecast = row.get(actual_col, 0), row.get(forecast_col, 0)
+                if forecast == 0:
+                    return 100.0 if actual == 0 else 0.0
+                return (actual / forecast) * 100
+
+            # 为每个指标计算偏差率
+            metric_definitions = {
+                "wind_power": {"name": "风电出力偏差率", "unit": "%"},
+                "solar_power": {"name": "光伏出力偏差率", "unit": "%"}
+            }
+
+            for key in metric_definitions.keys():
+                actual_col, forecast_col = f"{key}_actual", f"{key}_forecast"
+                df_hourly[f'{key}_ratio'] = df_hourly.apply(
+                    calculate_ratio_for_row, axis=1, args=(actual_col, forecast_col)
+                )
+
+            # 准备Sidecar数据
+            sidecar_data = kwargs.get("sidecar_data")
+            if sidecar_data is not None:
+                sidecar_data['type'] = 'power_generation_data'
+                # 准备x轴数据 (时间戳)
+                sidecar_data['x'] = [index.strftime('%H:%M') for index, row in df_hourly.iterrows()]
+                
+                # 准备各个系列的数据
+                for key, details in metric_definitions.items():
+                    sidecar_data[key] = {
+                        "name": details["name"],
+                        "unit": details["unit"],
+                        "type": "line",
+                        "data": [round(row.get(f'{key}_ratio', 0), 2) for index, row in df_hourly.iterrows()]
+                    }
+                logger.info(f"Sidecar data populated for PowerGenerationTool. Keys: {list(sidecar_data.keys())}")
+            # --- 结束新增部分 ---
+
             # 初始化分析结果字典
             analysis_result = {
                 "date": date_str,

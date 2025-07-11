@@ -176,10 +176,11 @@ async def chat(request: ChatRequest):
                 for response_chunk in response_generator:
                     # 在每次循环迭代时都检查sidecar_data，实现解耦
                     # 检查新数据结构（以'x'键为标志），并发送整个对象
-                    if 'x' in sidecar_data and isinstance(sidecar_data, dict):
+                    if 'type' in sidecar_data and 'x' in sidecar_data:
                         # 直接发送整个sidecar_data对象
-                        api_logger.info(f"Found and sending sidecar data with new structure. Keys: {list(sidecar_data.keys())}")
-                        yield f"data: {json.dumps({'type': 'bidding_space_data', 'data': sidecar_data}, ensure_ascii=False)}\n\n"
+                        event_type = sidecar_data.pop('type', 'unknown_data')
+                        api_logger.info(f"Found and sending sidecar data with type '{event_type}'. Keys: {list(sidecar_data.keys())}")
+                        yield f"data: {json.dumps({'type': event_type, 'data': sidecar_data}, ensure_ascii=False)}\n\n"
                         # 发送后清空，避免重复发送
                         sidecar_data.clear()
 
