@@ -359,55 +359,68 @@ class BiddingSpaceTool(BaseTool):
             return json.dumps({"error": f"日期解析错误: {e}"}, ensure_ascii=False)
         
         try:
-            # 查询1: 预测的竞价空间数据
             forecast_query = """
-            SELECT date_time, bidding_space AS bidding_space_forecast
-            FROM neimeng_market_forecast
-            WHERE date_time BETWEEN %s AND %s
-            ORDER BY date_time
+            SELECT s.date_time, s.bidding_space AS bidding_space_forecast
+            FROM neimeng_market_forecast s
+            INNER JOIN (
+                SELECT date_time, MAX(predict_date) AS latest_predict_date
+                FROM neimeng_market_forecast
+                WHERE date_time BETWEEN %s AND %s
+                GROUP BY date_time
+            ) t ON s.date_time = t.date_time AND s.predict_date = t.latest_predict_date
+            ORDER BY s.date_time
             """
-            
             df_forecast = pd.read_sql_query(
-                forecast_query, 
-                engine, 
-                params=(start_time, end_time)
+                forecast_query, engine, params=(start_time, end_time)
             )
             
-            # 查询2: 实际的竞价空间数据
             actual_query = """
             SELECT date_time, bidding_space AS bidding_space_actual
             FROM neimeng_market_actual
             WHERE date_time BETWEEN %s AND %s
             ORDER BY date_time
             """
-            
             df_actual = pd.read_sql_query(
                 actual_query, 
                 engine, 
                 params=(start_time, end_time)
             )
             
-            # 检查查询结果
             if df_forecast.empty and df_actual.empty:
                 logger.warning(f"查询结果为空: forecast={len(df_forecast)}, actual={len(df_actual)}")
                 return json.dumps({
                     "error": f"未找到{start_time}至{end_time}期间的竞价空间数据"
                 }, ensure_ascii=False)
             
-            # 合并数据集 (外连接，保留所有时间点)
             df_forecast['date_time'] = pd.to_datetime(df_forecast['date_time'])
             df_actual['date_time'] = pd.to_datetime(df_actual['date_time'])
-            df_merged = pd.merge(df_forecast, df_actual, on='date_time', how='outer')
+            df_merged = pd.merge(df_forecast, df_actual, on='date_time', how='outer').interpolate().ffill().bfill()
             
-            # 处理缺失值
-            df_merged = df_merged.interpolate(method='linear')
-            df_merged = df_merged.ffill().bfill()
+            # --- 新增：为前端准备每小时的比率数据 ---
+            df_hourly = df_merged.set_index('date_time').resample('H').sum()
+
+            def calculate_ratio(row):
+                forecast, actual = row['bidding_space_forecast'], row['bidding_space_actual']
+                if forecast == 0: return 100.0 if actual == 0 else 0.0
+                return (actual / forecast) * 100
             
-            # 计算每个时间点的偏差
+            df_hourly['percentage_ratio'] = df_hourly.apply(calculate_ratio, axis=1)
+
+            hourly_ratio_data = [
+                {"time": index.strftime('%Y-%m-%d %H:%M:%S'), "value": round(row['percentage_ratio'], 2)}
+                for index, row in df_hourly.iterrows()
+            ]
+            
+            sidecar_data = kwargs.get("sidecar_data")
+            if sidecar_data is not None:
+                sidecar_data["hourly_bidding_space_ratio"] = hourly_ratio_data
+                logger.info(f"Sidecar data populated with 'hourly_bidding_space_ratio'. Keys: {list(sidecar_data.keys())}")
+            # --- 结束新增部分 ---
+
+            # 沿用原逻辑计算偏差，用于生成文本摘要
             df_merged['deviation'] = df_merged['bidding_space_actual'] - df_merged['bidding_space_forecast']
             df_merged['abs_deviation'] = abs(df_merged['deviation'])
             
-            # 计算核心指标
             forecast_mean = round(df_merged['bidding_space_forecast'].mean(), 2)
             actual_mean = round(df_merged['bidding_space_actual'].mean(), 2)
             mean_deviation = round(abs(actual_mean - forecast_mean), 2)
@@ -453,6 +466,7 @@ class BiddingSpaceTool(BaseTool):
                     "deviation": max_dev_value
                 },
                 "analysis_summary": analysis_summary
+                # REMOVED: "hourly_deviation_percentage" is no longer in the main report
             }
             
             return json.dumps(report, ensure_ascii=False)

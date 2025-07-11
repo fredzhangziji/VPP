@@ -79,9 +79,8 @@ async def stream_chat(message: str, session_id: Optional[str] = None) -> Dict:
     # 准备接收AI回复的变量
     full_content = ""
     is_first_content_chunk = True
-    done = False
+    thinking_messages = []
     start_time = time.time()
-    last_update = start_time
     
     try:
         async with aiohttp.ClientSession() as session:
@@ -92,58 +91,66 @@ async def stream_chat(message: str, session_id: Optional[str] = None) -> Dict:
                     console.print(f"错误详情: {error_text}")
                     return {"session_id": current_session_id}
                 
-                # 使用Rich的Live显示来创建动态更新的区域
-                with Live(console=console, auto_refresh=False) as live:
-                    # 读取SSE流
-                    async for line in response.content:
-                        line = line.decode('utf-8')
+                # 读取SSE流
+                async for line in response.content:
+                    line = line.decode('utf-8')
+                    
+                    # 将原始响应写入日志
+                    if line.strip():
+                        logging.info(line.strip())
+                    
+                    if not line.strip() or not line.startswith("data: "):
+                        continue
+                    
+                    # 解析SSE数据
+                    try:
+                        data = json.loads(line[6:])
                         
-                        # 将原始响应写入日志
-                        if line.strip():
-                            logging.info(line.strip())
+                        if DEBUG_MODE:
+                            console.print(f"[dim]调试: 收到事件: {data}[/dim]")
                         
-                        if not line.strip() or not line.startswith("data: "):
-                            continue
+                        event_type = data.get("type")
                         
-                        # 解析SSE数据
-                        try:
-                            data = json.loads(line[6:])
-                            
-                            if DEBUG_MODE:
-                                console.print(f"[dim]调试: 收到事件: {data}[/dim]")
-                            
-                            event_type = data.get("type")
-                            
-                            if event_type == "streaming_content":
-                                full_content += data.get("delta", "")
-                                last_update = time.time()
-                            
-                            elif event_type == "tool_call":
+                        if event_type == "streaming_content":
+                            delta = data.get("delta", "")
+                            if delta:
+                                if is_first_content_chunk:
+                                    # 如果有思考过程，打印换行与思考过程分隔
+                                    if thinking_messages:
+                                        console.print()
+                                    console.print("[bold green]LEMMA:[/bold green] ", end="")
+                                    is_first_content_chunk = False
+                                
+                                console.print(delta, end="")
+                                full_content += delta
+                        
+                        elif event_type == "tool_call":
+                            if show_thinking:
                                 tool_name = data.get('name', '未知工具')
-                                full_content += f"\n\n[bold yellow]LEMMA 正在思考... (调用工具: {tool_name})[/bold yellow]\n"
-                                last_update = time.time()
-                                
-                            elif event_type == "done":
-                                done = True
-                                current_session_id = data.get("session_id")
-                                
-                                if DEBUG_MODE:
-                                    elapsed_time = time.time() - start_time
-                                    console.print(f"\n[dim]对话完成 | 会话ID: {current_session_id} | 耗时: {elapsed_time:.2f}秒[/dim]")
-                                
-                            elif event_type == "error":
-                                console.print(f"\n[bold red]错误:[/bold red] {data.get('content', '未知错误')}")
-                                
-                            # 统一更新显示，将所有内容放入一个带标题的面板中
-                            live.update(Panel(Text.from_markup(full_content), title="[bold green]LEMMA[/bold green]", border_style="green"), refresh=True)
-
-                        except json.JSONDecodeError as e:
+                                think_msg = f"[bold yellow]LEMMA 正在思考... (调用工具: {tool_name})[/bold yellow]"
+                                console.print(think_msg)
+                                thinking_messages.append(think_msg)
+                        
+                        elif event_type == "bidding_space_data":
+                            detailed_data = data.get('data', [])
                             if DEBUG_MODE:
-                                console.print(f"[bold red]解析JSON错误:[/bold red] {e} | 原始数据: {line}")
+                                console.print(f"[dim]收到竞价空间详细数据: {len(detailed_data)} 条记录[/dim]")
+                            
+                        elif event_type == "done":
+                            current_session_id = data.get("session_id")
+                            if DEBUG_MODE:
+                                elapsed_time = time.time() - start_time
+                                console.print(f"\n[dim]对话完成 | 会话ID: {current_session_id} | 耗时: {elapsed_time:.2f}秒[/dim]")
+                            break # 结束循环
+                            
+                        elif event_type == "error":
+                            console.print(f"\n[bold red]错误:[/bold red] {data.get('content', '未知错误')}")
+                            
+                    except json.JSONDecodeError as e:
+                        if DEBUG_MODE:
+                            console.print(f"[bold red]解析JSON错误:[/bold red] {e} | 原始数据: {line}")
         
-        # 确保在Live上下文之外，最终内容被正确打印
-        # Live组件在退出时会打印最后的状态，所以这里不需要再次打印full_content
-        console.print()
+        console.print() # 确保在流式输出后换行
 
         return {"session_id": current_session_id}
         

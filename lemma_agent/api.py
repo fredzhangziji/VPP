@@ -106,7 +106,8 @@ def get_session(session_id: Optional[str] = None) -> tuple:
             "agent": initialize_agent(),
             "messages": [],
             "created_at": datetime.now().isoformat(),
-            "last_active": datetime.now().isoformat()
+            "last_active": datetime.now().isoformat(),
+            "sidecar_data": {}  # 为会话添加边车数据存储
         }
         active_sessions[new_session_id] = session_data
         return new_session_id, session_data
@@ -156,6 +157,7 @@ async def chat(request: ChatRequest):
         session_id, session_data = get_session(request.session_id)
         agent = session_data["agent"]
         messages = session_data["messages"]
+        sidecar_data = session_data["sidecar_data"] # 获取sidecar数据
         
         # 添加用户消息
         user_message = Message(role="user", content=request.message)
@@ -165,13 +167,19 @@ async def chat(request: ChatRequest):
         
         async def event_generator():
             try:
-                # 调用agent.run()并流式处理响应
-                response_generator = agent.run(messages=messages, stream=True)
+                # 调用agent.run()并流式处理响应，传入sidecar_data
+                response_generator = agent.run(messages=messages, stream=True, sidecar_data=sidecar_data)
                 
                 last_assistant_content = ""
                 final_assistant_content = ""
                 
                 for response_chunk in response_generator:
+                    # 在每次循环迭代时都检查sidecar_data，实现解耦
+                    if 'hourly_bidding_space_ratio' in sidecar_data:
+                        detailed_data = sidecar_data.pop('hourly_bidding_space_ratio')
+                        api_logger.info(f"Found and sending 'hourly_bidding_space_ratio' data from sidecar. Size: {len(detailed_data)} records.")
+                        yield f"data: {json.dumps({'type': 'bidding_space_data', 'data': detailed_data}, ensure_ascii=False)}\n\n"
+
                     # 对于流式响应，处理每个chunk
                     if isinstance(response_chunk, list) and response_chunk:
                         latest_message = response_chunk[-1]
@@ -199,10 +207,12 @@ async def chat(request: ChatRequest):
                         # 检查是否有工具调用消息，记录日志并通知前端
                         elif hasattr(latest_message, 'role') and latest_message.role == 'tool':
                             tool_name = getattr(latest_message, 'name', '未知工具')
-                            api_logger.info(f"工具调用: {tool_name}")
-                            # 根据需求，发送工具调用事件给前端
+                            api_logger.info(f"Tool call reported by agent: {tool_name}")
+                            # 发送通用工具调用事件
                             yield f"data: {json.dumps({'type': 'tool_call', 'name': tool_name}, ensure_ascii=False)}\n\n"
-                
+                            
+                            # 注意：原先耦合在这里的sidecar检查逻辑已被移除并上提到循环顶部
+
                 # 流式响应完成后，将最终的、完整的助手消息添加到会话历史
                 if final_assistant_content:
                     assistant_message = Message(role="assistant", content=final_assistant_content)
