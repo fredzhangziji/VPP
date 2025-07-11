@@ -36,7 +36,7 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 # 配置日志
 logging.basicConfig(
-    level=logging.WARNING,
+    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler("lemma_agent.log"),  # 文件日志
@@ -80,7 +80,7 @@ class PriceDeviationTool(BaseTool):
     
     def call(self, params: str, **kwargs) -> str:
         """执行电价偏差报告获取操作。""" 
-        logger.debug(f"PriceDeviationTool被调用，参数: {params}")
+        logger.info(f"PriceDeviationTool被调用，参数: {params}")
         print(f"{Colors.CYAN}[工具] 获取电价偏差报告...{Colors.RESET}")
         
         if not engine:
@@ -325,7 +325,7 @@ class BiddingSpaceTool(BaseTool):
 
     def call(self, params: str, **kwargs) -> str:
         """执行竞价空间偏差分析操作。"""
-        logger.debug(f"BiddingSpaceTool被调用，参数: {params}")
+        logger.info(f"BiddingSpaceTool被调用，参数: {params}")
         print(f"{Colors.CYAN}[工具] 分析竞价空间偏差...{Colors.RESET}")
         
         if not engine:
@@ -510,18 +510,18 @@ class PowerGenerationTool(BaseTool):
     }, {
         "name": "region",
         "type": "string",
-        "description": "电力市场区域，例如'呼包东'、'呼包西'、'内蒙全省'等",
+        "description": "电力市场区域，例如'内蒙全省'",
         "required": False
     }, {
         "name": "energy_type",
         "type": "string",
-        "description": "能源类型，如'风电'、'光伏'、'水电'、'火电'或'全部'",
+        "description": "能源类型，如'风电'、'光伏'或'全部'",
         "required": False
     }]
     
     def call(self, params: str, **kwargs) -> str:
         """执行电力生成偏差分析操作。"""
-        logger.debug(f"PowerGenerationTool被调用，参数: {params}")
+        logger.info(f"PowerGenerationTool被调用，参数: {params}")
         print(f"{Colors.CYAN}[工具] 分析电力生成偏差...{Colors.RESET}")
         
         if not engine:
@@ -902,7 +902,12 @@ class PowerGenerationTool(BaseTool):
 class RegionalCapacityTool(BaseTool):
     """用于获取区域发电容量信息的工具。"""
     
-    description = "获取特定区域的发电容量结构信息，包括不同类型能源的装机容量、占比。"
+    description = """获取特定区域的发电容量结构信息。返回数据包括：
+- `total_capacity`: 该区域总装机容量 (MW)。
+- `capacity_by_type`: 各能源类型（风、光、水、火、其他）的装机容量 (MW)。
+- `percentage_by_type`: 各能源类型在本区域内的装机容量占比 (%)。
+- `new_energy_penetration`: 新能源（风+光）在本区域的渗透率 (%)。
+- `percentage_in_mengxi_new_energy`: 该区域的风、光发电装机容量分别占整个蒙西地区新能源（风+光）总装机容量的百分比 (%)。"""
     
     parameters = [{
         "name": "region",
@@ -929,6 +934,10 @@ class RegionalCapacityTool(BaseTool):
                 'other': 15.3,
                 'hydro': 57.8
             },
+            'percentage_in_mengxi_new_energy': { # 该区域某能源类型占全蒙西新能源（风+光）的比例
+                'wind': 33.6,
+                'solar': 6.8
+            },
             'percentage_in_region': {  # 区内占比
                 'wind': 54.4,
                 'solar': 11.0,
@@ -953,6 +962,10 @@ class RegionalCapacityTool(BaseTool):
                 'other': 84.7,
                 'hydro': 42.2
             },
+            'percentage_in_mengxi_new_energy': { # 该区域某能源类型占全蒙西新能源（风+光）的比例
+                'wind': 28.7,
+                'solar': 30.9
+            },
             'percentage_in_region': {  # 区内占比
                 'wind': 25.8,
                 'solar': 27.8,
@@ -965,7 +978,7 @@ class RegionalCapacityTool(BaseTool):
     
     def call(self, params: str, **kwargs) -> str:
         """执行区域容量信息获取操作。"""
-        logger.debug(f"RegionalCapacityTool被调用，参数: {params}")
+        logger.info(f"RegionalCapacityTool被调用，参数: {params}")
         print(f"{Colors.CYAN}[工具] 获取区域容量信息...{Colors.RESET}")
         
         # 解析参数
@@ -986,10 +999,30 @@ class RegionalCapacityTool(BaseTool):
         # 获取区域数据
         region_data = self.REGIONAL_CAPACITY_DATA[region]
         
+        # --- 新增：为前端准备sidecar数据 ---
+        sidecar_data = kwargs.get("sidecar_data")
+        if sidecar_data is not None:
+            sidecar_data['type'] = 'regional_capacity_data'
+            sidecar_data['chart_type'] = 'pie'
+            sidecar_data['title'] = '蒙西地区新能源装机结构'
+            
+            pie_data = []
+            for region_name, data in self.REGIONAL_CAPACITY_DATA.items():
+                new_energy_data = data.get('percentage_in_mengxi_new_energy', {})
+                if 'wind' in new_energy_data:
+                    pie_data.append({'value': new_energy_data['wind'], 'name': f'{region_name}-风电'})
+                if 'solar' in new_energy_data:
+                    pie_data.append({'value': new_energy_data['solar'], 'name': f'{region_name}-光伏'})
+
+            sidecar_data['data'] = pie_data
+            logger.info(f"Sidecar data populated for RegionalCapacityTool. Keys: {list(sidecar_data.keys())}")
+        # --- 结束新增部分 ---
+        
         # 提取数据
         capacity_by_type = region_data['capacity_by_type']
         total_capacity = region_data['total_capacity']
         percentage_in_region = region_data['percentage_in_region']
+        percentage_in_mengxi_new_energy = region_data.get('percentage_in_mengxi_new_energy', {})
         
         # 计算新能源渗透率（风电+光伏占比）
         new_energy_penetration = percentage_in_region['wind'] + percentage_in_region['solar']
@@ -1022,6 +1055,7 @@ class RegionalCapacityTool(BaseTool):
                 "other": percentage_in_region['other']
             },
             "new_energy_penetration": new_energy_penetration,
+            "percentage_in_mengxi_new_energy": percentage_in_mengxi_new_energy,
             "analysis_summary": analysis_summary
         }
         
