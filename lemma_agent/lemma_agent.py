@@ -308,16 +308,8 @@ class BiddingSpaceTool(BaseTool):
         # 解析日期部分
         base_date = pd.to_datetime(start_time).date()
         
-        # 处理"高峰期"(8:00-20:00)
-        if time_period == "高峰期":
-            new_start = datetime.combine(base_date, pd.to_datetime("08:00").time())
-            new_end = datetime.combine(base_date, pd.to_datetime("20:00").time())
-        # 处理"低谷期"(20:00-次日8:00)
-        elif time_period == "低谷期":
-            new_start = datetime.combine(base_date, pd.to_datetime("20:00").time())
-            new_end = datetime.combine(base_date, pd.to_datetime("08:00").time())
         # 处理具体时间范围，如"08:00-16:00"
-        elif re.match(r'(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})', time_period):
+        if re.match(r'(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})', time_period):
             match = re.match(r'(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})', time_period)
             start_h, start_m = int(match.group(1)), int(match.group(2))
             end_h, end_m = int(match.group(3)), int(match.group(4))
@@ -360,7 +352,11 @@ class BiddingSpaceTool(BaseTool):
         
         try:
             forecast_query = """
-            SELECT s.date_time, s.bidding_space AS bidding_space_forecast
+            SELECT s.date_time, s.bidding_space AS bidding_space_forecast,
+                   s.total_load AS total_load_forecast,
+                   s.east_power AS east_power_forecast,
+                   s.non_market_power AS non_market_power_forecast,
+                   s.renewable_power AS renewable_power_forecast
             FROM neimeng_market_forecast s
             INNER JOIN (
                 SELECT date_time, MAX(predict_date) AS latest_predict_date
@@ -375,7 +371,11 @@ class BiddingSpaceTool(BaseTool):
             )
             
             actual_query = """
-            SELECT date_time, bidding_space AS bidding_space_actual
+            SELECT date_time, bidding_space AS bidding_space_actual,
+                   total_load AS total_load_actual,
+                   east_power AS east_power_actual,
+                   non_market_power AS non_market_power_actual,
+                   renewable_power AS renewable_power_actual
             FROM neimeng_market_actual
             WHERE date_time BETWEEN %s AND %s
             ORDER BY date_time
@@ -398,23 +398,43 @@ class BiddingSpaceTool(BaseTool):
             
             # --- 新增：为前端准备每小时的比率数据 ---
             df_hourly = df_merged.set_index('date_time').resample('H').sum()
-
-            def calculate_ratio(row):
-                forecast, actual = row['bidding_space_forecast'], row['bidding_space_actual']
+            
+            # 定义一个通用的比率计算函数
+            def calculate_ratio_for_row(row, actual_col, forecast_col):
+                actual, forecast = row.get(actual_col, 0), row.get(forecast_col, 0)
                 if forecast == 0: return 100.0 if actual == 0 else 0.0
                 return (actual / forecast) * 100
-            
-            df_hourly['percentage_ratio'] = df_hourly.apply(calculate_ratio, axis=1)
 
-            hourly_ratio_data = [
-                {"time": index.strftime('%Y-%m-%d %H:%M:%S'), "value": round(row['percentage_ratio'], 2)}
-                for index, row in df_hourly.iterrows()
-            ]
-            
+            # 为每个指标计算偏差率
+            metric_definitions = {
+                "bidding_space": {"name": "竞价空间偏差率", "unit": "%"},
+                "total_load": {"name": "负荷偏差率", "unit": "%"},
+                "east_power": {"name": "东送计划偏差率", "unit": "%"},
+                "non_market_power": {"name": "非市场化出力偏差率", "unit": "%"},
+                "renewable_power": {"name": "新能源出力偏差率", "unit": "%"}
+            }
+
+            for key in metric_definitions.keys():
+                actual_col, forecast_col = f"{key}_actual", f"{key}_forecast"
+                df_hourly[f'{key}_ratio'] = df_hourly.apply(
+                    calculate_ratio_for_row, axis=1, args=(actual_col, forecast_col)
+                )
+
+            # 准备Sidecar数据
             sidecar_data = kwargs.get("sidecar_data")
             if sidecar_data is not None:
-                sidecar_data["hourly_bidding_space_ratio"] = hourly_ratio_data
-                logger.info(f"Sidecar data populated with 'hourly_bidding_space_ratio'. Keys: {list(sidecar_data.keys())}")
+                # 准备x轴数据 (时间戳)
+                sidecar_data['x'] = [index.strftime('%H:%M') for index, row in df_hourly.iterrows()]
+                
+                # 准备各个系列的数据
+                for key, details in metric_definitions.items():
+                    sidecar_data[key] = {
+                        "name": details["name"],
+                        "unit": details["unit"],
+                        "type": "line",
+                        "data": [round(row[f'{key}_ratio'], 2) for index, row in df_hourly.iterrows()]
+                    }
+                logger.info(f"Sidecar data populated with new structure. Keys: {list(sidecar_data.keys())}")
             # --- 结束新增部分 ---
 
             # 沿用原逻辑计算偏差，用于生成文本摘要
@@ -510,8 +530,13 @@ class PowerGenerationTool(BaseTool):
         try:
             parsed_params = json.loads(params)
             date_str = parsed_params.get("date", "")
-            region = parsed_params.get("region", "内蒙全省")  # 默认为内蒙全省
+            region_param = parsed_params.get("region", "内蒙全省")  # 默认为内蒙全省
             energy_type = parsed_params.get("energy_type", "全部")  # 默认分析所有能源类型
+
+            # 当前风电和光伏数据是全省范围的，强制region为"内蒙全省"
+            region = "内蒙全省"
+            if region_param != region:
+                logger.warning(f"PowerGenerationTool currently only supports province-wide data. Region parameter '{region_param}' is ignored, using '{region}' instead.")
         except Exception as e:
             logger.error(f"参数解析错误: {e}")
             return json.dumps({"error": f"参数解析错误: {e}"}, ensure_ascii=False)
@@ -746,10 +771,11 @@ class PowerGenerationTool(BaseTool):
                 }, ensure_ascii=False)
             
             # 根据能源类型参数过滤分析结果
-            if energy_type.lower() == "风电" or energy_type.lower() == "全部":
+            energy_type_lower = energy_type.lower()
+            if energy_type_lower in ["风电", "全部", "新能源"]:
                 analysis_result["analysis"]["wind_power"] = wind_analysis
             
-            if energy_type.lower() == "光伏" or energy_type.lower() == "全部":
+            if energy_type_lower in ["光伏", "全部", "新能源"]:
                 analysis_result["analysis"]["solar_power"] = solar_analysis
             
             # 生成分析摘要

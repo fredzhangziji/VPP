@@ -132,10 +132,35 @@ async def stream_chat(message: str, session_id: Optional[str] = None) -> Dict:
                                 thinking_messages.append(think_msg)
                         
                         elif event_type == "bidding_space_data":
-                            detailed_data = data.get('data', [])
+                            detailed_data = data.get('data', {})
                             if DEBUG_MODE:
-                                console.print(f"[dim]收到竞价空间详细数据: {len(detailed_data)} 条记录[/dim]")
+                                console.print(f"[dim]收到竞价空间详细数据: {json.dumps(detailed_data, indent=2)}[/dim]")
                             
+                            # 使用Rich Panel美化输出
+                            if detailed_data and 'x' in detailed_data:
+                                output = "[bold magenta]竞价空间及相关指标偏差率 (%):[/bold magenta]\n"
+                                # 提取除时间轴'x'之外的所有数据系列
+                                series_keys = [k for k in detailed_data.keys() if k != 'x']
+                                
+                                # 准备表头
+                                headers = ["时间"] + [detailed_data[k].get('name', k) for k in series_keys]
+                                table_rows = " | ".join(headers) + "\n"
+                                table_rows += " | ".join(["---"] * len(headers)) + "\n"
+
+                                # 准备每一行的数据
+                                for i, time_stamp in enumerate(detailed_data['x']):
+                                    row_data = [time_stamp]
+                                    for key in series_keys:
+                                        # 检查数据是否存在且长度匹配
+                                        if i < len(detailed_data[key].get('data', [])):
+                                            row_data.append(f"{detailed_data[key]['data'][i]:.2f}")
+                                        else:
+                                            row_data.append("N/A")
+                                    table_rows += " | ".join(row_data) + "\n"
+                                
+                                output += f"```markdown\n{table_rows}```"
+                                console.print(Panel(Markdown(output), title="详细数据", border_style="cyan", expand=False))
+                        
                         elif event_type == "done":
                             current_session_id = data.get("session_id")
                             if DEBUG_MODE:

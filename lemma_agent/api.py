@@ -175,10 +175,13 @@ async def chat(request: ChatRequest):
                 
                 for response_chunk in response_generator:
                     # 在每次循环迭代时都检查sidecar_data，实现解耦
-                    if 'hourly_bidding_space_ratio' in sidecar_data:
-                        detailed_data = sidecar_data.pop('hourly_bidding_space_ratio')
-                        api_logger.info(f"Found and sending 'hourly_bidding_space_ratio' data from sidecar. Size: {len(detailed_data)} records.")
-                        yield f"data: {json.dumps({'type': 'bidding_space_data', 'data': detailed_data}, ensure_ascii=False)}\n\n"
+                    # 检查新数据结构（以'x'键为标志），并发送整个对象
+                    if 'x' in sidecar_data and isinstance(sidecar_data, dict):
+                        # 直接发送整个sidecar_data对象
+                        api_logger.info(f"Found and sending sidecar data with new structure. Keys: {list(sidecar_data.keys())}")
+                        yield f"data: {json.dumps({'type': 'bidding_space_data', 'data': sidecar_data}, ensure_ascii=False)}\n\n"
+                        # 发送后清空，避免重复发送
+                        sidecar_data.clear()
 
                     # 对于流式响应，处理每个chunk
                     if isinstance(response_chunk, list) and response_chunk:
