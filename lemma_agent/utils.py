@@ -141,14 +141,25 @@ def extract_tool_responses(messages: List[Message]) -> Dict[str, Any]:
     Extracts and categorizes all tool responses from the message history.
     """
     tool_outputs = {}
-    for msg in messages:
-        if msg.role == 'tool':
-            try:
-                tool_name = msg.name
-                tool_data = json.loads(msg.content)
-                tool_outputs[tool_name] = tool_data
-                util_logger.info(f"Successfully extracted response from tool '{tool_name}'.")
-            except (json.JSONDecodeError, AttributeError) as e:
-                util_logger.warning(f"Error parsing tool response: {e} - Content: {getattr(msg, 'content', 'N/A')}")
+    util_logger.info(f"开始提取工具响应，消息列表长度: {len(messages)}")
     
+    for i, msg in enumerate(messages):
+        role = getattr(msg, 'role', 'unknown')
+        content_preview = getattr(msg, 'content', '')[:50] + '...' if hasattr(msg, 'content') else 'No content'
+        util_logger.info(f"消息 #{i}: 角色={role}, 内容摘要={content_preview}")
+        
+        if role == 'tool':
+            try:
+                tool_name = getattr(msg, 'name', 'unknown_tool')
+                util_logger.info(f"找到工具消息 #{i}, 工具名称: {tool_name}")
+                tool_content = getattr(msg, 'content', '{}')
+                util_logger.info(f"工具内容预览: {tool_content[:100]}...")
+                
+                tool_data = json.loads(tool_content)
+                tool_outputs[tool_name] = tool_data
+                util_logger.info(f"成功提取工具 '{tool_name}' 的响应，包含键: {list(tool_data.keys() if isinstance(tool_data, dict) else ['non-dict-data'])}")
+            except (json.JSONDecodeError, AttributeError) as e:
+                util_logger.warning(f"解析工具响应错误: {e} - 内容: {getattr(msg, 'content', 'N/A')[:100]}")
+    
+    util_logger.info(f"工具响应提取完成，共 {len(tool_outputs)} 个工具: {list(tool_outputs.keys())}")
     return tool_outputs 

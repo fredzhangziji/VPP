@@ -49,7 +49,7 @@ for handler in logger.handlers:
     if isinstance(handler, logging.StreamHandler):
         handler.setLevel(logging.ERROR)
 
-# --- 数据库引擎 (全局共享) ---
+# 数据库引擎 (全局共享)
 try:
     db_url = (f"mysql+pymysql://{DB_CONFIG_VPP_SERVICE['user']}:{DB_CONFIG_VPP_SERVICE['password']}"
               f"@{DB_CONFIG_VPP_SERVICE['host']}:{DB_CONFIG_VPP_SERVICE['port']}"
@@ -233,7 +233,7 @@ class PriceDeviationTool(BaseTool):
             
             analysis_summary = f"该日期{region}电价出现{deviation_magnitude}偏差，平均实际价格比平均预测价格{deviation_direction}约{abs(deviation_percentage)}%。{peak_valley_comparison}{max_min_info}"
             
-            # 计算市场价格（这里假设市场价格就是实际价格）
+            # 计算市场价格（实际价格）
             market_price = round(overall_actual_avg, 2)
             
             # 构建报告
@@ -396,7 +396,7 @@ class BiddingSpaceTool(BaseTool):
             df_actual['date_time'] = pd.to_datetime(df_actual['date_time'])
             df_merged = pd.merge(df_forecast, df_actual, on='date_time', how='outer').interpolate().ffill().bfill()
             
-            # --- 新增：为前端准备每小时的比率数据 ---
+            # 为前端准备每小时的比率数据
             df_hourly = df_merged.set_index('date_time').resample('H').sum()
             
             # 定义一个通用的比率计算函数
@@ -436,7 +436,6 @@ class BiddingSpaceTool(BaseTool):
                         "data": [round(row[f'{key}_ratio'], 2) for index, row in df_hourly.iterrows()]
                     }
                 logger.info(f"Sidecar data populated with new structure. Keys: {list(sidecar_data.keys())}")
-            # --- 结束新增部分 ---
 
             # 沿用原逻辑计算偏差，用于生成文本摘要
             df_merged['deviation'] = df_merged['bidding_space_actual'] - df_merged['bidding_space_forecast']
@@ -637,7 +636,7 @@ class PowerGenerationTool(BaseTool):
                 if df_merged.isna().sum().sum() > 0:
                     logger.warning("数据存在无法填充的NaN值，这可能影响分析结果")
             
-            # --- 新增：为前端准备每小时的比率数据 ---
+            # 为前端准备每小时的比率数据
             df_hourly = df_merged.set_index('date_time').resample('H').sum()
             
             # 定义一个通用的比率计算函数
@@ -675,7 +674,6 @@ class PowerGenerationTool(BaseTool):
                         "data": [round(row.get(f'{key}_ratio', 0), 2) for index, row in df_hourly.iterrows()]
                     }
                 logger.info(f"Sidecar data populated for PowerGenerationTool. Keys: {list(sidecar_data.keys())}")
-            # --- 结束新增部分 ---
 
             # 初始化分析结果字典
             analysis_result = {
@@ -999,7 +997,7 @@ class RegionalCapacityTool(BaseTool):
         # 获取区域数据
         region_data = self.REGIONAL_CAPACITY_DATA[region]
         
-        # --- 新增：为前端准备sidecar数据 ---
+        # 为前端准备sidecar数据
         sidecar_data = kwargs.get("sidecar_data")
         if sidecar_data is not None:
             sidecar_data['type'] = 'regional_capacity_data'
@@ -1016,7 +1014,6 @@ class RegionalCapacityTool(BaseTool):
 
             sidecar_data['data'] = pie_data
             logger.info(f"Sidecar data populated for RegionalCapacityTool. Keys: {list(sidecar_data.keys())}")
-        # --- 结束新增部分 ---
         
         # 提取数据
         capacity_by_type = region_data['capacity_by_type']
@@ -1061,9 +1058,11 @@ class RegionalCapacityTool(BaseTool):
         
         return json.dumps(response, ensure_ascii=False)
 
-def generate_final_analysis(messages: List[Message]) -> str:
+def _legacy_generate_final_analysis(messages: List[Message]) -> str:
     """
-    根据所有工具调用的结果，生成一个综合性的最终分析报告 (优化版)。
+    [已弃用] 根据所有工具调用的结果，生成一个综合性的最终分析报告 (优化版)。
+    目前作为一个后备机制，当系统无法从正常响应中提取到最终回答时被调用。
+    此函数已被 AnalysisFrameworkTool 替代。
     
     Args:
         messages: 所有消息的历史记录。
@@ -1090,7 +1089,7 @@ def generate_final_analysis(messages: List[Message]) -> str:
         analysis_parts.append(
             f"根据价格偏差报告，在日期 {price_data.get('date', 'N/A')}，"
             f"{price_data.get('region', '该地区')}的实际电价与预测存在 {price_data.get('deviation_percentage', 0)}% 的显著偏差。"
-            f"“{price_data.get('analysis_summary', '')}”"
+            f"{price_data.get('analysis_summary', '')}"
         )
         
     # 竞价空间分析
@@ -1141,55 +1140,298 @@ def generate_final_analysis(messages: List[Message]) -> str:
     return final_report
 
 
-def typewriter_print(content, previous_content=""):
-    """
-    打印机风格的流式输出，不显示思考过程
+@register_tool('generate_analysis_framework')
+class AnalysisFrameworkTool(BaseTool):
+    """生成分析报告框架工具。不直接生成完整分析，而是提供结构化框架和关键指标。"""
     
-    Args:
-        content: 当前内容
-        previous_content: 之前打印的内容
+    description = """基于已收集的工具数据，生成分析报告的结构框架和关键指标列表。
+    此工具不生成最终报告，而是提供框架供智能体完成分析。
+    应在收集了足够的工具数据(价格偏差、竞价空间、发电偏差等)后使用。"""
     
-    Returns:
-        返回当前打印的内容，用于下次比较
-    """
-    # 先提取内容 - 现在只需处理字符串
-    if isinstance(content, str):
-        clean_content = extract_content(content)
-    else:
-        # 如果是复杂对象，先尝试找出最终消息
-        final_message = find_final_assistant_message(content)
-        if final_message:
-            if hasattr(final_message, 'content'):
-                clean_content = extract_content(final_message.content)
-            else:
-                clean_content = extract_content(final_message.get('content', ''))
-        else:
-            # 如果找不到最终消息，退回到原来的处理方式
-            clean_content = extract_content(str(content))
+    parameters = []  # 不需要额外参数，使用当前会话中已有的工具结果
     
-    # 如果提取的内容为空但原始内容不为空，可能是工具调用或未识别格式
-    # 此时不输出任何内容，等待实际结果
-    if not clean_content.strip() and content:
-        return previous_content
+    def call(self, params: str, **kwargs) -> str:
+        """执行分析框架生成操作。"""
+        logger.info("生成分析报告框架...")
+        start_time = time.time()
+        
+        try:
+            # 从会话历史中获取消息
+            messages = kwargs.get("messages", [])
+            logger.info(f"接收到消息历史，共 {len(messages)} 条消息")
+            
+            # 记录消息角色分布
+            role_counts = {}
+            for msg in messages:
+                role = getattr(msg, 'role', 'unknown')
+                role_counts[role] = role_counts.get(role, 0) + 1
+            logger.info(f"消息角色分布: {role_counts}")
+            
+            # 提取工具响应
+            tool_outputs = extract_tool_responses(messages)
+            logger.info(f"提取到工具响应 {len(tool_outputs)} 个: {list(tool_outputs.keys())}")
+            
+            # 如果工具结果不足，返回提示 (从原来的2个改为1个)
+            if len(tool_outputs) < 1:
+                logger.warning("工具数据不足，无法生成有效框架")
+                return json.dumps({
+                    "status": "insufficient_data",
+                    "message": "需要更多工具分析结果才能生成框架。请先使用价格偏差、竞价空间或发电偏差分析工具收集数据。"
+                }, ensure_ascii=False)
+            
+            # 提取分析所需的时间和区域信息
+            date_info = self._extract_date_info(tool_outputs)
+            region_info = self._extract_region_info(tool_outputs)
+            logger.info(f"提取到日期: {date_info}, 区域: {region_info}")
+            
+            # 构建分析框架
+            framework = {
+                "title": f"{date_info} {region_info} 电力市场分析框架",
+                "suggested_structure": [
+                    "市场概况摘要",
+                    "价格偏差分析",
+                    "供需平衡分析",
+                    "新能源出力影响",
+                    "关键发现与洞察",
+                    "建议行动"
+                ],
+                "key_metrics": self._extract_key_metrics(tool_outputs),
+                "correlation_points": self._identify_correlations(tool_outputs),
+                "data_sources": list(tool_outputs.keys())
+            }
+            
+            logger.info(f"生成分析框架完成，耗时: {time.time() - start_time:.2f}秒")
+            return json.dumps(framework, ensure_ascii=False)
+            
+        except Exception as e:
+            logger.error(f"生成分析框架时出错: {e}", exc_info=True)
+            return json.dumps({
+                "status": "error",
+                "message": f"生成分析框架时出错: {str(e)}"
+            }, ensure_ascii=False)
     
-    # 如果内容没有变化，直接返回
-    if clean_content == previous_content:
-        return previous_content
+    def _extract_date_info(self, tool_outputs):
+        """从工具输出中提取日期信息"""
+        # 尝试从价格偏差工具获取
+        if 'get_price_deviation_report' in tool_outputs:
+            date = tool_outputs['get_price_deviation_report'].get('date')
+            if date:
+                return date
+        
+        # 尝试从竞价空间工具获取
+        if 'analyze_bidding_space_deviation' in tool_outputs:
+            date = tool_outputs['analyze_bidding_space_deviation'].get('date')
+            if date:
+                return date
+                
+        # 尝试从发电偏差工具获取
+        if 'analyze_power_generation_deviation' in tool_outputs:
+            date = tool_outputs['analyze_power_generation_deviation'].get('date')
+            if date:
+                return date
+        
+        return "未指定日期"
     
-    # 计算上一次输出占用的行数
-    if previous_content:
-        # 安全起见，直接使用清屏方式重新打印
-        # 这种方式不依赖于ANSI转义序列的行数计算，更可靠
-        if os.name == 'nt':
-            os.system('cls')
-        else:
-            os.system('clear')
+    def _extract_region_info(self, tool_outputs):
+        """从工具输出中提取区域信息"""
+        # 优先从价格偏差工具获取
+        if 'get_price_deviation_report' in tool_outputs:
+            region = tool_outputs['get_price_deviation_report'].get('region')
+            if region:
+                return region
+        
+        # 尝试从其他工具获取
+        for tool_name in ['analyze_bidding_space_deviation', 'analyze_power_generation_deviation', 'get_regional_capacity_info']:
+            if tool_name in tool_outputs:
+                region = tool_outputs[tool_name].get('region')
+                if region:
+                    return region
+        
+        return "未指定区域"
     
-    # 打印新内容
-    prefix = f"{Colors.GREEN}LEMMA: {Colors.RESET}"
-    print(f"{prefix}{clean_content}", flush=True)
+    def _extract_key_metrics(self, tool_outputs):
+        """提取各工具的关键指标"""
+        key_metrics = {}
+        
+        # 价格偏差指标
+        if 'get_price_deviation_report' in tool_outputs:
+            price_data = tool_outputs['get_price_deviation_report']
+            key_metrics["价格偏差"] = {
+                "整体偏差率": f"{price_data.get('deviation_percentage', 0)}%",
+                "实际价格": f"{price_data.get('actual_price', 0)}元/MWh",
+                "预测价格": f"{price_data.get('forecast_price', 0)}元/MWh",
+                "高峰期偏差": f"{price_data.get('peak_hours_deviation', 0)}%",
+                "低谷期偏差": f"{price_data.get('valley_hours_deviation', 0)}%",
+                "最大价差": f"{price_data.get('max_price_diff', 0)}元/MWh"
+            }
+        
+        # 竞价空间指标
+        if 'analyze_bidding_space_deviation' in tool_outputs:
+            bidding_data = tool_outputs['analyze_bidding_space_deviation']
+            key_metrics["竞价空间"] = {
+                "实际竞价空间": f"{bidding_data.get('actual_avg_bidding_space', 0)}MW",
+                "预测竞价空间": f"{bidding_data.get('forecast_avg_bidding_space', 0)}MW",
+                "平均偏差率": f"{bidding_data.get('average_deviation', 0)}%",
+                "最大偏差率": f"{bidding_data.get('max_deviation', 0)}%",
+                "最小偏差率": f"{bidding_data.get('min_deviation', 0)}%"
+            }
+        
+        # 发电偏差指标
+        if 'analyze_power_generation_deviation' in tool_outputs:
+            gen_data = tool_outputs['analyze_power_generation_deviation']
+            analysis = gen_data.get('analysis', {})
+            
+            power_metrics = {}
+            # 风电指标
+            if 'wind_power' in analysis:
+                wind = analysis['wind_power']
+                power_metrics["风电"] = {
+                    "偏差率": f"{wind.get('deviation_percentage', 0)}%",
+                    "实际平均出力": f"{wind.get('actual_avg', 0)}MW",
+                    "预测平均出力": f"{wind.get('forecast_avg', 0)}MW"
+                }
+            
+            # 光伏指标
+            if 'solar_power' in analysis:
+                solar = analysis['solar_power']
+                power_metrics["光伏"] = {
+                    "偏差率": f"{solar.get('deviation_percentage', 0)}%",
+                    "实际平均出力": f"{solar.get('actual_avg', 0)}MW",
+                    "预测平均出力": f"{solar.get('forecast_avg', 0)}MW"
+                }
+            
+            if power_metrics:
+                key_metrics["发电出力"] = power_metrics
+        
+        # 区域容量信息
+        if 'get_regional_capacity_info' in tool_outputs:
+            capacity_data = tool_outputs['get_regional_capacity_info']
+            
+            if 'capacity_by_type' in capacity_data:
+                capacity = capacity_data['capacity_by_type']
+                energy_mix = {}
+                for energy_type, value in capacity.items():
+                    energy_mix[energy_type] = f"{value}MW"
+                
+                key_metrics["装机容量"] = {
+                    "总装机容量": f"{capacity_data.get('total_capacity', 0)}MW",
+                    "能源结构": energy_mix,
+                    "新能源渗透率": f"{capacity_data.get('new_energy_penetration', 0)}%"
+                }
+        
+        return key_metrics
     
-    return clean_content
+    def _identify_correlations(self, tool_outputs):
+        """识别数据之间的相关性和可能的因果关系"""
+        correlations = []
+        
+        # 价格偏差与竞价空间关系
+        if 'get_price_deviation_report' in tool_outputs and 'analyze_bidding_space_deviation' in tool_outputs:
+            price_dev = tool_outputs['get_price_deviation_report'].get('deviation_percentage', 0)
+            bidding_dev = tool_outputs['analyze_bidding_space_deviation'].get('average_deviation', 0)
+            
+            if price_dev * bidding_dev > 0:  # 同向偏差
+                correlations.append("价格偏差与竞价空间偏差呈同向变化，表明市场供需关系可能是价格变动的主要因素")
+            else:  # 反向偏差
+                correlations.append("价格偏差与竞价空间偏差呈反向变化，可能存在其他非供需因素影响价格")
+        
+        # 新能源出力与竞价空间关系
+        if 'analyze_power_generation_deviation' in tool_outputs and 'analyze_bidding_space_deviation' in tool_outputs:
+            gen_data = tool_outputs['analyze_power_generation_deviation']
+            analysis = gen_data.get('analysis', {})
+            
+            # 风电偏差
+            wind_dev = 0
+            if 'wind_power' in analysis:
+                wind_dev = analysis['wind_power'].get('deviation_percentage', 0)
+            
+            # 光伏偏差
+            solar_dev = 0
+            if 'solar_power' in analysis:
+                solar_dev = analysis['solar_power'].get('deviation_percentage', 0)
+            
+            # 竞价空间偏差
+            bidding_dev = tool_outputs['analyze_bidding_space_deviation'].get('average_deviation', 0)
+            
+            # 如果新能源总体低于预期，竞价空间应该增大
+            new_energy_dev = (wind_dev + solar_dev) / 2
+            if new_energy_dev < 0 and bidding_dev > 0:
+                correlations.append("新能源出力低于预期，导致竞价空间扩大，火电机组议价能力增强")
+            elif new_energy_dev > 0 and bidding_dev < 0:
+                correlations.append("新能源出力高于预期，导致竞价空间收窄，火电机组议价能力减弱")
+        
+        # 价格与新能源出力关系
+        if 'get_price_deviation_report' in tool_outputs and 'analyze_power_generation_deviation' in tool_outputs:
+            price_dev = tool_outputs['get_price_deviation_report'].get('deviation_percentage', 0)
+            
+            gen_data = tool_outputs['analyze_power_generation_deviation']
+            analysis = gen_data.get('analysis', {})
+            
+            # 计算新能源平均偏差
+            deviations = []
+            for power_type in ['wind_power', 'solar_power']:
+                if power_type in analysis:
+                    deviations.append(analysis[power_type].get('deviation_percentage', 0))
+            
+            if deviations:
+                avg_dev = sum(deviations) / len(deviations)
+                if avg_dev < -10 and price_dev > 5:
+                    correlations.append("新能源显著低于预期(-10%以上)，是电价高于预期(5%以上)的主要原因")
+                elif avg_dev > 10 and price_dev < -5:
+                    correlations.append("新能源显著高于预期(10%以上)，是电价低于预期(5%以上)的主要原因")
+        
+        # 如果没有找到相关性
+        if not correlations:
+            correlations.append("从现有数据中未能识别出明显的相关性，建议收集更多维度数据")
+        
+        return correlations
+
+@register_tool('debug_messages')
+class DebugMessagesTool(BaseTool):
+    """调试工具，用于检查消息历史和工具响应。"""
+    
+    description = "检查当前对话中的消息历史和工具响应，帮助调试问题。"
+    
+    parameters = []
+    
+    def call(self, params: str, **kwargs) -> str:
+        """执行消息历史检查。"""
+        logger.info("开始调试消息历史...")
+        
+        try:
+            # 检查kwargs中是否有消息历史
+            has_messages = "messages" in kwargs
+            messages = kwargs.get("messages", [])
+            messages_count = len(messages)
+            
+            # 统计消息类型
+            role_counts = {}
+            for msg in messages:
+                role = getattr(msg, 'role', 'unknown')
+                role_counts[role] = role_counts.get(role, 0) + 1
+            
+            # 提取工具响应
+            tool_outputs = extract_tool_responses(messages)
+            
+            # 构建调试报告
+            debug_info = {
+                "has_messages_in_kwargs": has_messages,
+                "messages_count": messages_count,
+                "role_distribution": role_counts,
+                "extracted_tools_count": len(tool_outputs),
+                "extracted_tools": list(tool_outputs.keys()),
+                "kwargs_keys": list(kwargs.keys())
+            }
+            
+            logger.info(f"调试信息: {json.dumps(debug_info, ensure_ascii=False)}")
+            return json.dumps(debug_info, ensure_ascii=False)
+            
+        except Exception as e:
+            logger.error(f"调试过程中出错: {e}", exc_info=True)
+            return json.dumps({
+                "error": f"调试过程中出错: {str(e)}",
+                "kwargs_keys": list(kwargs.keys() if isinstance(kwargs, dict) else [])
+            }, ensure_ascii=False)
 
 
 def print_welcome_banner():
@@ -1322,7 +1564,7 @@ if __name__ == "__main__":
                 else:
                     # 如果都失败了，尝试手动生成分析报告
                     logger.warning("未能提取到最终回答，尝试手动生成分析报告。")
-                    manual_summary = generate_final_analysis(messages + [Message(role='assistant', content=full_response_content)])
+                    manual_summary = _legacy_generate_final_analysis(messages + [Message(role='assistant', content=full_response_content)])
                     if manual_summary:
                         print(f"{Colors.BOLD}{Colors.GREEN}LEMMA (分析总结):{Colors.RESET}\n{manual_summary}")
                         final_message_object = Message(role='assistant', content=manual_summary)

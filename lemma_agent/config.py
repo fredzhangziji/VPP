@@ -37,7 +37,9 @@ TOOLS = [
     'get_price_deviation_report', 
     'analyze_bidding_space_deviation',
     'analyze_power_generation_deviation', 
-    'get_regional_capacity_info'
+    'get_regional_capacity_info',
+    'generate_analysis_framework',
+    'debug_messages'
 ]
 
 # --- System Prompt Configuration ---
