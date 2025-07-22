@@ -9,10 +9,13 @@ from sqlalchemy.exc import NoSuchTableError
 import pandas as pd
 from snowflake import SnowflakeGenerator
 import time
+import ssl
+from requests.adapters import HTTPAdapter
+from datetime import date
 
 import logging
 import pub_tools.logging_config
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('renewable_data_crawler')
 
 _MAX_RETRY_NUM = 5
 
@@ -133,7 +136,26 @@ def _process_city_name(city: str) -> str:
         city = city.replace("','", "+")
     return city
 
-def fetch_multi_day_wind_power_data_for_each_city(url: str, start_date: str, end_date: str = '2023-01-01'):
+def validate_date(date_str: str) -> str:
+    """验证日期字符串并返回标准化的日期格式
+    
+    入参:
+        date_str: 字符串类型，表示需要验证的日期
+        
+    返回:
+        标准化的YYYY-MM-DD格式日期字符串
+        
+    异常:
+        如果日期格式无效，抛出ValueError
+    """
+    try:
+        # 尝试解析日期字符串，并转换为标准格式
+        return pd.to_datetime(date_str).strftime("%Y-%m-%d")
+    except Exception as e:
+        logger.error(f"日期格式无效: {date_str}")
+        raise ValueError(f"日期格式无效: {date_str}") from e
+
+def fetch_multi_day_wind_power_data_for_each_city(url: str, start_date: str, end_date: str = None):
     """对各个城市进行多天风电数据爬取，并将每一天的数据插入数据库。
 
     从起始日期到结束日期（日期递减），对每个城市依次请求单日风电数据。
@@ -143,14 +165,32 @@ def fetch_multi_day_wind_power_data_for_each_city(url: str, start_date: str, end
     入参:
         url: 字符串类型, API请求的URL地址
         start_date: 字符串类型, 起始日期. 例如: "2025-04-02"
-        end_date: 字符串类型, 结束日期. (默认值：'2023-01-01')
+        end_date: 字符串类型, 结束日期. 默认为None，表示使用start_date作为结束日期
     """
     engine, _ = db_tools.get_db_connection(const.DB_CONFIG_VPP_SERVICE)
 
     headers = _set_headers(const.HEADERS)
     
-    cur_date = pd.to_datetime(start_date, format="%Y-%m-%d")
-    end_date = pd.to_datetime(end_date, format="%Y-%m-%d")
+    # 如果未提供结束日期，则使用起始日期作为结束日期
+    if end_date is None:
+        end_date = start_date
+    
+    # 验证并标准化日期格式
+    try:
+        start_date = validate_date(start_date)
+        end_date = validate_date(end_date)
+    except ValueError as e:
+        logger.error(f"日期验证失败: {e}")
+        return
+    
+    cur_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+    
+    # 确保开始日期不早于结束日期
+    if cur_date < end_date:
+        logger.error(f"起始日期 {start_date} 早于结束日期 {end_date}，将交换顺序")
+        cur_date, end_date = end_date, cur_date
+    
     while cur_date >= end_date:
         for city in const.REGIONS_FOR_CRAWLER:
             retry_cnt = 0
@@ -175,7 +215,7 @@ def fetch_multi_day_wind_power_data_for_each_city(url: str, start_date: str, end
 
     db_tools.release_db_connection(engine)
 
-def fetch_multi_day_solar_power_data_for_each_city(url: str, start_date: str, end_date: str = '2023-01-01'):
+def fetch_multi_day_solar_power_data_for_each_city(url: str, start_date: str, end_date: str = None):
     """对各个城市进行多天光伏数据爬取，并将每一天的数据写入数据库。
       
     从起始日期到结束日期（日期递减），对每个城市依次请求单日光伏数据。
@@ -185,14 +225,32 @@ def fetch_multi_day_solar_power_data_for_each_city(url: str, start_date: str, en
     入参:
         url: 字符串类型, API请求的URL地址
         start_date: 字符串类型, 起始日期. 例如: "2025-04-02"
-        end_date: 字符串类型, 结束日期. (默认值：'2023-01-01')
+        end_date: 字符串类型, 结束日期. 默认为None，表示使用start_date作为结束日期
     """
     engine, _ = db_tools.get_db_connection(const.DB_CONFIG_VPP_SERVICE)
 
     headers = _set_headers(const.HEADERS)
     
-    cur_date = pd.to_datetime(start_date, format="%Y-%m-%d")
-    end_date = pd.to_datetime(end_date, format="%Y-%m-%d")
+    # 如果未提供结束日期，则使用起始日期作为结束日期
+    if end_date is None:
+        end_date = start_date
+    
+    # 验证并标准化日期格式
+    try:
+        start_date = validate_date(start_date)
+        end_date = validate_date(end_date)
+    except ValueError as e:
+        logger.error(f"日期验证失败: {e}")
+        return
+    
+    cur_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+    
+    # 确保开始日期不早于结束日期
+    if cur_date < end_date:
+        logger.error(f"起始日期 {start_date} 早于结束日期 {end_date}，将交换顺序")
+        cur_date, end_date = end_date, cur_date
+    
     while cur_date >= end_date:
         for city in const.REGIONS_FOR_CRAWLER:
             retry_cnt = 0
@@ -337,10 +395,17 @@ def write_df_into_solar_db(engine, df: pd.DataFrame, city_name: str, cur_date_st
     db_tools.upsert_to_db(engine=engine, df=df, table_name=const.NEIMENG_SOLAR_TABLE_NAME, update_column='value')
     logger.info(f'{cur_date_str} 的 {city_name} 的光伏数据已写入DB.')
 
+class TLSv1_2Adapter(HTTPAdapter):
+    """强制 requests 使用 TLSv1.2 协议的适配器"""
+    def init_poolmanager(self, connections, maxsize, block=False, **pool_kwargs):
+        pool_kwargs['ssl_version'] = ssl.PROTOCOL_TLSv1_2
+        return super().init_poolmanager(connections, maxsize, block, **pool_kwargs)
+
 def get_response(url: str, headers: dict, data: dict):
     """发送POST请求获取数据响应。
 
     通过requests.post发送POST请求，支持指定SSL证书验证路径。
+    此实现强制使用TLSv1.2协议。
 
     入参:
         url: 请求的URL地址
@@ -350,7 +415,9 @@ def get_response(url: str, headers: dict, data: dict):
     返回:
         返回requests的响应对象(response)。
     """
-    response = requests.post(url=url, json=data, headers=headers, verify='pem/fullchain_intermediate+root.pem')
+    session = requests.Session()
+    session.mount('https://', TLSv1_2Adapter())
+    response = session.post(url=url, json=data, headers=headers, verify='pem/fullchain_intermediate+root.pem')
     return response
 
 if __name__ == '__main__': 

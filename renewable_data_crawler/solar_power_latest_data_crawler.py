@@ -2,7 +2,7 @@
 内蒙每日光伏出力的数据爬取程序入口。
 """
 
-from renewable_data_crawler import crawler_tools
+import crawler_tools
 from pub_tools import const
 from datetime import date
 import pandas as pd

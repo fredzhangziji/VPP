@@ -2,9 +2,9 @@
 内蒙全量风电出力的数据爬取程序入口。
 """
 
-from renewable_data_crawler import crawler_tools
+import crawler_tools
 from pub_tools import const
-from datetime import date
+from datetime import date, datetime
 import argparse
 import time
 
@@ -13,7 +13,7 @@ import pub_tools.logging_config
 logger = logging.getLogger(__name__)
 
 if __name__ == '__main__': 
-    logger.info("开始全量光伏数据爬取程序...")
+    logger.info("开始全量风电数据爬取程序...")
     start_time = time.time()
 
     parser = argparse.ArgumentParser(description="Wind Power Data Crawler")
@@ -23,12 +23,27 @@ if __name__ == '__main__':
         default=date.today().strftime("%Y-%m-%d"),
         help="起始日期，格式为 YYYY-MM-DD，默认为今天的日期"
     )
+    parser.add_argument(
+        "--end_date",
+        type=str,
+        default=None,
+        help="结束日期，格式为 YYYY-MM-DD，默认为起始日期相同（即只爬取一天数据）"
+    )
 
     args = parser.parse_args()
     start_date = args.start_date
-
-    crawler_tools.fetch_multi_day_wind_power_data_for_each_city(const.NEIMENG_RENEWABLE_ENERGY_URL,
-                                                          start_date=start_date)
+    end_date = args.end_date
+    
+    logger.info(f"开始爬取从 {start_date} 到 {end_date if end_date else start_date} 的风电数据...")
+    try:
+        crawler_tools.fetch_multi_day_wind_power_data_for_each_city(
+            const.NEIMENG_RENEWABLE_ENERGY_URL,
+            start_date=start_date,
+            end_date=end_date
+        )
+        logger.info("风电数据爬取成功完成！")
+    except Exception as e:
+        logger.error(f"风电数据爬取过程中发生错误: {e}")
     
     end_time = time.time()
     elapsed = end_time - start_time

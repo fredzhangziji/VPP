@@ -54,7 +54,7 @@ def load_custom_config():
                     TARGET_TABLE = custom_config['target_table']
 
 # 临时硬编码API Cookie配置 - 所有爬虫共用一个Cookie
-API_COOKIE = "BIGipServerxyddljy_newmain_20080=1873222060.28750.0000; Gray-Tag=79793033; ClientTag=OUTNET_BROWSE; B-Digest=f1a823aaaaafe40e113c7f04dd72c289faf86252c4a9b57cf1d3c9e12547f9ad; P-Digest=70848ab0714944fc774f395610bf3288c028d6ec44badf47eae82ccf958449c8; CurrentRoute=/dashboard; X-Token=undefined; sidebarStatus=0; Huyi3DKbjTb1O=606_J_RlMbS8w.zV8fD9nR2.4F4.QULap7xzd50sC3JIof9xK2TPxJCTG4zbhGsVMrLvDCBl2w29OGag9lP8sfMq; Admin-Token=137858cc97bd45d57d65e792baa6f8b070ab47ac5a792844de7dce5d16034b8ecc4556bd90841cc1e47e39d08d989df9.adb65539d03d5990fdef897675c0154de37e2c55; X-Ticket=137858cc97bd45d57d65e792baa6f8b070ab47ac5a792844de7dce5d16034b8ecc4556bd90841cc1e47e39d08d989df9.adb65539d03d5990fdef897675c0154de37e2c55"
+API_COOKIE = "Huyi3DKbjTb1O=606_J_RlMbS8w.zV8fD9nR2.4F4.QULap7xzd50sC3JIof9xK2TPxJCTG4zbhGsVMrLvDCBl2w29OGag9lP8sfMq; BIGipServerxyddljy_newmain_20080=1822890412.28750.0000; Gray-Tag=79793033; ClientTag=OUTNET_BROWSE; CurrentRoute=/dashboard; X-Token=undefined; Admin-Token=137858cc97bd45d57d65e792baa6f8b0c5559f5a2f3e7b52639101bc6d104fe6906fb31c01650246bf7993a87629709b.5b89315c3ff76c62c74840c408d1222b99091b85; X-Ticket=137858cc97bd45d57d65e792baa6f8b0c5559f5a2f3e7b52639101bc6d104fe6906fb31c01650246bf7993a87629709b.5b89315c3ff76c62c74840c408d1222b99091b85"
 
 def get_api_cookie():
     """
