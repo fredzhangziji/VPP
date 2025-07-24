@@ -24,11 +24,12 @@ from qwen_agent.llm.base import Message
 from qwen_agent.agents import Assistant
 
 # 导入配置和工具函数
-from config import LLM_CONFIG, TOOLS, SYSTEM_MESSAGE, API_SESSION_CLEANUP_INTERVAL_SECONDS, API_SESSION_MAX_AGE_HOURS
+from config import LLM_CONFIG, TOOLS, SYSTEM_MESSAGE, API_SESSION_CLEANUP_INTERVAL_SECONDS, API_SESSION_MAX_AGE_HOURS, DB_CONFIG_VPP_SERVICE
 from utils import extract_content, Colors
 
 # 导入lemma_agent以触发工具注册
 import lemma_agent
+from sqlalchemy import create_engine
 
 # 配置API日志
 api_logger = logging.getLogger("lemma_api")
@@ -102,12 +103,30 @@ def get_session(session_id: Optional[str] = None) -> tuple:
         new_session_id = session_id or str(uuid.uuid4())
         api_logger.info(f"创建新会话: {new_session_id}")
         
+        # 为会话创建数据库引擎
+        try:
+            db_url = (f"mysql+pymysql://{DB_CONFIG_VPP_SERVICE['user']}:{DB_CONFIG_VPP_SERVICE['password']}"
+                     f"@{DB_CONFIG_VPP_SERVICE['host']}:{DB_CONFIG_VPP_SERVICE['port']}"
+                     f"/{DB_CONFIG_VPP_SERVICE['database']}")
+            session_engine = create_engine(
+                db_url,
+                pool_recycle=1800,  # 30分钟回收连接
+                pool_pre_ping=True,  # 使用前检测连接
+                pool_size=3,         # 每个会话池大小
+                max_overflow=5       # 允许的最大连接数
+            )
+            api_logger.info(f"会话 {new_session_id} 数据库引擎创建成功")
+        except Exception as e:
+            api_logger.error(f"创建数据库引擎失败: {e}", exc_info=True)
+            session_engine = None
+        
         session_data = {
             "agent": initialize_agent(),
             "messages": [],
+            "db_engine": session_engine,  # 存储数据库引擎
             "created_at": datetime.now().isoformat(),
             "last_active": datetime.now().isoformat(),
-            "sidecar_data": {}  # 为会话添加边车数据存储
+            "sidecar_data": {}  # 初始化为空字典，用于存储每个请求的分析结果
         }
         active_sessions[new_session_id] = session_data
         return new_session_id, session_data
@@ -131,6 +150,14 @@ def cleanup_sessions():
     
     for session_id in expired_sessions:
         api_logger.info(f"清理过期会话: {session_id}")
+        # 关闭数据库连接
+        if "db_engine" in active_sessions[session_id] and active_sessions[session_id]["db_engine"]:
+            try:
+                active_sessions[session_id]["db_engine"].dispose()
+                api_logger.info(f"会话 {session_id} 的数据库连接已关闭")
+            except Exception as e:
+                api_logger.error(f"关闭会话 {session_id} 的数据库连接时出错: {e}")
+        
         del active_sessions[session_id]
 
 # 后台任务，用于定期清理会话
@@ -157,7 +184,10 @@ async def chat(request: ChatRequest):
         session_id, session_data = get_session(request.session_id)
         agent = session_data["agent"]
         messages = session_data["messages"]
-        sidecar_data = session_data["sidecar_data"] # 获取sidecar数据
+        
+        # 创建一个用于本次请求的sidecar_data副本
+        # 确保db_engine不会被包含在需要序列化的数据中
+        sidecar_data = {}  # 空字典，不包含db_engine
         
         # 添加用户消息
         user_message = Message(role="user", content=request.message)
@@ -167,8 +197,13 @@ async def chat(request: ChatRequest):
         
         async def event_generator():
             try:
-                # 调用agent.run()并流式处理响应，传入sidecar_data
-                response_generator = agent.run(messages=messages, stream=True, sidecar_data=sidecar_data)
+                # 调用agent.run()并流式处理响应，传入sidecar_data和db_engine
+                response_generator = agent.run(
+                    messages=messages, 
+                    stream=True, 
+                    sidecar_data={},  # 确保传入一个新的空字典
+                    db_engine=session_data.get("db_engine")  # 直接传递数据库引擎作为单独参数
+                )
                 
                 last_assistant_content = ""
                 final_assistant_content = ""
@@ -177,10 +212,12 @@ async def chat(request: ChatRequest):
                     # 在每次循环迭代时都检查sidecar_data，实现解耦
                     # 放宽检查条件，只要有type就发送
                     if 'type' in sidecar_data:
+                        # 创建一个不包含db_engine的新字典用于发送
+                        send_data = {k: v for k, v in sidecar_data.items() if k != 'db_engine'}
                         # 直接发送整个sidecar_data对象
                         event_type = sidecar_data.pop('type', 'unknown_data')
-                        api_logger.info(f"Found and sending sidecar data with type '{event_type}'. Keys: {list(sidecar_data.keys())}")
-                        yield f"data: {json.dumps({'type': event_type, 'data': sidecar_data}, ensure_ascii=False)}\n\n"
+                        api_logger.info(f"Found and sending sidecar data with type '{event_type}'. Keys: {list(send_data.keys())}")
+                        yield f"data: {json.dumps({'type': event_type, 'data': send_data}, ensure_ascii=False)}\n\n"
                         # 发送后清空，避免重复发送
                         sidecar_data.clear()
 
